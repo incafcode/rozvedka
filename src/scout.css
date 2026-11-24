@@ -1,0 +1,19 @@
+
+.sco{display:flex;flex-direction:column;gap:10px;padding:12px 14px 10px;border:1px solid var(--line2);border-radius:var(--r);background:rgba(255,255,255,.025)}
+.sco-h{display:flex;align-items:center;gap:8px;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3)}
+.sco-h b{font-weight:600;color:var(--ink2)}
+.sco-h span{flex:1;text-transform:none;letter-spacing:0;font-variant-numeric:tabular-nums}
+.sco-x{display:inline-grid;place-items:center;width:28px;height:28px;margin:-6px -8px -6px 0;border-radius:var(--r-sm);color:var(--ink3)}
+.sco-x:hover{color:var(--ink);background:rgba(255,255,255,.06)}
+.sco-stop{margin:0;color:var(--ink2);font-size:12px;line-height:1.45}
+.sco-big{display:flex;align-items:baseline;gap:10px}
+.sco-big b{font-size:28px;line-height:1;font-weight:650;color:var(--ink);font-variant-numeric:tabular-nums}
+.sco-big span{color:var(--ink2);font-size:12.5px}
+.sco-rows{display:flex;flex-direction:column;margin:0}
+.sco-rows>div{display:flex;flex-direction:column;gap:2px;padding:7px 0;border-top:1px solid var(--line)}
+.sco-rows dt{color:var(--ink3);font-size:11.5px}
+.sco-rows dd{margin:0;color:var(--ink);font-size:12.5px;font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.sco-acts{display:inline-flex;align-items:center;gap:10px}
+.sco-acts .btn{min-height:30px;padding:0 14px;font-size:12.5px}
+.sco .sco-more{margin-top:0;padding-top:6px}
+.sco .sco-more p{margin:6px 0 0;color:var(--ink3);font-size:11.5px;line-height:1.5}

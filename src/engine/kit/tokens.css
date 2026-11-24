@@ -1,0 +1,313 @@
+/* ==========================================================================
+   tokens.css — база для всіх сайтів (HoReCa, меню з кошиком)
+   v1 · 04.10.2026
+
+   Три шари:
+     1. БРЕНД      — єдине, що змінюється під клієнта (блок нижче).
+     2. ПРИМІТИВИ  — шкали: нейтральні 1–12, статуси, кегль, відступи.
+     3. РОЛІ       — --bg, --text, --accent, --sp-el, --type-h1…
+   Верстка бере ТІЛЬКИ ролі. Примітив у компоненті = помилка.
+
+   Тема: <html data-theme="light|dark">. Атрибут можна ставити й на розділ —
+   темна смуга на світлій сторінці перерахує всі ролі (див. блок РОЛІ).
+
+   Контраст перевірено розрахунком (WCAG):
+     --text 14–16:1 · --text-muted ≥ 5.9:1 · --line-strong ≥ 3:1 (межа поля)
+     статуси на --bg ≥ 4.8:1, на своїй м'якій плашці ≥ 4.6:1, --accent-on-soft 5.9:1
+     бренд за замовчуванням: білий на ньому 5.2:1, як текст 5.1:1 / темна 6.5:1
+   Новий бренд → перевірити --brand-ink на --brand і --brand-text на --bg (≥ 4.5).
+
+   Підтримка: oklch() і color-mix() — Chrome/Android 111+, Safari 16.2+, FF 113+.
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1. БРЕНД — заповнюється під кожного клієнта, решту файлу не чіпати
+   -------------------------------------------------------------------------- */
+:root {
+  /* Колір бренду: заливка головних кнопок, активні стани, позначки. */
+  --brand:       oklch(55% 0.16 40);        /* теракота, #bb4717 */
+  --brand-ink:   #fff;                       /* текст на заливці бренду */
+  --brand-shade: black;                      /* куди темніє кнопка при наведенні: протилежно --brand-ink
+                                                (білий текст → black, темний текст → white) */
+  --brand-text:  var(--brand);               /* бренд як колір тексту на --bg */
+
+  /* Відтінок нейтральних: фон, лінії, сірий текст.
+     Тепла кухня / кава / піца → 50–70; суші, бар, мінімалізм → 240–260;
+     хрома 0 = чистий сірий, 0.012 = ледь відчутно, 0.02 = вже «папір». */
+  --n-h: 60;
+  --n-c: 0.012;
+
+  /* Шрифти. Перевіряти кирилицю з ґ, є, і, ї до того, як обрати. */
+  --font-display: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-text:    system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --fw-display: 700;                         /* Dela Gothic One та ін. мають лише 400 */
+  --tracking-display: -0.02em;               /* вузьким/важким шрифтам — 0 */
+
+  /* Базовий радіус. Уся шкала радіусів рахується від нього:
+     0 — гострий характер, 4–8 — нейтрально, 12 — м'яко. Пігулок немає. */
+  --r: 6px;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. ПРИМІТИВИ
+   -------------------------------------------------------------------------- */
+
+/* 2.1 Нейтральні 1–12. Ролі кроків (як у Radix Colors):
+   1 фон сторінки · 2 тонований фон · 3 фон елемента · 4 наведення · 5 натиснуто/вибрано
+   6 тонка лінія · 7 лінія · 8 сильна лінія · 9 межа поля (3:1)
+   10 — резерв · 11 другорядний текст · 12 основний текст */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --n-1:  oklch(99%   calc(var(--n-c) * 0.3) var(--n-h));
+  --n-2:  oklch(97.5% calc(var(--n-c) * 0.5) var(--n-h));
+  --n-3:  oklch(95.2% calc(var(--n-c) * 0.8) var(--n-h));
+  --n-4:  oklch(93%   var(--n-c)             var(--n-h));
+  --n-5:  oklch(90.5% calc(var(--n-c) * 1.1) var(--n-h));
+  --n-6:  oklch(87.5% calc(var(--n-c) * 1.2) var(--n-h));
+  --n-7:  oklch(83%   calc(var(--n-c) * 1.3) var(--n-h));
+  --n-8:  oklch(75%   calc(var(--n-c) * 1.4) var(--n-h));
+  --n-9:  oklch(60%   calc(var(--n-c) * 1.5) var(--n-h));
+  --n-10: oklch(55%   calc(var(--n-c) * 1.5) var(--n-h));
+  --n-11: oklch(47%   calc(var(--n-c) * 1.4) var(--n-h));
+  --n-12: oklch(24%   calc(var(--n-c) * 1.1) var(--n-h));
+
+  /* Статуси — однакові для всіх брендів, бренд їх не перефарбовує. */
+  --c-ok:   oklch(50% 0.13 150);             /* #137738 */
+  --c-err:  oklch(52% 0.19 27);              /* #be2323 */
+  --c-warn: oklch(52% 0.13 65);              /* #9a5500 */
+  --c-info: oklch(50% 0.14 255);             /* #2063b0 */
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --n-1:  oklch(17%   var(--n-c)             var(--n-h));
+  --n-2:  oklch(20%   calc(var(--n-c) * 1.1) var(--n-h));
+  --n-3:  oklch(23.5% calc(var(--n-c) * 1.2) var(--n-h));
+  --n-4:  oklch(26.5% calc(var(--n-c) * 1.3) var(--n-h));
+  --n-5:  oklch(29.5% calc(var(--n-c) * 1.3) var(--n-h));
+  --n-6:  oklch(33.5% calc(var(--n-c) * 1.3) var(--n-h));
+  --n-7:  oklch(39%   calc(var(--n-c) * 1.3) var(--n-h));
+  --n-8:  oklch(48%   calc(var(--n-c) * 1.3) var(--n-h));
+  --n-9:  oklch(60%   calc(var(--n-c) * 1.3) var(--n-h));
+  --n-10: oklch(65%   calc(var(--n-c) * 1.2) var(--n-h));
+  --n-11: oklch(79%   calc(var(--n-c) * 0.8) var(--n-h));
+  --n-12: oklch(95.5% calc(var(--n-c) * 0.3) var(--n-h));
+
+  --c-ok:   oklch(78% 0.14 150);
+  --c-err:  oklch(74% 0.15 25);
+  --c-warn: oklch(82% 0.13 80);
+  --c-info: oklch(76% 0.11 250);
+}
+
+:root {
+  /* 2.2 Кегль: від 390 px до 1440 px екрана плавно, далі стоп.
+     Мінімум для тексту й полів — 16 px (iOS не збільшує сторінку). */
+  --text-xs:      0.75rem;                                        /* 12 — лише юр. дрібниця */
+  --text-sm:      0.875rem;                                       /* 14 */
+  --text-base:    clamp(1rem,     0.977rem + 0.095vw, 1.0625rem); /* 16 → 17 */
+  --text-md:      clamp(1.125rem, 1.079rem + 0.19vw,  1.25rem);   /* 18 → 20 */
+  --text-lg:      clamp(1.25rem,  1.157rem + 0.381vw, 1.5rem);    /* 20 → 24 */
+  --text-xl:      clamp(1.5rem,   1.361rem + 0.571vw, 1.875rem);  /* 24 → 30 */
+  --text-2xl:     clamp(1.75rem,  1.471rem + 1.143vw, 2.5rem);    /* 28 → 40 */
+  --text-3xl:     clamp(2.125rem, 1.614rem + 2.095vw, 3.5rem);    /* 34 → 56 */
+  --text-display: clamp(2.5rem,   1.386rem + 4.571vw, 5.5rem);    /* 40 → 88 */
+
+  --lh-tight: 1.05;    /* display, h1 */
+  --lh-snug:  1.15;    /* h2, h3 */
+  --lh-title: 1.3;     /* назви страв, підписи кнопок */
+  --lh-text:  1.55;    /* абзаци */
+
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* 2.3 Відступи — крок 4 px. Тільки ці значення, без «на око». */
+  --space-0:  0;
+  --space-1:  0.25rem;  /* 4 */
+  --space-2:  0.5rem;   /* 8 */
+  --space-3:  0.75rem;  /* 12 */
+  --space-4:  1rem;     /* 16 */
+  --space-5:  1.25rem;  /* 20 */
+  --space-6:  1.5rem;   /* 24 */
+  --space-8:  2rem;     /* 32 */
+  --space-10: 2.5rem;   /* 40 */
+  --space-12: 3rem;     /* 48 */
+  --space-16: 4rem;     /* 64 */
+  --space-20: 5rem;     /* 80 */
+  --space-24: 6rem;     /* 96 */
+  --space-32: 8rem;     /* 128 */
+}
+
+
+/* --------------------------------------------------------------------------
+   3. РОЛІ — саме їх бере верстка.
+   Селектор «:root, [data-theme]» навмисний: ролі перераховуються на кожному
+   елементі з data-theme, тому темний розділ на світлій сторінці працює.
+   -------------------------------------------------------------------------- */
+:root,
+[data-theme] {
+  /* 3.1 Поверхні */
+  --bg:         var(--n-1);    /* сторінка */
+  --bg-subtle:  var(--n-2);    /* смуга розділу, підкладка під фото */
+  --surface:    var(--n-1);    /* шар над сторінкою: шторка, меню, тост */
+  --surface-2:  var(--n-3);    /* поле всередині шторки, вкладений блок */
+  --field:      var(--n-1);    /* фон поля вводу */
+  --hover:      var(--n-3);    /* наведення на прозорий елемент */
+  --press:      var(--n-4);
+  --selected:   var(--n-5);
+  --overlay:    oklch(15% 0.01 var(--n-h) / 0.55);   /* затемнення під шторкою */
+
+  /* 3.2 Текст — лише два рівні. Третій «ледь сірий» не читається. */
+  --text:       var(--n-12);
+  --text-muted: var(--n-11);   /* опис страви, вага, примітки */
+  --text-on-photo: #fff;       /* лише на фото із затемненням --photo-dim */
+  --photo-dim:  oklch(10% 0 0 / 0.45);
+
+  /* 3.3 Лінії */
+  --line:        var(--n-6);   /* роздільник рядків меню */
+  --line-strong: var(--n-9);   /* межа поля, чекбокса (3:1) */
+  --focus:       var(--n-12);
+  --ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--focus);   /* box-shadow на :focus-visible */
+
+  /* 3.4 Акцент (бренд) */
+  --accent:       var(--brand);
+  --accent-hover: color-mix(in oklch, var(--brand), var(--brand-shade) 10%);   /* контраст з --brand-ink лише росте */
+  --accent-press: color-mix(in oklch, var(--brand), var(--brand-shade) 18%);
+  --accent-ink:   var(--brand-ink);
+  --accent-text:  var(--brand-text);
+  --accent-soft:  color-mix(in oklab, var(--brand) 12%, var(--bg));  /* фон вибраного фільтра */
+  --accent-on-soft: color-mix(in oklch, var(--brand-text), var(--n-12) 25%);  /* текст на --accent-soft */
+
+  /* 3.5 Статуси: колір = текст/іконка, -soft = плашка під ним */
+  --ok:        var(--c-ok);
+  --ok-soft:   color-mix(in oklab, var(--c-ok) 12%, var(--bg));
+  --err:       var(--c-err);
+  --err-soft:  color-mix(in oklab, var(--c-err) 12%, var(--bg));
+  --warn:      var(--c-warn);
+  --warn-soft: color-mix(in oklab, var(--c-warn) 12%, var(--bg));
+  --info:      var(--c-info);
+  --info-soft: color-mix(in oklab, var(--c-info) 12%, var(--bg));
+
+  /* 3.6 Тіні — ТІЛЬКИ для того, що літає над сторінкою (липка панель, меню,
+     тост, шторка). Картки й рядки меню тіней не мають.
+     Колір тіні — з відтінку фону, не чорний. */
+  --shadow-tint: oklch(30% calc(var(--n-c) * 3) var(--n-h));
+  --sa-1: 6%;
+  --sa-2: 10%;
+  --sa-3: 16%;
+  --shadow-1:                                      /* липка шапка, панель кошика */
+    0 1px 2px  color-mix(in oklch, var(--shadow-tint) var(--sa-1), transparent),
+    0 2px 8px  color-mix(in oklch, var(--shadow-tint) var(--sa-1), transparent);
+  --shadow-2:                                      /* випадне меню, тост */
+    0 2px 4px  color-mix(in oklch, var(--shadow-tint) var(--sa-1), transparent),
+    0 8px 24px color-mix(in oklch, var(--shadow-tint) var(--sa-2), transparent);
+  --shadow-3:                                      /* діалог по центру */
+    0 4px 8px   color-mix(in oklch, var(--shadow-tint) var(--sa-1), transparent),
+    0 16px 32px color-mix(in oklch, var(--shadow-tint) var(--sa-2), transparent),
+    0 32px 64px color-mix(in oklch, var(--shadow-tint) var(--sa-3), transparent);
+  --shadow-sheet:                                  /* шторка знизу — тінь угору */
+    0 -2px 8px  color-mix(in oklch, var(--shadow-tint) var(--sa-1), transparent),
+    0 -12px 40px color-mix(in oklch, var(--shadow-tint) var(--sa-2), transparent);
+}
+
+/* У темній темі шар над сторінкою світліший за неї — висоту видно кольором,
+   тінь лише допомагає. Акцент як текст висвітлюється до читабельного.
+   Наведення на кнопку бренду НЕ світлішає: білий текст на ній втратив би контраст (було 4.3 і 3.7). */
+[data-theme="dark"] {
+  --surface:   var(--n-3);
+  --surface-2: var(--n-4);
+  --field:     var(--n-2);
+  --hover:     var(--n-4);
+  --press:     var(--n-5);
+  --selected:  var(--n-6);
+  --overlay:   oklch(5% 0 0 / 0.65);
+  --accent-text:  color-mix(in oklch, var(--brand-text) 70%, white);
+  --accent-on-soft: var(--accent-text);
+  --shadow-tint: oklch(0% 0 0);
+  --sa-1: 30%;
+  --sa-2: 45%;
+  --sa-3: 60%;
+}
+
+:root {
+  /* 3.7 Відступи — три рівні (правило «не все однаково»):
+     --sp-in  всередині елемента: іконка↔текст, назва↔ціна
+     --sp-el  між елементами: рядки меню, поля форми, абзаци
+     --sp-sec між розділами: меню ↔ адреси ↔ футер */
+  --sp-in:  var(--space-2);                                   /* 8 */
+  --sp-el:  clamp(1rem, 0.814rem + 0.762vw, 1.5rem);          /* 16 → 24 */
+  --sp-sec: clamp(4rem, 2.514rem + 6.095vw, 8rem);            /* 64 → 128 */
+
+  --gutter: clamp(1rem, 0.257rem + 3.048vw, 3rem);            /* поле екрана 16 → 48 */
+  --w-text:    62ch;      /* ширина абзацу */
+  --w-content: 75rem;     /* 1200 — основна колонка */
+  --w-wide:    90rem;     /* 1440 — фото до країв, «стіл» */
+
+  /* Брейкпоінти (у @media змінні не працюють — тут для довідки):
+     перевірка 390 · 768 · 1440; перемикання розкладки — 768 і 1024. */
+
+  /* 3.8 Типографіка — ролі одним рядком: font: var(--type-h1).
+     Шорт-хенд скидає font-variant — ціни після нього: tabular-nums окремо. */
+  --type-display: var(--fw-display) var(--text-display)/var(--lh-tight) var(--font-display);
+  --type-h1:      var(--fw-display) var(--text-3xl)/var(--lh-tight) var(--font-display);
+  --type-h2:      var(--fw-display) var(--text-2xl)/var(--lh-snug)  var(--font-display);
+  --type-h3:      var(--fw-semibold) var(--text-xl)/var(--lh-snug)  var(--font-text);
+  --type-title:   var(--fw-semibold) var(--text-md)/var(--lh-title) var(--font-text);  /* назва страви */
+  --type-lead:    var(--fw-regular) var(--text-md)/var(--lh-text)   var(--font-text);
+  --type-body:    var(--fw-regular) var(--text-base)/var(--lh-text) var(--font-text);
+  --type-small:   var(--fw-regular) var(--text-sm)/1.45             var(--font-text);
+  --type-label:   var(--fw-semibold) var(--text-base)/1.2           var(--font-text);  /* кнопки, підписи полів */
+  --type-caption: var(--fw-medium) var(--text-xs)/1.4               var(--font-text);
+  /* Капс із розрядкою над розділами не використовуємо — ознака шаблону. */
+
+  /* 3.9 Радіуси — від бренду --r */
+  --radius-xs:    calc(var(--r) * 0.5);   /* чекбокс, мітка «гостро» */
+  --radius-ctl:   var(--r);               /* кнопка, поле, фільтр */
+  --radius-media: calc(var(--r) * 1.5);   /* фото страви */
+  --radius-panel: calc(var(--r) * 2);     /* випадне меню, діалог, тост */
+  --radius-sheet: calc(var(--r) * 3);     /* верхні кути шторки */
+  --radius-round: 999px;                  /* ЛИШЕ лічильник кошика й аватар */
+
+  /* 3.10 Розміри */
+  --tap:          2.75rem;   /* 44 — мінімальна зона дотику */
+  --control-h:    3rem;      /* 48 — кнопка, поле */
+  --control-h-sm: 2.5rem;    /* 40 — фільтр, «+» біля страви (зона дотику — все одно 44) */
+  --control-px:   var(--space-5);
+  --header-h:     3.75rem;   /* 60 */
+  --icon:         1.25rem;   /* 20 */
+  --icon-sm:      1rem;
+  --ratio-dish:     4 / 3;
+  --ratio-square:   1;
+  --ratio-portrait: 4 / 5;
+
+  /* 3.11 Шари */
+  --z-sticky:  10;
+  --z-popover: 20;
+  --z-overlay: 30;
+  --z-sheet:   40;
+  --z-toast:   50;
+
+  /* 3.12 Рух — лише transform/opacity, ніколи transition: all */
+  --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);   /* поява */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);   /* рух того, що вже на екрані */
+  --ease-sheet:  cubic-bezier(0.32, 0.72, 0, 1);   /* шторка, як в iOS */
+  --dur-1:     120ms;   /* наведення, натиск */
+  --dur-2:     180ms;   /* меню, підказка */
+  --dur-3:     240ms;   /* зміна стану: додано в кошик */
+  --dur-sheet: 500ms;
+  --press-scale: 0.97;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0ms;
+    --dur-2: 0ms;
+    --dur-3: 0ms;
+    --dur-sheet: 0ms;
+    --press-scale: 1;
+  }
+}

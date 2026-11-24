@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src data:; base-uri 'none'; form-action 'none'">
+<title>Rozvedka — вход в Telegram</title>
+<link rel="stylesheet" href="shell-local.css"></head>
+<body><main>
+  <h1>Ваш Telegram в Rozvedka</h1>
+  <p>Вход идёт только в этом окне программы: номер, код и облачный пароль не попадают на сайт. Сайт видит лишь «подключён» и имя.</p>
+  <section id="st"></section>
+  <form id="fStart">
+    <label for="apiId">api_id</label><input id="apiId" inputmode="numeric" autocomplete="off" maxlength="12">
+    <label for="apiHash">api_hash</label><input id="apiHash" autocomplete="off" maxlength="32">
+    <label for="phone">Номер телефона</label><input id="phone" type="tel" autocomplete="off" placeholder="+380…" maxlength="20">
+    <div class="row"><button class="primary" type="submit">Получить код</button><button type="button" id="bQr">Войти по QR</button></div>
+    <p class="note">api_id и api_hash — на <a href="https://my.telegram.org/apps" target="_blank" rel="noopener">my.telegram.org</a> → API development tools.</p>
+  </form>
+  <form id="fCode" hidden>
+    <label for="code" id="codeLab">Код из Telegram</label><input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="12">
+    <div class="row"><button class="primary" type="submit">Войти</button><button type="button" id="bResend">Другой способ</button><button type="button" class="cancel">Отмена</button></div>
+  </form>
+  <form id="fPass" hidden>
+    <label for="pass" id="passLab">Облачный пароль</label><input id="pass" type="password" autocomplete="off" maxlength="200">
+    <div class="row"><button class="primary" type="submit">Войти</button><button type="button" class="cancel">Отмена</button></div>
+  </form>
+  <div id="qrBox" hidden><img class="qr" id="qr" alt="QR для входа"><p class="note">Telegram на телефоне → Настройки → Устройства → Подключить устройство.</p>
+    <div class="row"><button type="button" class="cancel">Отмена</button></div></div>
+  <div id="done" hidden><div class="row"><button type="button" id="bOut">Отключить Telegram</button><button type="button" class="primary" id="bClose">Готово</button></div></div>
+  <div class="msg" id="msg" role="status"></div>
+</main><script src="shell-tg.js"></script></body></html>

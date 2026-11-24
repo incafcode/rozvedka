@@ -1,0 +1,2543 @@
+<!doctype html>
+<html lang="uk" data-format="cafe">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<meta name="format-detection" content="telephone=no">
+<title>Кориця — кав’ярня-пекарня</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    color-scheme: dark;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --muted-foreground: 0 0% 72%;
+    --card: 0 0% 5%;
+    --border: 0 0% 20%;
+    --hero-subtitle: 210 17% 95%;
+    /* Формат підміняє акцент із FORMATS (див. скрипт унизу) */
+    --accent: #f0cf9b;
+    --accent-ink: #1b120a;
+    --ok: #5fd38a; --ok-text: #5fd38a; --err: #ff8a8a;
+    --serif: "Playfair Display", Georgia, "Times New Roman", serif;
+    --gutter: clamp(20px, 7.8vw, 112px);
+    --ease-out: cubic-bezier(.16, 1, .3, 1);
+    --ease-sheet: cubic-bezier(.32, .72, 0, 1);
+    --bar-h: 0px;
+    /* Стиль «Ніч» (типовий). Інші стилі перевизначають ці токени нижче, у блоці «Стилі» */
+    --accent-text: var(--accent);   /* акцент як колір тексту; на світлому тлі скрипт його затемнює */
+    --surface-0: hsl(0 0% 4%); --surface: hsl(0 0% 6%); --surface-2: hsl(0 0% 11%);
+    --field: hsl(0 0% 9%); --field-line: hsl(0 0% 28%);
+    --rule: hsl(0 0% 12%); --dots: hsl(0 0% 32%);
+    --line: hsl(0 0% 100% / .28); --hover: hsl(0 0% 100% / .1);
+    --bar: hsl(0 0% 5% / .94); --glass: rgba(8, 8, 8, .55); --focus: #fff;
+    --photo-dim: rgba(0, 0, 0, .35); --photo-dim-2: rgba(0, 0, 0, .45);
+    --shadow: 0 8px 28px rgba(0, 0, 0, .6);
+    --font-body: "Inter", "Segoe UI", Arial, sans-serif; --font-display: var(--font-body);
+    /* *слово* у заголовку: той самий шрифт, лише колір акценту (антиква-курсив — лише в «Ранку», де вона і є шрифтом) */
+    --em-font: inherit; --em-style: normal; --em-weight: inherit;
+  }
+  html { scroll-behavior: smooth; scroll-padding-top: calc(var(--bar-h) + 24px); -webkit-text-size-adjust: 100%; }
+  html.locked { overflow: hidden; }
+  body {
+    margin: 0; background: hsl(var(--background)); color: hsl(var(--foreground));
+    font-family: var(--font-body); font-size: 18px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  button, input, textarea { font: inherit; color: inherit; }
+  button { border: 0; background: none; padding: 0; cursor: pointer; }
+  a, button, label { touch-action: manipulation; }
+  img { display: block; max-width: 100%; }
+  h1, h2, h3, p { margin: 0; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
+  em { font-family: var(--em-font); font-style: var(--em-style); font-weight: var(--em-weight); color: var(--accent-text); letter-spacing: 0; }
+  .muted { color: hsl(var(--muted-foreground)); }
+  .tnum { font-variant-numeric: tabular-nums; }
+  .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .ico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+  /* ---------- Liquid glass ---------- */
+  .liquid-glass {
+    background: rgba(255, 255, 255, 0.01);
+    background-blend-mode: luminosity;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: none;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 20%,
+      rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%,
+      rgba(255,255,255,0.15) 80%, rgba(255,255,255,0.45) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* ---------- Демо-панель: перемикач формату (сховати: ?bar=0) ---------- */
+  .demo-bar {
+    /* панель — інструмент, не частина сайту: завжди темна, хоч би який стиль */
+    --foreground: 0 0% 100%; --muted-foreground: 0 0% 72%; --border: 0 0% 20%; --focus: #fff; color: #fff;
+    position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 52px; padding: 6px 12px; background: hsl(0 0% 7% / .92); border-bottom: 1px solid hsl(var(--border));
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); font-size: 15px;
+  }
+  .demo-bar .muted { white-space: nowrap; }
+  .switcher { display: flex; gap: 4px; }
+  .switcher button {
+    min-height: 40px; padding: 0 14px; border-radius: 8px; font-weight: 500; color: hsl(var(--muted-foreground));
+    transition: color 140ms ease-out, background-color 140ms ease-out, transform 140ms ease-out;
+  }
+  .switcher button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .switcher button:active { transform: scale(.97); }
+
+  /* ---------- Герой ---------- */
+  .hero { position: relative; min-height: 100vh; min-height: 100svh; overflow: hidden; overflow: clip; }
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px max(var(--gutter), calc((100% - 1024px) / 2)); }   /* одна ліва лінія з заголовком і розділами */
+  .nav-left { display: flex; align-items: center; gap: clamp(48px, 5.5vw, 80px); min-width: 0; }
+  .nav-right { display: flex; align-items: center; gap: 10px; flex: none; }
+  .brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; letter-spacing: -.025em; min-width: 0; }
+  .brand span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .brand-mark { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); }
+  .brand-mark svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-links a { padding: 10px 14px; border-radius: 8px; font-size: 16px; font-weight: 500; color: hsl(var(--muted-foreground)); transition: color 140ms ease-out; }
+  .btn-call, .btn-cart {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 16px; border-radius: 8px;
+    font-size: 16px; font-weight: 600; white-space: nowrap; transition: opacity 140ms ease-out, transform 140ms ease-out, background-color 140ms ease-out;
+  }
+  .btn-call { background: hsl(var(--foreground)); color: hsl(var(--background)); }
+  .btn-cart { border: 1px solid var(--line); }
+  .badge { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--accent); color: var(--accent-ink); font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .hero-text { display: flex; flex-direction: column; align-items: flex-start; text-align: left; width: min(1024px, 100% - 2 * var(--gutter)); margin: clamp(40px, 6vw, 80px) auto 0; will-change: transform, opacity; }
+  .pill { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px; border-radius: 8px; margin-bottom: 24px; max-width: 100%; }
+  .pill-badge { flex: none; padding: 2px 8px; border-radius: 6px; background: hsl(var(--foreground)); color: hsl(var(--background)); font-size: 14px; font-weight: 600; }
+  .pill-text { font-size: 15px; font-weight: 500; color: hsl(var(--muted-foreground)); text-align: left; }
+  .hero-title { font-size: clamp(38px, 9.4vw, 72px); font-weight: 500; letter-spacing: -2px; line-height: 1.15; margin-bottom: 14px; text-wrap: balance; }
+  .hero-title span { display: block; }
+  .subtitle { max-width: 640px; font-size: clamp(17px, 1.5vw, 19px); line-height: 1.5; color: hsl(var(--hero-subtitle)); opacity: .9; margin-bottom: 32px; text-wrap: pretty; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .cta, .cta-ghost {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 0 32px; border-radius: 12px;
+    font-size: 18px; font-weight: 600; transition: transform 160ms var(--ease-out), opacity 160ms ease-out, background-color 160ms ease-out;
+  }
+  .cta { background: hsl(var(--foreground)); color: hsl(var(--background)); }
+  .cta-ghost { border: 1px solid var(--line); padding: 0 26px; }
+  .hero-meta { margin-top: 20px; font-size: 16px; color: hsl(var(--muted-foreground)); }
+  .open-dot { display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; background: var(--ok); vertical-align: 1px; }
+  .open-dot.closed { background: #8a8a8a; }
+
+  /* ---------- Сцена: фото на всю ширину + скляна панель з хітами ---------- */
+  .stage { position: relative; margin-top: clamp(40px, 5vw, 64px); display: grid; place-items: center; padding: clamp(56px, 9vw, 130px) 0 clamp(96px, 12vw, 190px); }
+  .stage-bg { position: absolute; inset: 0; overflow: hidden; background: linear-gradient(140deg, #1d1712, #0b0908); }
+  .stage-bg img, .stage-bg video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .stage-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, hsl(var(--background)) 0%, var(--photo-dim) 26%, var(--photo-dim-2) 100%); }
+  .stage-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 160px; z-index: 3; pointer-events: none; background: linear-gradient(0deg, hsl(var(--background)), transparent); }
+  .hits { z-index: 4; width: min(1024px, 100% - 2 * var(--gutter)); padding: clamp(14px, 2vw, 22px); border-radius: 16px; background: var(--glass); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); will-change: transform; }
+  .hits-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 2px 4px 14px; }
+  .hits-head h2 { font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
+  .hits-head a { font-size: 16px; font-weight: 500; color: hsl(var(--muted-foreground)); text-decoration: underline; text-underline-offset: 4px; white-space: nowrap; }
+  .hits-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(10px, 1.4vw, 18px); }
+  .dish { display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; background: hsl(var(--card)); border: 1px solid hsl(var(--border)); }
+  .dish-photo { position: relative; aspect-ratio: 4 / 3; background: linear-gradient(140deg, #231b14, #100d0a); }
+  .dish-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .dish-tag { position: absolute; left: 8px; top: 8px; padding: 3px 9px; border-radius: 6px; background: var(--accent); color: var(--accent-ink); font-size: 13px; font-weight: 600; }
+  .dish-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding: 12px 14px 14px; }
+  .dish-info { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .dish-name { min-width: 0; font-size: 17px; font-weight: 500; line-height: 1.3; }
+  .dish-price { flex: none; font-size: 18px; font-weight: 600; color: var(--accent-text); white-space: nowrap; }
+  .dish .ctl { margin-top: auto; }
+  .dish .add-wide, .dish .stepper { width: 100%; }
+
+  /* ---------- Кнопки кошика: «додати» та лічильник ---------- */
+  .add-btn {
+    display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line);
+    font-size: 24px; line-height: 1; transition: background-color 140ms ease-out, transform 140ms ease-out;
+  }
+  .add-wide {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 10px;
+    border: 1px solid var(--line); font-size: 16px; font-weight: 600; transition: background-color 140ms ease-out, transform 140ms ease-out;
+  }
+  .stepper { display: inline-flex; align-items: center; justify-content: space-between; height: 44px; border-radius: 22px; background: var(--accent); color: var(--accent-ink); }
+  .stepper button { width: 44px; height: 44px; border-radius: 50%; font-size: 22px; line-height: 1; font-weight: 600; transition: transform 140ms ease-out; }
+  .stepper output { min-width: 22px; text-align: center; font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stepper :focus-visible { outline-color: var(--accent-ink); outline-offset: -5px; border-radius: 50%; }
+
+  /* ---------- Спільні секції ---------- */
+  .section { padding: clamp(72px, 9vw, 128px) var(--gutter); }
+  .section-inner { max-width: 1024px; margin: 0 auto; }
+  .section-title { font-size: clamp(32px, 5vw, 52px); font-weight: 500; letter-spacing: -1.2px; line-height: 1.15; margin-bottom: clamp(28px, 4vw, 48px); text-wrap: balance; }
+
+  /* ---------- Меню: читабельний прайс-лист ---------- */
+  .combo-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 14px 18px; margin-bottom: clamp(24px, 3vw, 36px); border-radius: 12px; border: 1px dashed color-mix(in srgb, var(--accent) 60%, transparent); font-size: 17px; }
+  .combo-banner strong { color: var(--accent-text); font-weight: 600; }
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: clamp(28px, 4vw, 56px); }
+  .menu-group h3 { font-family: var(--font-display); font-size: 22px; font-weight: 600; letter-spacing: -.01em; line-height: 1.25; padding-bottom: 12px; border-bottom: 1px solid hsl(var(--border)); }
+  .menu-list { list-style: none; margin: 0; padding: 0; }
+  .menu-list li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .menu-item { min-width: 0; font-size: 18px; font-weight: 500; line-height: 1.35; }
+  .menu-item small { display: block; font-size: 15px; font-weight: 400; color: hsl(var(--muted-foreground)); margin-top: 2px; }
+  .menu-dots { flex: 1; min-width: 12px; border-bottom: 1px dotted var(--dots); }
+  .menu-price { flex: none; font-size: 18px; font-weight: 600; white-space: nowrap; }
+  .menu-list .ctl { flex: none; display: flex; justify-content: flex-end; min-width: 44px; }
+  .menu-list .stepper { width: 118px; }
+  .menu-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; margin-top: clamp(28px, 4vw, 44px); }
+  .menu-foot p { font-size: 16px; color: hsl(var(--muted-foreground)); max-width: 520px; }
+
+  /* ---------- Факти ---------- */
+  /* Цифри й контакти — без коробок: лінія зверху і повітря (коробка лише для того, що натискають) */
+  .facts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px 40px; }
+  .fact { padding-top: 20px; border-top: 1px solid hsl(var(--border)); }
+  .fact strong { display: block; font-size: clamp(30px, 3.4vw, 40px); font-weight: 500; letter-spacing: -1px; line-height: 1.15; color: var(--accent-text); margin-bottom: 10px; }
+  .fact p { font-size: 17px; color: hsl(var(--muted-foreground)); }
+
+  /* ---------- Відгук: слова проявляються під час прокрутки ---------- */
+  .review { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; justify-content: center; }
+  .review-inner { max-width: 768px; margin: 0 auto; display: flex; flex-direction: column; align-items: flex-start; gap: 40px; }
+  .quote-mark { font-family: var(--serif); font-style: italic; font-size: 120px; line-height: .7; height: 44px; color: var(--accent-text); user-select: none; }
+  .review-text { display: flex; flex-wrap: wrap; font-size: clamp(26px, 4.3vw, 48px); font-weight: 500; line-height: 1.2; letter-spacing: -.02em; }
+  .review-text span { margin-right: .3em; }
+  .review-text .close { margin-right: 0; color: hsl(var(--muted-foreground)); }
+  .author { display: flex; align-items: center; gap: 16px; }
+  .avatar { flex: none; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; border: 3px solid hsl(var(--foreground)); background: var(--accent); color: var(--accent-ink); font-size: 22px; font-weight: 700; }
+  .author-name { font-size: 18px; font-weight: 600; line-height: 1.5; }
+  .author-role { font-size: 16px; line-height: 1.4; color: hsl(var(--muted-foreground)); }
+
+  /* ---------- Контакти ---------- */
+  .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px 40px; }
+  .contact { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding-top: 20px; border-top: 1px solid hsl(var(--border)); }
+  .contact-label { font-size: 16px; color: hsl(var(--muted-foreground)); }
+  .contact-value { font-size: 22px; font-weight: 500; line-height: 1.3; letter-spacing: -.01em; overflow-wrap: anywhere; }
+  .contact-note { font-size: 16px; color: hsl(var(--muted-foreground)); }
+  .contact a.link { margin-top: auto; padding-top: 12px; font-size: 17px; font-weight: 600; color: var(--accent-text); text-decoration: underline; text-underline-offset: 4px; }
+  .footer { padding: 28px var(--gutter) 40px; border-top: 1px solid var(--rule); font-size: 15px; color: hsl(var(--muted-foreground)); display: flex; flex-wrap: wrap; gap: 6px 24px; justify-content: space-between; }
+
+  /* ---------- Нижня панель на телефоні, плаваюча кнопка кошика, підказка ---------- */
+  .action-bar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: none; gap: 10px;
+    padding: 10px 14px max(10px, env(safe-area-inset-bottom)); background: var(--bar); border-top: 1px solid hsl(var(--border));
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    transform: translateY(110%); transition: transform 260ms var(--ease-out);
+  }
+  .action-bar.on { transform: none; }
+  .action-bar a, .action-bar button { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; border-radius: 12px; font-size: 17px; font-weight: 600; white-space: nowrap; transition: transform 140ms ease-out; }
+  .action-bar .primary { flex: 1.7; background: hsl(var(--foreground)); color: hsl(var(--background)); }
+  .action-bar .secondary { border: 1px solid var(--line); }
+  .fab {
+    position: fixed; right: 24px; bottom: 24px; z-index: 40; display: inline-flex; align-items: center; gap: 10px; min-height: 56px; padding: 0 22px;
+    border-radius: 28px; background: hsl(var(--foreground)); color: hsl(var(--background)); font-size: 17px; font-weight: 600;
+    box-shadow: var(--shadow); transition: transform 160ms var(--ease-out);
+  }
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; z-index: 45; width: min(440px, calc(100% - 24px)); padding: 14px 14px 14px 18px;
+    border-radius: 14px; background: var(--surface-2); border: 1px solid hsl(var(--border)); box-shadow: var(--shadow);
+    display: flex; flex-direction: column; gap: 10px; font-size: 16px;
+    transform: translate(-50%, 16px); opacity: 0; visibility: hidden;
+    transition: transform 220ms var(--ease-out), opacity 220ms ease-out, visibility 0s 220ms;
+  }
+  .toast.on { transform: translate(-50%, 0); opacity: 1; visibility: visible; transition-delay: 0s; }
+  .toast-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-weight: 600; }
+  .toast-top span::before { content: "✓"; color: var(--ok); margin-right: 8px; }
+  .toast-close { width: 36px; height: 36px; border-radius: 50%; font-size: 22px; line-height: 1; color: hsl(var(--muted-foreground)); flex: none; }
+  .toast-offer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .toast-offer p { min-width: 0; color: hsl(var(--muted-foreground)); line-height: 1.35; }
+  .toast-offer b { color: hsl(var(--foreground)); font-weight: 600; }
+  .toast-offer button { flex: none; min-height: 44px; padding: 0 16px; border-radius: 10px; background: var(--accent); color: var(--accent-ink); font-weight: 600; white-space: nowrap; transition: transform 140ms ease-out; }
+
+  /* ---------- Кошик (вікно збоку, на телефоні — на весь екран) ---------- */
+  dialog.cart {
+    position: fixed; inset: 0 0 0 auto; margin: 0; width: min(480px, 100%); height: 100%; max-height: none; max-width: none;
+    padding: 0; border: 0; border-left: 1px solid hsl(var(--border)); background: var(--surface); color: hsl(var(--foreground));
+    overscroll-behavior: contain;
+  }
+  dialog.cart[open] { display: flex; flex-direction: column; }
+  dialog.cart::backdrop { background: rgba(0, 0, 0, .62); }
+  .cart-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid hsl(var(--border)); }
+  .cart-head h2 { font-size: 22px; font-weight: 600; letter-spacing: -.01em; }
+  .icon-btn { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; font-size: 26px; line-height: 1; color: hsl(var(--muted-foreground)); transition: background-color 140ms ease-out; }
+  .view { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .cart-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 16px 20px 24px; display: flex; flex-direction: column; gap: 18px; }
+  .cart-foot { flex: none; padding: 14px 20px max(16px, env(safe-area-inset-bottom)); border-top: 1px solid hsl(var(--border)); background: var(--surface-0); display: flex; flex-direction: column; gap: 10px; }
+  .cart-empty { margin: auto 0; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; color: hsl(var(--muted-foreground)); }
+  .cart-empty strong { font-size: 22px; font-weight: 600; color: hsl(var(--foreground)); }
+  .lines { list-style: none; margin: 0; padding: 0; }
+  .lines li { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+  .line-name { font-size: 17px; font-weight: 500; line-height: 1.3; min-width: 0; }
+  .line-each { font-size: 15px; color: hsl(var(--muted-foreground)); }
+  .line-sum { font-size: 17px; font-weight: 600; text-align: right; white-space: nowrap; }
+  .lines .stepper { width: 118px; height: 40px; }
+  .lines .stepper button { width: 40px; height: 40px; }
+  .notice { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-radius: 10px; background: var(--surface-2); font-size: 16px; }
+  .notice button { flex: none; min-height: 40px; padding: 0 8px; font-weight: 600; color: var(--accent-text); text-decoration: underline; text-underline-offset: 4px; }
+  .hint { padding: 12px 14px; border-radius: 10px; border: 1px dashed color-mix(in srgb, var(--accent) 60%, transparent); font-size: 16px; line-height: 1.4; }
+  .hint b { color: var(--accent-text); font-weight: 600; }
+  .hint.done { border-style: solid; }
+  .progress { height: 6px; margin-top: 10px; border-radius: 3px; background: var(--rule); overflow: hidden; }
+  .progress i { display: block; height: 100%; border-radius: 3px; background: var(--accent); transform-origin: left; transition: transform 300ms var(--ease-out); }
+  .block-title { font-size: 15px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: hsl(var(--muted-foreground)); margin-bottom: 8px; }
+  .sug { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; }
+  .sug-name { min-width: 0; font-size: 17px; font-weight: 500; line-height: 1.3; }
+  .sug-name small { display: block; font-size: 15px; font-weight: 400; color: var(--accent-text); }
+  .stamps { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .stamps i { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; border: 1.5px dashed var(--field-line); font-style: normal; font-size: 15px; font-weight: 700; color: hsl(var(--muted-foreground)); }
+  .stamps i.on { border: 0; background: var(--accent); color: var(--accent-ink); }
+  .stamps i.gift { border-color: var(--accent); color: var(--accent-text); }
+  .totals { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; font-size: 16px; color: hsl(var(--muted-foreground)); }
+  .totals .save { color: var(--ok-text); }
+  .totals .grand { font-size: 20px; font-weight: 600; color: hsl(var(--foreground)); padding-top: 4px; }
+  .btn-main {
+    display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 56px; padding: 0 20px; border-radius: 14px;
+    background: hsl(var(--foreground)); color: hsl(var(--background)); font-size: 18px; font-weight: 600; transition: transform 140ms ease-out, opacity 140ms ease-out;
+  }
+  .btn-line { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 48px; border-radius: 12px; font-size: 17px; font-weight: 600; border: 1px solid var(--line); transition: background-color 140ms ease-out, transform 140ms ease-out; }
+  .btn-text { min-height: 44px; font-size: 16px; font-weight: 500; color: hsl(var(--muted-foreground)); text-decoration: underline; text-underline-offset: 4px; align-self: center; }
+
+  /* ---------- Форма оформлення ---------- */
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label, .field legend { font-size: 16px; font-weight: 600; padding: 0; }
+  .field input[type="text"], .field input[type="tel"], .field textarea {
+    width: 100%; min-height: 52px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--field-line); background: var(--field); font-size: 18px;
+    transition: border-color 140ms ease-out;
+  }
+  .field textarea { min-height: 84px; resize: vertical; }
+  .field input:focus-visible, .field textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; border-radius: 10px; }
+  .field [aria-invalid="true"] { border-color: #ff6b6b; }
+  .err { font-size: 15px; color: var(--err); }
+  fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; margin-top: 6px; }
+  .seg label { position: relative; display: grid; place-items: center; min-height: 50px; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--field-line); font-size: 16px; font-weight: 500; text-align: center; cursor: pointer; transition: background-color 140ms ease-out, color 140ms ease-out; }
+  .seg input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+  .seg label:has(input:checked) { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 600; }
+  .seg label:has(input:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .done-mark { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--ok); color: #06240f; font-size: 34px; font-weight: 700; }
+  .done-title { font-size: 26px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
+  .receipt { white-space: pre-wrap; padding: 14px 16px; border-radius: 10px; background: var(--surface-2); font-size: 16px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+
+  /* ---------- Наведення та натискання ---------- */
+  @media (hover: hover) {
+    .nav-links a:hover, .switcher button:hover, .hits-head a:hover, .btn-text:hover, .toast-close:hover { color: hsl(var(--foreground)); }
+    .switcher button[aria-pressed="true"]:hover { color: var(--accent-ink); }
+    .btn-call:hover, .btn-main:hover { opacity: .88; }
+    .cta:hover, .cta-ghost:hover, .fab:hover { transform: scale(1.03); }
+    .cta-ghost:hover, .btn-cart:hover, .add-btn:hover, .add-wide:hover, .btn-line:hover, .icon-btn:hover { background: var(--hover); }
+    .contact a.link:hover, .notice button:hover, .toast-offer button:hover { opacity: .8; }
+    .seg label:hover { background: var(--hover); }
+    .seg label:has(input:checked):hover { background: var(--accent); }
+  }
+  .cta:active, .cta-ghost:active, .fab:active { transform: scale(.98); }
+  .btn-call:active, .btn-cart:active, .action-bar a:active, .action-bar button:active, .add-btn:active, .add-wide:active,
+  .stepper button:active, .btn-main:active, .btn-line:active, .toast-offer button:active { transform: scale(.97); }
+
+  /* ---------- Поява (перезапускається після зміни формату) ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    .enter .pill { animation: rise-10 .5s var(--ease-out) backwards; }
+    .enter .hero-title { animation: rise-20 .6s var(--ease-out) .1s backwards; }
+    .enter .subtitle { animation: rise-20 .6s var(--ease-out) .2s backwards; }
+    .enter .cta-row, .enter .hero-meta { animation: rise-20 .6s var(--ease-out) .3s backwards; }
+    .enter .stage { animation: rise-40 .8s var(--ease-out) .4s backwards; }
+    .stage-bg img { animation: drift 28s ease-in-out infinite alternate; }
+    dialog.cart[open] { animation: sheet-side 420ms var(--ease-sheet); }
+    dialog.cart[open]::backdrop { animation: fade 240ms ease-out; }
+    .badge.bump { animation: bump 260ms var(--ease-out); }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  @keyframes rise-10 { from { opacity: 0; transform: translateY(10px); } }
+  @keyframes rise-20 { from { opacity: 0; transform: translateY(20px); } }
+  @keyframes rise-40 { from { opacity: 0; transform: translateY(40px); } }
+  @keyframes drift { from { transform: scale(1); } to { transform: scale(1.07); } }
+  @keyframes sheet-side { from { transform: translateX(100%); } }
+  @keyframes sheet-up { from { transform: translateY(100%); } }
+  @keyframes fade { from { opacity: 0; } }
+  @keyframes bump { 50% { transform: scale(1.25); } }
+
+  /* ---------- Планшет і телефон ---------- */
+  @media (max-width: 900px) { .nav-links { display: none; } }
+  @media (max-width: 700px) {
+    body { padding-bottom: 76px; }
+    .action-bar { display: flex; }
+    .fab, .btn-cart { display: none; }
+    .toast { bottom: 88px; }
+    .demo-bar .muted { display: none; }
+    .switcher button { padding: 0 11px; }
+    .call-num { display: none; }
+    .subtitle br { display: none; }
+    .cta-row { width: 100%; flex-direction: column; }
+    .hero-title { letter-spacing: -1px; }
+    .hits-grid { grid-template-columns: 1fr; }
+    .dish { flex-direction: row; align-items: stretch; }
+    .dish-photo { flex: none; width: 104px; aspect-ratio: auto; }
+    .dish-tag { display: none; }
+    .dish-body { gap: 8px; padding: 10px 12px; }
+    .menu-grid { grid-template-columns: 1fr; }
+    .menu-dots { display: none; }
+    .menu-item { flex: 1; }
+    .quote-mark { font-size: 96px; height: 34px; }
+    .review-inner { gap: 28px; }
+    dialog.cart { width: 100%; border-left: 0; }
+  }
+  @media (max-width: 700px) and (prefers-reduced-motion: no-preference) { dialog.cart[open] { animation-name: sheet-up; } }
+
+  /* ---------- Свій заклад: чесні позначки, вставка даних, помилки ---------- */
+  html.loading main, html.loading .footer, html.nodemo main, html.nodemo .footer { visibility: hidden; }
+  /* «Свій дизайн» у «Розвідці»: сторінка Claude у пісочниці поверх рушія */
+  .page-frame { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; z-index: 2147483000; background: #fff; }
+  html.page-mode, html.page-mode body { overflow: hidden; }
+  .bar-btn { min-height: 40px; padding: 0 12px; border-radius: 8px; border: 1px dashed var(--line); font-size: 15px; font-weight: 500; white-space: nowrap; color: hsl(var(--muted-foreground)); transition: color 140ms ease-out, transform 140ms ease-out; }
+  .bar-btn:active { transform: scale(.97); }
+  .sample-note { margin: calc(clamp(28px, 4vw, 48px) * -0.6) 0 clamp(24px, 3vw, 36px); font-size: 16px; color: hsl(var(--muted-foreground)); }
+  .sample-note::before { content: "Приклад"; display: inline-block; margin-right: 10px; padding: 1px 8px; border-radius: 6px; border: 1px solid var(--line); font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: hsl(var(--foreground)); vertical-align: 1px; }
+  html[lang="ru"] .sample-note::before { content: "Пример"; }   /* 3.9: демо російською (config.lang) */
+  .menu-price.ask { font-size: 15px; font-weight: 500; color: hsl(var(--muted-foreground)); }
+  /* Свого фото немає: ні чужого інтер’єру, ні сяйва з візерунком, ні букви замість страви — хіти просто картками без скляної панелі */
+  .stage.no-photo { padding: 0; }
+  .stage.no-photo .dish-body { gap: 8px; padding: 16px; }
+  @media (max-width: 700px) {   /* на телефоні хіт — рядок: назва й ціна ліворуч, кнопка праворуч */
+    .stage.no-photo .dish-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr; gap: 2px 16px; align-items: center; padding: 14px 16px; }
+    .stage.no-photo .dish-info { flex-direction: column; align-items: flex-start; gap: 2px; grid-column: 1; }
+    .stage.no-photo .dish .ctl { grid-column: 2; grid-row: 1 / 3; margin: 0; }
+    .stage.no-photo .dish :is(.add-wide, .stepper) { width: auto; }
+    .stage.no-photo .dish .stepper { width: 118px; }
+  }
+  .stage.no-photo :is(.stage-bg, .stage-fade) { display: none; }
+  .stage.no-photo .hits { padding: 0; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; border-radius: 0; overflow: visible; }
+  .stage.no-photo .hits::before { display: none; }
+  .stage.no-photo .hits-head { padding: 0 0 16px; }
+  .dish-note { font-size: 15px; color: var(--accent-text); }
+  dialog.paste {
+    width: min(640px, calc(100% - 24px)); max-height: calc(100% - 24px); padding: 0; border: 1px solid hsl(var(--border)); border-radius: 16px;
+    background: hsl(0 0% 7%); color: hsl(var(--foreground)); overscroll-behavior: contain;
+  }
+  dialog.paste::backdrop { background: rgba(0, 0, 0, .62); }
+  .paste-box { display: flex; flex-direction: column; gap: 12px; padding: 20px; }
+  .paste-box h2 { font-size: 22px; font-weight: 600; letter-spacing: -.01em; }
+  .paste-box .muted { font-size: 16px; line-height: 1.45; }
+  .paste-box textarea {
+    width: 100%; min-height: 220px; padding: 12px 14px; border-radius: 10px; border: 1px solid hsl(0 0% 28%); background: hsl(0 0% 4%);
+    font: 14px/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace; resize: vertical;
+  }
+  .paste-box textarea:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+  .paste-actions { display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
+  .paste-actions .btn-main { width: auto; min-width: 160px; }
+  .report { list-style: none; margin: 0; padding: 12px 14px; border-radius: 10px; border: 1px solid hsl(var(--border)); background: hsl(0 0% 10%); font-size: 15px; line-height: 1.45; max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+  .report li:not(.report-head)::before { content: "· "; color: hsl(var(--muted-foreground)); }
+  .report-head { font-weight: 600; color: var(--ok-text); }
+  .report.bad { border-color: #ff6b6b; }
+  .report.bad .report-head { color: #ff8a8a; }
+  .cfg-error { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: hsl(var(--background)); }
+  .cfg-error-box { width: min(560px, 100%); display: flex; flex-direction: column; gap: 16px; }
+  .cfg-error-box h2 { font-size: clamp(26px, 4vw, 34px); font-weight: 500; letter-spacing: -.02em; }
+  .cfg-error-box ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; color: hsl(var(--muted-foreground)); font-size: 17px; }
+  @media (hover: hover) { .bar-btn:hover { color: #fff; border-color: hsl(0 0% 100% / .5); } }
+  @media (max-width: 700px) {
+    .demo-bar { justify-content: flex-start; overflow-x: auto; scrollbar-width: none; }
+    .bar-btn { flex: none; }
+    .paste-actions .btn-main { flex: 1; }
+  }
+
+  /* =====================================================================
+     СТИЛІ. Поле style у даних закладу: nich | ranok | teplo | vulytsia.
+     Стиль = палітра + пара шрифтів (усі з українською кирилицею) + характер
+     заголовків і заокруглень. Розкладка та логіка кошика спільні.
+     ===================================================================== */
+  .hero-title, .section-title, .review-text, .fact strong, .brand, .done-title { font-family: var(--font-display); }
+
+  /* «Ранок» — світлий папір, редакційна антиква: кав’ярні, пекарні, сніданки */
+  html[data-style="ranok"] {
+    color-scheme: light;
+    --background: 38 38% 95%; --foreground: 24 28% 11%; --muted-foreground: 26 12% 36%;
+    --card: 40 40% 99%; --border: 34 22% 83%; --hero-subtitle: 24 22% 20%;
+    --surface-0: #efe8dc; --surface: #faf6ef; --surface-2: #f1eadf; --field: #fffdf9; --field-line: #c9bdab;
+    --rule: #e3dacb; --dots: #c4b8a6; --line: rgba(44, 30, 16, .24); --hover: rgba(44, 30, 16, .06);
+    --bar: rgba(250, 246, 239, .95); --glass: rgba(250, 246, 239, .8); --focus: #2a1d12;
+    --photo-dim: rgba(20, 12, 4, .1); --photo-dim-2: rgba(20, 12, 4, .2);
+    --shadow: 0 10px 30px rgba(60, 38, 16, .16); --ok-text: #1d7a43; --err: #b3261e;
+    --font-body: "Manrope", "Segoe UI", Arial, sans-serif; --font-display: "Cormorant Garamond", Georgia, serif;
+    --serif: "Cormorant Garamond", Georgia, serif; --em-font: var(--serif); --em-style: italic; --em-weight: 500;
+  }
+  html[data-style="ranok"] .hero-title { font-weight: 500; letter-spacing: -1px; font-size: clamp(46px, 10.5vw, 88px); line-height: 1.02; }
+  html[data-style="ranok"] .section-title { font-weight: 500; letter-spacing: -.5px; font-size: clamp(40px, 5.8vw, 64px); line-height: 1.05; }
+  html[data-style="ranok"] .review-text { font-weight: 500; letter-spacing: -.01em; font-size: clamp(32px, 4.8vw, 56px); line-height: 1.12; }
+  html[data-style="ranok"] .fact strong { font-weight: 600; letter-spacing: -.5px; font-size: clamp(34px, 3.8vw, 46px); }
+  html[data-style="ranok"] .brand { font-weight: 600; font-size: 24px; letter-spacing: 0; }
+  html[data-style="ranok"] .menu-group h3 { font-size: 28px; font-weight: 600; letter-spacing: 0; }
+
+  /* «Тепло» — світлий теплий, округлий і гучний: піцерії, сімейні кафе, домашня кухня */
+  html[data-style="teplo"] {
+    color-scheme: light;
+    --background: 32 70% 95%; --foreground: 14 38% 14%; --muted-foreground: 16 16% 36%;
+    --card: 36 80% 98.5%; --border: 26 40% 84%; --hero-subtitle: 14 30% 20%;
+    --surface-0: #f6e6d4; --surface: #fff8f0; --surface-2: #f8eadb; --field: #fffdfa; --field-line: #d9bfa3;
+    --rule: #efdcc6; --dots: #d6bb9c; --line: rgba(70, 30, 10, .22); --hover: rgba(70, 30, 10, .06);
+    --bar: rgba(255, 248, 240, .95); --glass: rgba(255, 248, 240, .82); --focus: #31190f;
+    --photo-dim: rgba(40, 14, 0, .1); --photo-dim-2: rgba(40, 14, 0, .2);
+    --shadow: 0 10px 30px rgba(90, 40, 10, .16); --ok-text: #1d7a43; --err: #b3261e;
+    --font-body: "Nunito", "Segoe UI", Arial, sans-serif; --font-display: "Nunito", "Segoe UI", Arial, sans-serif;
+    --serif: "Lora", Georgia, serif;
+  }
+  html[data-style="teplo"] .hero-title { font-weight: 800; letter-spacing: -1.5px; line-height: 1.08; }
+  html[data-style="teplo"] .section-title { font-weight: 800; letter-spacing: -1px; }
+  html[data-style="teplo"] .review-text { font-weight: 700; letter-spacing: -.01em; }
+  html[data-style="teplo"] .fact strong { font-weight: 800; }
+  html[data-style="teplo"] .brand { font-weight: 800; }
+  html[data-style="teplo"] :is(.dish, .hits) { border-radius: 24px; }
+  html[data-style="teplo"] :is(.cta, .cta-ghost) { border-radius: 999px; }
+  html[data-style="teplo"] :is(.btn-call, .btn-cart, .pill) { border-radius: 999px; }
+  html[data-style="teplo"] .pill-badge { border-radius: 999px; padding: 2px 10px; }
+  html[data-style="teplo"] .combo-banner { border-radius: 20px; }
+  html[data-style="teplo"] .menu-group h3 { font-weight: 800; }
+
+  /* «Вулиця» — темний теплий, широкі великі літери: бургерні, гриль, шаурма, стріт-фуд */
+  html[data-style="vulytsia"] {
+    --background: 24 10% 6%; --foreground: 40 33% 95%; --muted-foreground: 32 10% 66%;
+    --card: 24 10% 9%; --border: 24 8% 19%; --hero-subtitle: 40 25% 88%;
+    --surface-0: #0d0b0a; --surface: #12100e; --surface-2: #1c1916; --field: #171412; --field-line: #3d3630;
+    --rule: #221e1b; --dots: #4a423b; --line: rgba(255, 240, 220, .26); --hover: rgba(255, 240, 220, .08);
+    --bar: rgba(16, 13, 11, .95); --glass: rgba(14, 11, 9, .72); --focus: #fff4e6;
+    --font-body: "Rubik", "Segoe UI", Arial, sans-serif; --font-display: "Unbounded", "Arial Black", sans-serif;
+    --serif: "Unbounded", "Arial Black", sans-serif; --em-style: normal; --em-weight: 700;
+  }
+  /* Unbounded широкий: кегль від довжини найдовшого рядка (--tl), щоб рядок заголовка не розривався */
+  html[data-style="vulytsia"] .hero-title { font-weight: 700; text-transform: uppercase; letter-spacing: -.02em; font-size: clamp(28px, calc((100vw - 64px) / (var(--tl) * .84)), 74px); line-height: 1.04; }
+  html[data-style="vulytsia"] .section-title { font-weight: 700; text-transform: uppercase; letter-spacing: -.02em; font-size: clamp(28px, 4.4vw, 46px); }
+  html[data-style="vulytsia"] .review-text { font-family: var(--font-body); font-weight: 600; }
+  html[data-style="vulytsia"] .fact strong { font-weight: 700; text-transform: uppercase; letter-spacing: -.02em; font-size: clamp(24px, 2.8vw, 32px); }
+  html[data-style="vulytsia"] .brand { font-weight: 700; text-transform: uppercase; font-size: 17px; letter-spacing: 0; }
+  @media (max-width: 700px) { html[data-style="vulytsia"] .brand { font-size: 14px; } }
+  html[data-style="vulytsia"] :is(.dish, .hits) { border-radius: 6px; }
+  html[data-style="vulytsia"] :is(.cta, .cta-ghost) { border-radius: 8px; }
+  html[data-style="vulytsia"] :is(.btn-call, .btn-cart, .pill) { border-radius: 6px; }
+  html[data-style="vulytsia"] .menu-group h3 { font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 0; }
+  html[data-style="vulytsia"] .quote-mark { font-family: var(--font-display); font-style: normal; }
+
+  /* Світлі стилі: скляна плашка-акція з рамкою замість світлового контуру */
+  html:is([data-style="ranok"], [data-style="teplo"]) .pill { border: 1px solid var(--line); background: hsl(var(--card) / .7); }
+  html:is([data-style="ranok"], [data-style="teplo"]) .pill::before { display: none; }
+  @media (min-width: 701px) { .call-short { display: none; } }
+</style>
+</head>
+<body>
+
+<div class="demo-bar" id="demoBar">
+  <span class="muted">Демо · формат закладу:</span>
+  <div class="switcher" id="switcher" role="group" aria-label="Формат закладу"></div>
+  <button class="bar-btn" type="button" id="pasteBtn" aria-haspopup="dialog">+ Свій заклад</button>
+</div>
+
+<div class="cfg-error" id="cfgError" role="alert" hidden>
+  <div class="cfg-error-box">
+    <h2>Не вдалося показати демо</h2>
+    <ul id="cfgErrorList"></ul>
+  </div>
+</div>
+
+<main>
+  <section class="hero enter" id="hero">
+    <header class="nav">
+      <div class="nav-left">
+        <a class="brand" href="#hero" aria-label="На початок сторінки">
+          <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" id="brandIcon"></svg></span>
+          <span data-t="brand"></span>
+        </a>
+        <nav class="nav-links" aria-label="Основна навігація">
+          <a href="#menu">Меню</a>
+          <a href="#about">Про нас</a>
+          <a href="#reviews">Відгуки</a>
+          <a href="#contacts">Контакти</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <button class="btn-cart" type="button" data-open-cart>
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 12H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+          Кошик <span class="badge" data-t="count" hidden></span>
+        </button>
+        <a class="btn-call" data-t="tel">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>
+          <span class="call-num tnum" data-t="phone"></span><span class="call-short">Подзвонити</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="hero-text" id="heroText">
+      <div class="pill liquid-glass">
+        <span class="pill-badge" data-t="pillBadge"></span>
+        <span class="pill-text" data-t="pillText"></span>
+      </div>
+      <h1 class="hero-title" id="heroTitle"></h1>
+      <p class="subtitle" id="subtitle"></p>
+      <div class="cta-row">
+        <a class="cta" href="#menu" data-t="cta"></a>
+        <a class="cta-ghost" data-t="tel">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>
+          <span class="tnum" data-t="phone"></span>
+        </a>
+      </div>
+      <p class="hero-meta"><span class="open-dot" id="openDot" aria-hidden="true"></span><span id="heroMeta"></span></p>
+    </div>
+
+    <div class="stage">
+      <div class="stage-bg" id="stageBg" aria-hidden="true"></div>
+      <div class="hits liquid-glass" id="hits">
+        <div class="hits-head">
+          <h2 data-t="hitsTitle"></h2>
+          <a href="#menu">Усе меню</a>
+        </div>
+        <div class="hits-grid" id="hitsGrid"></div>
+      </div>
+      <div class="stage-fade"></div>
+    </div>
+  </section>
+
+  <section class="section" id="menu">
+    <div class="section-inner">
+      <h2 class="section-title" id="menuTitle"></h2>
+      <p class="sample-note" id="menuSample" hidden></p>
+      <p class="combo-banner" id="comboBanner"></p>
+      <div class="menu-grid" id="menuGrid"></div>
+      <div class="menu-foot">
+        <p data-t="menuNote"></p>
+        <button class="cta" type="button" data-open-cart>Перейти до кошика</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="section-inner">
+      <h2 class="section-title" id="factsTitle"></h2>
+      <p class="sample-note" id="factsSample" hidden></p>
+      <div class="facts-grid" id="factsGrid"></div>
+    </div>
+  </section>
+
+  <section class="section review" id="reviews">
+    <div class="review-inner" id="reviewBox">
+      <div class="quote-mark" aria-hidden="true">“</div>
+      <p class="review-text" id="reviewText"></p>
+      <div class="author">
+        <div class="avatar" id="avatar" aria-hidden="true"></div>
+        <div>
+          <div class="author-name" data-t="reviewName"></div>
+          <div class="author-role" data-t="reviewRole"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contacts">
+    <div class="section-inner">
+      <h2 class="section-title" id="contactsTitle"></h2>
+      <div class="contact-grid">
+        <div class="contact">
+          <span class="contact-label">Адреса</span>
+          <span class="contact-value" id="addressValue"></span>
+          <a class="link" id="mapLink" target="_blank" rel="noopener">Прокласти маршрут</a>
+        </div>
+        <div class="contact">
+          <span class="contact-label">Години роботи</span>
+          <span class="contact-value tnum" id="hoursValue"></span>
+          <span class="contact-note" id="openNote"></span>
+        </div>
+        <div class="contact">
+          <span class="contact-label">Телефон</span>
+          <span class="contact-value tnum" data-t="phone"></span>
+          <a class="link" data-t="tel">Подзвонити</a>
+        </div>
+        <div class="contact" id="instaCard" hidden>
+          <span class="contact-label">Instagram</span>
+          <span class="contact-value" id="instaValue"></span>
+          <a class="link" id="instaLink" target="_blank" rel="noopener">Відкрити сторінку</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <span id="copyright"></span>
+  <span id="demoNote">Демо-макет: назва, ціни та відгук наведені для прикладу.</span>
+</footer>
+
+<button class="fab" type="button" id="fab" data-open-cart hidden>
+  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 12H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+  Кошик <span class="badge" data-t="count"></span> <span class="tnum" data-t="sum"></span>
+</button>
+
+<div class="action-bar" id="actionBar">
+  <a class="secondary" href="#menu">Меню</a>
+  <a class="primary" id="barCall" data-t="tel">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>
+    Подзвонити
+  </a>
+  <button class="primary" type="button" id="barCart" data-open-cart hidden>
+    Кошик <span class="badge" data-t="count"></span> <span class="tnum" data-t="sum"></span>
+  </button>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <div class="toast-top"><span id="toastText"></span><button class="toast-close" type="button" id="toastClose" aria-label="Закрити підказку">×</button></div>
+  <div class="toast-offer" id="toastOffer"><p id="toastOfferText"></p><button type="button" id="toastAdd"></button></div>
+</div>
+<div class="sr-only" id="live" aria-live="polite"></div>
+
+<dialog class="cart" id="cart" aria-labelledby="cartTitle">
+  <div class="cart-head">
+    <h2 id="cartTitle" tabindex="-1">Ваше замовлення</h2>
+    <button class="icon-btn" type="button" id="cartClose" aria-label="Закрити кошик">×</button>
+  </div>
+
+  <div class="view" data-view="cart">
+    <div class="cart-body" id="cartBody"></div>
+    <div class="cart-foot" id="cartFoot"></div>
+  </div>
+
+  <form class="view" data-view="checkout" id="orderForm" novalidate hidden>
+    <div class="cart-body">
+      <fieldset class="field">
+        <legend>Як отримаєте замовлення</legend>
+        <div class="seg" id="modeSeg"></div>
+      </fieldset>
+      <div class="field">
+        <label for="fName">Ваше ім’я</label>
+        <input id="fName" name="name" type="text" autocomplete="given-name" placeholder="Наприклад, Олена…" aria-describedby="eName">
+        <p class="err" id="eName" hidden></p>
+      </div>
+      <div class="field">
+        <label for="fPhone">Телефон</label>
+        <input id="fPhone" name="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="+380 XX XXX XX XX…" aria-describedby="ePhone">
+        <p class="err" id="ePhone" hidden></p>
+      </div>
+      <div class="field" id="addressField">
+        <label for="fAddress">Адреса доставки</label>
+        <input id="fAddress" name="address" type="text" autocomplete="street-address" placeholder="Вулиця, будинок, квартира…" aria-describedby="eAddress">
+        <p class="err" id="eAddress" hidden></p>
+      </div>
+      <fieldset class="field">
+        <legend>Оплата</legend>
+        <div class="seg">
+          <label><input type="radio" name="pay" value="Готівкою" checked>Готівкою</label>
+          <label><input type="radio" name="pay" value="Карткою під час отримання">Карткою</label>
+        </div>
+      </fieldset>
+      <div class="field">
+        <label for="fNote">Коментар <span class="muted" style="font-weight:400">(необов’язково)</span></label>
+        <textarea id="fNote" name="note" autocomplete="off" placeholder="Наприклад: без цибулі, домофон не працює…"></textarea>
+      </div>
+      <p class="hint" id="closedNote" hidden></p>
+    </div>
+    <div class="cart-foot">
+      <div class="totals" id="checkoutTotals"></div>
+      <button class="btn-main" type="submit" id="submitBtn">Підтвердити замовлення</button>
+      <button class="btn-text" type="button" id="backBtn">Назад до кошика</button>
+    </div>
+  </form>
+
+  <div class="view" data-view="done" hidden>
+    <div class="cart-body" id="doneBody"></div>
+    <div class="cart-foot">
+      <button class="btn-main" type="button" id="doneBtn">Повернутися до меню</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="paste" id="paste" aria-labelledby="pasteTitle">
+  <form id="pasteForm" class="paste-box" novalidate>
+    <h2 id="pasteTitle">Свій заклад</h2>
+    <p class="muted">Вставте відповідь Claude на промт «Розвідки» — блок даних цілком, разом із ``` теж можна.</p>
+    <label class="sr-only" for="pasteText">Дані закладу</label>
+    <textarea id="pasteText" spellcheck="false" autocomplete="off" placeholder='{ "v": 1, "brand": "…", "menu": [ … ] }'></textarea>
+    <ul class="report" id="pasteReport" aria-live="polite" hidden></ul>
+    <div class="paste-actions">
+      <button class="btn-text" type="button" id="pasteCancel">Скасувати</button>
+      <button class="btn-main" type="submit" id="pasteGo">Показати</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+/* =====================================================================
+   ФОРМАТИ. Щоб показати клієнту його заклад — правте ТІЛЬКИ цей блок.
+
+   Посилання на формат:       index.html?format=cafe | pizza | burger
+   Чистовий показ без панелі:  index.html?format=pizza&bar=0
+   Назва й місто без правок:   index.html?format=burger&brand=Назва&city=Буча&bar=0
+
+   *слово* у заголовках — курсивний акцент кольором формату.
+   bg — фото або .mp4 (відео увімкнеться саме); hits[].img — фото страви 4:3.
+   hits[].ref — назва позиції з menu (так хіт потрапляє до кошика).
+   instagram — лишити '', якщо сторінки немає (картка сховається).
+
+   ДОПРОДАЖІ (усе автоматично, без персоналу):
+   menu[].role — main | side | drink | sweet; menu[].one — «що додати» у знахідному відмінку;
+   menu[].star — яку позицію групи радити першою.
+   combo   — знижка за набір: по одній позиції з кожної ролі.
+   upsell  — у якому порядку радити ролі; addon — дрібна позиція «до замовлення».
+   delivery — вартість і поріг безкоштовної доставки (null, якщо доставки немає).
+   modes   — способи отримання; loyalty — картка штампів.
+   ===================================================================== */
+const DEFAULT_FORMAT = 'cafe';
+const U = (id, w) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=75`;
+const FORMATS = {
+  cafe: {
+    label: 'Кав’ярня', brand: 'Кориця', kind: 'кав’ярня-пекарня', city: 'Фастів',
+    accent: '#f0cf9b', accentInk: '#1b120a',
+    pill: ['Комбо', 'Кава + випічка — знижка 10%'],
+    title: ['Тепла випічка.', 'Кава, як ви *любите*.'],
+    subtitle: 'Печемо круасани щоранку, варимо каву на свіжому зерні\nй готуємо сніданки цілий день. Приходьте всією родиною.',
+    cta: 'Переглянути меню',
+    phone: '+380 67 000 00 00', address: 'вул. Соборна, 12', instagram: '',
+    hours: { days: 'Щодня', open: '8:00', close: '21:00' },
+    bg: U('1554118811-1e0d58224f24', 1920),
+    hitsTitle: 'Улюблене в гостей',
+    hits: [
+      { tag: 'Хіт', ref: 'Капучино', img: U('1509042239860-f550ce710b93', 640), alt: 'Капучино з лате-артом' },
+      { tag: 'Щоранку', ref: 'Круасан з мигдалем', img: U('1555507036-ab1f4038808a', 640), alt: 'Свіжі круасани' },
+      { tag: 'Сніданок', ref: 'Панкейки з медом', img: U('1567620905732-2d1ec7ab7445', 640), alt: 'Стос панкейків з медом' }
+    ],
+    menuTitle: 'Наше *меню*',
+    menu: [
+      { group: 'Кава та напої', role: 'drink', one: 'каву', star: 'Капучино', items: [['Еспресо', 50], ['Капучино', 70], ['Лате', 80], ['Какао з маршмелоу', 85], ['Чай у чайнику', 75, 'чорний, зелений або трав’яний']] },
+      { group: 'Сніданки цілий день', role: 'main', one: 'сніданок', star: 'Сирники зі сметаною', items: [['Панкейки з медом', 155], ['Сирники зі сметаною', 165, 'з ягідним соусом'], ['Омлет із сиром і зеленню', 145], ['Вівсянка з яблуком і корицею', 120], ['Тост з авокадо та яйцем', 185]] },
+      { group: 'Випічка', role: 'sweet', one: 'випічку', star: 'Круасан з мигдалем', items: [['Круасан масляний', 65], ['Круасан з мигдалем', 85], ['Булочка з корицею', 60], ['Чизкейк', 110]] }
+    ],
+    menuNote: 'Ціни вказано в гривнях. Про алергени та склад страв запитуйте в баристи.',
+    combo: { roles: ['drink', 'sweet'], percent: 10, title: 'Кава + випічка' },
+    upsell: ['sweet', 'drink', 'main'], addon: '',
+    modes: [['pickup', 'Заберу сам'], ['hall', 'До столика']], delivery: null,
+    loyalty: { goal: 6, reward: 'сьома кава у подарунок' },
+    factsTitle: 'Чому до нас *повертаються*',
+    facts: [['Щоранку', 'Випічка з власної печі — на вітрині з восьмої ранку.'], ['Цілий день', 'Сніданки готуємо до закриття, а не лише до обіду.'], ['Для всіх', 'Дитячі стільчики, зручні крісла та вхід без сходів.']],
+    review: { text: 'Заходимо сюди всією родиною щонеділі. Кава завжди смачна, круасани ще теплі, а за стійкою пам’ятають, що замовляє наша бабуся. Таких місць у місті небагато.', name: 'Оксана М.', role: 'Постійна гостя' },
+    contactsTitle: 'Чекаємо на *вас*',
+    icon: '<path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9Z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 3v3M12 3v3"/>'
+  },
+  pizza: {
+    label: 'Піцерія', brand: 'Форно', kind: 'піцерія', city: 'Ірпінь',
+    accent: '#ff7a59', accentInk: '#1c0a05',
+    pill: ['Комбо', 'Піца + закуска + напій — знижка 10%'],
+    title: ['Піца з дров’яної печі.', 'Привеземо *гарячою*.'],
+    subtitle: 'Тісто визріває 48 годин, соус варимо зі стиглих томатів.\nДоставляємо по місту за 45 хвилин або чекаємо вас у залі.',
+    cta: 'Обрати піцу',
+    phone: '+380 67 000 00 00', address: 'вул. Центральна, 5', instagram: '',
+    hours: { days: 'Щодня', open: '11:00', close: '22:00' },
+    bg: U('1513104890138-7c749659a591', 1920),
+    hitsTitle: 'Найчастіше замовляють',
+    hits: [
+      { tag: 'Класика', ref: 'Маргарита', img: U('1574071318508-1cdbab80d002', 640), alt: 'Піца «Маргарита» з базиліком' },
+      { tag: 'Хіт', ref: 'Пепероні', img: U('1628840042765-356cda07504e', 640), alt: 'Піца «Пепероні»' },
+      { tag: 'Для компанії', ref: 'Куряча з цибулею', img: U('1565299624946-b28f40a0ae38', 640), alt: 'Піца з куркою та червоною цибулею' }
+    ],
+    menuTitle: 'Наше *меню*',
+    menu: [
+      { group: 'Піца, 30 см', role: 'main', one: 'піцу', star: 'Маргарита', items: [['Маргарита', 245, 'томати, моцарела, базилік'], ['Пепероні', 285], ['Куряча з цибулею', 295], ['Чотири сири', 315], ['Діабло', 305, 'гостра']] },
+      { group: 'Закуски та салати', role: 'side', one: 'закуску', star: 'Часникові палички', items: [['Часникові палички', 95, 'із сирним соусом'], ['Салат «Цезар» з куркою', 215], ['Курячі крильця, 8 шт.', 195], ['Картопля фрі', 85]] },
+      { group: 'Напої', role: 'drink', one: 'напій', star: 'Домашній лимонад, 0,4 л', items: [['Домашній лимонад, 0,4 л', 75], ['Узвар, 0,4 л', 60], ['Кава', 55], ['Вода, 0,5 л', 35]] }
+    ],
+    menuNote: 'Ціни вказано в гривнях. Доставка безкоштовна від 500 ₴, оплата готівкою або карткою.',
+    combo: { roles: ['main', 'side', 'drink'], percent: 10, title: 'Піца + закуска + напій' },
+    upsell: ['side', 'drink', 'main'], addon: '',
+    modes: [['delivery', 'Доставка'], ['pickup', 'Заберу сам']], delivery: { fee: 70, freeFrom: 500 },
+    loyalty: { goal: 5, reward: 'шоста піца у подарунок' },
+    factsTitle: 'Чому замовляють *знову*',
+    facts: [['48 годин', 'Стільки визріває тісто — тому воно тонке й легке.'], ['45 хвилин', 'Доставляємо по місту в термосумці, щоб піца приїхала гарячою.'], ['Від 500 ₴', 'Доставка безкоштовна. Можна забрати й самому.']],
+    review: { text: 'Замовляємо піцу на всі дні народження — і дітям, і дідусеві подобається. Привозять гарячою, тісто тонке, начинки не шкодують. Коли кур’єр затримувався, самі подзвонили й попередили.', name: 'Андрій К.', role: 'Постійний гість' },
+    contactsTitle: 'Замовляйте або *заходьте*',
+    icon: '<path d="M12 21 3.5 6.5a17 17 0 0 1 17 0L12 21Z"/><circle cx="10" cy="10" r="1.2"/><circle cx="14" cy="11.5" r="1.2"/><circle cx="12" cy="15" r="1"/>'
+  },
+  burger: {
+    label: 'Бургерна', brand: 'Вугілля', kind: 'бургерна', city: 'Буча',
+    accent: '#ffc531', accentInk: '#16110a',
+    pill: ['Комбо', 'Бургер + гарнір + напій — знижка 10%'],
+    title: ['Соковиті бургери.', 'Просто з *вогню*.'],
+    subtitle: 'Котлета з яловичини, булочка власної випічки й соуси за нашими рецептами.\nЗбираємо бургер після замовлення — за 10 хвилин.',
+    cta: 'Обрати бургер',
+    phone: '+380 67 000 00 00', address: 'вул. Вокзальна, 27', instagram: '',
+    hours: { days: 'Щодня', open: '10:00', close: '22:00' },
+    bg: U('1571091718767-18b5b1457add', 1920),
+    hitsTitle: 'Вибір гостей',
+    hits: [
+      { tag: 'Хіт', ref: 'Чизбургер', img: U('1568901346375-23c9450c58cd', 640), alt: 'Чизбургер із салатом' },
+      { tag: 'Новинка', ref: 'Подвійний з беконом', img: U('1553979459-d2229ba7433b', 640), alt: 'Подвійний бургер з беконом' },
+      { tag: 'До бургера', ref: 'Картопля фрі', img: U('1573080496219-bb080dd4f877', 640), alt: 'Картопля фрі' }
+    ],
+    menuTitle: 'Наше *меню*',
+    menu: [
+      { group: 'Бургери', role: 'main', one: 'бургер', star: 'Чизбургер', items: [['Класичний', 195], ['Чизбургер', 215], ['Подвійний з беконом', 295], ['Курячий', 185], ['Дитячий', 145, 'менша порція, без гострого']] },
+      { group: 'Гарніри', role: 'side', one: 'гарнір', star: 'Картопля фрі', items: [['Картопля фрі', 85], ['Картопля по-селянськи', 95], ['Цибулеві кільця', 95], ['Соус на вибір', 25, 'сирний, часниковий або барбекю']] },
+      { group: 'Напої', role: 'drink', one: 'напій', star: 'Домашній лимонад, 0,4 л', items: [['Домашній лимонад, 0,4 л', 75], ['Молочний коктейль', 110], ['Узвар, 0,4 л', 60], ['Вода, 0,5 л', 35]] }
+    ],
+    menuNote: 'Ціни вказано в гривнях. Доставка безкоштовна від 400 ₴. Можна з собою — запакуємо так, щоб доїхало гарячим.',
+    combo: { roles: ['main', 'side', 'drink'], percent: 10, title: 'Бургер + гарнір + напій' },
+    upsell: ['side', 'drink', 'main'], addon: 'Соус на вибір',
+    modes: [['delivery', 'Доставка'], ['pickup', 'Заберу сам']], delivery: { fee: 60, freeFrom: 400 },
+    loyalty: { goal: 5, reward: 'шостий бургер у подарунок' },
+    factsTitle: 'Чому до нас *повертаються*',
+    facts: [['100% яловичина', 'Котлети робимо самі щодня, без заморозки.'], ['10 хвилин', 'Бургер збираємо після замовлення, а не заздалегідь.'], ['Дитяче меню', 'Менші порції без гострого — для наймолодших гостей.']],
+    review: { text: 'Їмо тут із колегами щоп’ятниці, а у вихідні приводжу дітей. Котлета соковита, булочка не розвалюється, картопля завжди хрустка. Чесна їжа за чесну ціну.', name: 'Тарас Л.', role: 'Постійний гість' },
+    contactsTitle: 'Заходьте на *бургер*',
+    icon: '<path d="M4 11a8 8 0 0 1 16 0H4Z"/><path d="M3 14.5h18"/><path d="M5 18h14v.5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V18Z"/>'
+  }
+};
+
+/* =====================================================================
+   СВІЙ ЗАКЛАД. Дані приходять одним блоком JSON (схема v1): відповідь
+   Claude на промт «Розвідки», файл ?cfg=…, вікно «Розвідки» (postMessage)
+   або кнопка «Свій заклад» у демо-панелі.
+   normalize() лагодить усе, що можна, і пише людською мовою, що змінив.
+   Зупиняється лише тоді, коли немає назви або жодної страви.
+   Нічого не вигадує: чого немає в даних — того блоку на сторінці немає.
+   ===================================================================== */
+const FL_CHECK = (() => {
+  const ROLES = ['main', 'side', 'drink', 'sweet'];
+  const ONE = { main: 'страву', side: 'закуску', drink: 'напій', sweet: 'десерт' };
+  const MODE_LABEL = { delivery: 'Доставка', pickup: 'Заберу сам', hall: 'До столика' };
+  const SAMPLE_KEYS = ['menu', 'prices', 'facts', 'hits', 'offers'];   // offers — комбо й картка гостя як приклад акцій
+  const LIMITS = { groups: 8, items: 16, hits: 3, facts: 3 };
+  const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const STYLE_KEYS = ['nich', 'ranok', 'teplo', 'vulytsia'];
+  const STYLE_BY_FORMAT = { cafe: 'ranok', pizza: 'teplo', burger: 'vulytsia' };
+
+  // ---------- 3.9: мова, код телефону, валюта (config.lang / cc / cur). Немає поля — uk, 380, ₴, і вивід як до 3.9 ----------
+  const LANGS = ['uk', 'ru'];
+  // лише правильні поля; криве — у bad (для звіту), на сторінці буде типове
+  function locale(src) {
+    const o = {}, bad = [];
+    src = isObj(src) ? src : {};
+    const has = k => src[k] != null && src[k] !== '';
+    if (has('lang')) { const l = typeof src.lang === 'string' ? src.lang.toLowerCase().trim() : ''; if (LANGS.includes(l)) o.lang = l; else bad.push(['lang', src.lang]); }
+    if (has('cc')) {
+      const v = typeof src.cc === 'number' || typeof src.cc === 'string' ? String(src.cc).trim().replace(/^\+/, '') : '';
+      if (/^[1-9]\d{0,2}$/.test(v)) o.cc = v; else bad.push(['cc', src.cc]);
+    }
+    if (has('cur')) {
+      const v = typeof src.cur === 'string' ? src.cur.trim() : '';
+      if (v && [...v].length <= 4 && !/[<>"'&`\\\u0000-\u001f]/.test(v)) o.cur = v; else bad.push(['cur', src.cur]);
+    }
+    // 3.15: часовой пояс заведения для «открыто сейчас» (набор rz-kit): IANA или минуты от UTC
+    if (has('tz')) {
+      const v = String(src.tz).trim();
+      let okTz = /^[+-]?\d{1,3}$/.test(v) && Math.abs(+v) <= 840;
+      if (!okTz && /^[A-Za-z_]+(\/[A-Za-z0-9_+-]+){1,2}$/.test(v)) { try { new Intl.DateTimeFormat('en-GB', { timeZone: v }); okTz = true; } catch (e) {} }
+      if (okTz) o.tz = /^[+-]?\d+$/.test(v) ? String(+v) : v; else bad.push(['tz', src.tz]);
+    }
+    return { loc: o, bad };
+  }
+  // код країни → [цифр після коду, місцевий префікс («0…», «8…»), групи цифр у записі]
+  const TEL = {
+    380: [9, '0', [2, 3, 2, 2]], 7: [10, '8', [3, 3, 2, 2]], 375: [9, '80', [2, 3, 2, 2]], 998: [9, '', [2, 3, 2, 2]],
+    996: [9, '0', [3, 3, 3]], 992: [9, '', [2, 3, 2, 2]], 993: [8, '8', [2, 2, 2, 2]], 994: [9, '0', [2, 3, 2, 2]],
+    374: [8, '0', [2, 2, 2, 2]], 995: [9, '', [3, 2, 2, 2]], 373: [8, '0', [2, 3, 3]]
+  };
+  // «+380 XX XXX XX XX» — підказка й текст помилки у формі
+  const telMask = cc => '+' + cc + (TEL[cc] ? TEL[cc][2] : [3, 3, 4]).map(n => ' ' + 'X'.repeat(n)).join('');
+  // номер → «+380 67 123 45 67» або ''. Для 380 — рівно як було: 0XXXXXXXXX, 9 цифр без коду, 380XXXXXXXXX
+  function telNorm(raw, cc) {
+    cc = cc || '380';
+    let d = String(raw == null ? '' : raw).replace(/\D/g, '');
+    const t = TEL[cc];
+    if (!t) return d.startsWith(cc) && d.length >= 10 && d.length <= 15 ? '+' + cc + ' ' + d.slice(cc.length) : '';   // невідомий код: 10–15 цифр
+    const [len, pre, groups] = t;
+    if (pre && d.length === pre.length + len && d.startsWith(pre)) d = cc + d.slice(pre.length);
+    else if (d.length === len && (cc === '380' || d[0] !== '0')) d = cc + d;   // без коду й префікса; «0…» — не номер (крім 380: як було)
+    if (d.length !== cc.length + len || !d.startsWith(cc)) return '';
+    let i = cc.length;
+    return '+' + cc + groups.map(n => ' ' + d.slice(i, i += n)).join('');
+  }
+  // назва валюти в «Ціни вказано в …» (uk, ru)
+  const CUR_IN = { '₴': ['гривнях', 'гривнах'], '₽': ['рублях', 'рублях'], '₸': ['тенге', 'тенге'], 'Br': ['білоруських рублях', 'белорусских рублях'],
+    'сум': ['сумах', 'сумах'], 'сом': ['сомах', 'сомах'], 'смн': ['сомоні', 'сомони'], 'TMT': ['манатах', 'манатах'], '₼': ['манатах', 'манатах'],
+    '֏': ['драмах', 'драмах'], '₾': ['ларі', 'лари'], 'lei': ['леях', 'леях'] };
+  // те, що normalize підставляє замість відсутнього і що бачить гість; uk — як до 3.9
+  const LOC = {
+    uk: {
+      one: ONE, modes: MODE_LABEL, kind: () => null, group: n => `Розділ ${n}`, hit: 'Хіт', title2: 'Замовляйте *онлайн*.', cta: 'Переглянути меню',
+      pill: (t, p) => `${t} — знижка ${p}%`, hitsTitle: 'Улюблене в гостей', menuTitle: 'Наше *меню*',
+      menuNote: cur => cur === '₴' ? 'Ціни вказано в гривнях.' : `Ціни вказано в ${CUR_IN[cur] ? CUR_IN[cur][0] : cur}.`,
+      factsTitle: 'Чому до нас *повертаються*', contactsTitle: 'Чекаємо на *вас*', guest: 'Гість', guestRole: 'Гість закладу', days: 'Щодня'
+    },
+    ru: {
+      one: { main: 'блюдо', side: 'закуску', drink: 'напиток', sweet: 'десерт' }, modes: { delivery: 'Доставка', pickup: 'Заберу сам', hall: 'В зале' },
+      kind: f => ({ cafe: 'кофейня', pizza: 'пиццерия', burger: 'бургерная' }[f] || 'заведение'), group: n => `Раздел ${n}`, hit: 'Хит',
+      title2: 'Заказывайте *онлайн*.', cta: 'Посмотреть меню', pill: (t, p) => `${t} — скидка ${p}%`, hitsTitle: 'Любимое у гостей', menuTitle: 'Наше *меню*',
+      menuNote: cur => `Цены указаны в ${CUR_IN[cur] ? CUR_IN[cur][1] : cur}.`,
+      factsTitle: 'Почему к нам *возвращаются*', contactsTitle: 'Ждём *вас*', guest: 'Гость', guestRole: 'Гость заведения', days: 'Ежедневно'
+    }
+  };
+  // російське меню: ролі й формат за російськими словами (лише при lang: 'ru' — українські конфіги не зачіпає)
+  const RU_ROLE = { drink: /напит|кофе|сок|морс|компот|коктейл|пиво|вино|смузи|вода|воды/, sweet: /десерт|выпечк|сладк|торт|морожен|круассан|чизкейк|пирожн|пончик/, side: /гарнир|закуск|салат|соус|фри|картоф|снек|суп/ };
+
+  // ---------- Колір ----------
+  const hex = s => { const m = String(s || '').trim().match(/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i); if (!m) return null; let h = m[1]; if (h.length === 3) h = h.replace(/./g, x => x + x); return '#' + h.toLowerCase(); };
+  const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const lum = h => { const [r, g, b] = rgb(h).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * r + .7152 * g + .0722 * b; };
+  const contrast = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+  // Світлота в HSL: відтінок і насиченість лишаються, тож темно-коричневий стає карамельним, а не сірим
+  const shift = (h, add) => {
+    let [r, g, b] = rgb(h).map(v => v / 255);
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+    let hu = 0, s = 0, l = (mx + mn) / 2;
+    if (d) {
+      s = d / (1 - Math.abs(2 * l - 1));
+      hu = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    }
+    l = clamp(l + add, .08, .92);
+    const C = (1 - Math.abs(2 * l - 1)) * s, X = C * (1 - Math.abs((hu % 2 + 2) % 2 - 1)), m = l - C / 2;
+    [r, g, b] = [[C, X, 0], [X, C, 0], [0, C, X], [0, X, C], [X, 0, C], [C, 0, X]][Math.floor((hu + 6) % 6)];
+    return '#' + [r, g, b].map(v => Math.round((v + m) * 255).toString(16).padStart(2, '0')).join('');
+  };
+  // Підганяємо колір до тла: на світлому темнішаємо, на темному світлішаємо — до потрібного контрасту
+  function fit(color, bg, need) {
+    const c = hex(color), b = hex(bg);
+    if (!c || !b) return color;
+    const dir = lum(b) > .4 ? -1 : 1;
+    let out = c, t = 0;
+    while (contrast(out, b) < need && t < 1) { t += .03; out = shift(c, dir * t); }
+    return out;
+  }
+  const inkFor = c => contrast(c, '#14100c') >= contrast(c, '#ffffff') ? '#14100c' : '#ffffff';
+  const fitText = (color, bg) => fit(color, bg, 4.5);            // акцент як текст
+  const fitFill = (color, bg) => { const fill = fit(color, bg, 3); return { fill, ink: inkFor(fill) }; };   // заливки: бейджі, лічильник
+
+  // Розбір «як вставили»: ```json …```, текст навколо, висячі коми, рядки-коментарі, «розумні» лапки “ ”
+  function parseLoose(input) {
+    if (isObj(input)) return input;
+    let s = String(input == null ? '' : input).trim();
+    const fence = s.match(/```[a-z]*\s*([\s\S]*?)```/i);
+    if (fence) s = fence[1].trim();
+    const a = s.indexOf('{'), b = s.lastIndexOf('}');
+    if (a < 0) throw new Error('Не нашёл блок данных в фигурных скобках { … }. Скопируйте ответ Claude целиком — кнопкой «Copy» под блоком.');
+    if (b <= a) throw new Error('Блок данных обрезан — нет конца «}». Попросите Claude: «повтори блок полностью».');
+    s = s.slice(a, b + 1);
+    const tries = [
+      t => t,
+      t => t.replace(/^\s*\/\/.*$/gm, '').replace(/,(\s*[}\]])/g, '$1'),
+      t => t.replace(/^\s*\/\/.*$/gm, '').replace(/,(\s*[}\]])/g, '$1').replace(/[“”]/g, '"')
+    ];
+    let first;
+    for (const fix of tries) {
+      try { return JSON.parse(fix(s)); } catch (e) { first = first || e; }
+    }
+    const m = String(first.message).match(/position (\d+)/);
+    if (m) {
+      const pos = +m[1], line = s.slice(0, pos).split('\n').length;
+      const near = s.slice(Math.max(0, pos - 30), pos + 30).replace(/\s+/g, ' ');
+      throw new Error(`Блок данных сломан в строке ${line}, около: «${near}». Чаще всего ответ обрезан: попросите Claude «повтори блок полностью».`);
+    }
+    throw new Error('Блок данных сломан (похоже, ответ обрезан). Попросите Claude: «повтори блок полностью».');
+  }
+
+  function normalize(raw, opts) {
+    opts = opts || {};
+    const formats = opts.formats || {};
+    const fixes = [], errors = [];
+    const fix = m => { if (!fixes.includes(m)) fixes.push(m); };
+    let src;
+    try { src = parseLoose(raw); } catch (e) { return { cfg: null, errors: [e.message], fixes }; }
+    if (!isObj(src)) return { cfg: null, errors: ['Данные должны быть одним блоком { … }, а не списком.'], fixes };
+
+    // Рядок в один абзац; задовгий — обрізаємо по слову й кажемо про це
+    const line = (v, max, what) => {
+      if (v == null || typeof v === 'object') return '';
+      let s = String(v).replace(/\s+/g, ' ').trim();
+      if (max && s.length > max) {
+        s = s.slice(0, max).replace(/\s+\S*$/, '').replace(/[,;:–—-]$/, '') + '…';
+        if (what) fix(`${what}: слишком длинно, сократил до «${s}».`);
+      }
+      return s;
+    };
+    const int = v => {
+      if (typeof v === 'number' && isFinite(v)) return Math.round(v);
+      const m = String(v == null ? '' : v).replace(/(\d)[\s ](?=\d{3}\b)/g, '$1').match(/\d+(?:[.,]\d+)?/);
+      return m ? Math.round(parseFloat(m[0].replace(',', '.'))) : NaN;
+    };
+
+    const c = { v: 1, custom: true };
+    if (src.v != null && src.v !== 1) fix(`Версия схемы «${src.v}» — читаю как 1.`);
+    // 3.9: мова / код телефону / валюта — лише коли задані й правильні (немає — конфіг такий самий, як до 3.9)
+    const lc = locale(src);
+    lc.bad.forEach(([k, v]) => fix(k === 'lang' ? `Язык «${v}» неизвестен (есть uk, ru) — украинский.` : k === 'cc' ? `Код телефона «${v}» не распознал — +380.` : k === 'tz' ? `Часовой пояс «${v}» не распознал — время по стране.` : `Валюта «${v}» не похожа на знак валюты — ₴.`));
+    if (lc.loc.lang) c.lang = lc.loc.lang;
+    if (lc.loc.cc) c.cc = lc.loc.cc;
+    if (lc.loc.cur) c.cur = lc.loc.cur;
+    const L = LOC[c.lang || 'uk'], RU = c.lang === 'ru', CUR = c.cur || '₴', CC = c.cc || '380';
+    c.brand = line(src.brand, 40, 'Название');
+    if (!c.brand) errors.push('Нет названия заведения (поле brand).');
+    c.city = line(src.city, 40, 'Город');
+    c.address = line(src.address, 80, 'Адрес');
+    c.kind = line(src.kind, 40, 'Тип заведения');
+
+    // Формат: від нього іконка й запасні фото
+    let fmt = String(src.format || '').toLowerCase();
+    if (!formats[fmt]) {
+      const hay = `${src.kind || ''} ${src.brand || ''} ${JSON.stringify(src.menu || '').slice(0, 2000)}`.toLowerCase();
+      const guess = /піц|pizz/.test(hay) || (RU && /пицц/.test(hay)) ? 'pizza' : /бургер|burger|гриль|grill|шаурм|шаверм|хот-?дог|стріт/.test(hay) || (RU && /стрит/.test(hay)) ? 'burger' : 'cafe';
+      if (Object.keys(formats).length && !formats[guess]) fmt = Object.keys(formats)[0]; else fmt = guess;
+      fix(src.format ? `Формат «${src.format}» неизвестен — взял «${fmt}».` : `Формат не указан — взял «${fmt}» по названию и меню.`);
+    }
+    c.format = fmt;
+    const base = formats[fmt] || {};
+    if (!c.kind) c.kind = L.kind(fmt) || String(base.label || 'заклад').toLowerCase();
+    c.style = String(src.style || '').toLowerCase().trim();
+    if (!STYLE_KEYS.includes(c.style)) {
+      const def = STYLE_BY_FORMAT[fmt] || 'nich';
+      if (src.style) fix(`Стиль «${src.style}» неизвестен — взял «${def}».`);
+      c.style = def;
+    }
+
+    // ---------- Меню ----------
+    const priceOf = (v, name) => {
+      if (v == null || v === '') return null;
+      if (typeof v === 'number') return v > 0 && v < 100000 ? Math.round(v) : null;
+      const nums = String(v).replace(/(\d)[\s ](?=\d{3}\b)/g, '$1').match(/\d+(?:[.,]\d+)?/g);
+      if (!nums) return null;
+      if (nums.length > 1) fix(`«${name}»: несколько цен (${v}) — в корзину идёт первая, остальные в примечании.`);
+      const p = Math.round(parseFloat(nums[0].replace(',', '.')));
+      return p > 0 && p < 100000 ? p : null;
+    };
+    const guessRole = (title, names) => {
+      const t = (title + ' ' + names).toLowerCase();
+      if (/напо|кава|кав'|кав’|чай|лимонад|сік|соки|коктейл|пиво|вино|drink|coffee|tea|смузі|узвар|вода/.test(t) || (RU && RU_ROLE.drink.test(t))) return 'drink';
+      if (/десерт|випічк|солодк|торт|морозив|круасан|чізкейк|чизкейк|тістеч|пончик|dessert|sweet/.test(t) || (RU && RU_ROLE.sweet.test(t))) return 'sweet';
+      if (/гарнір|закуск|салат|соус|фрі|картопл|снек|side|starter|суп/.test(t) || (RU && RU_ROLE.side.test(t))) return 'side';
+      return 'main';
+    };
+    const seen = new Set();
+    c.menu = [];
+    const groupsIn = Array.isArray(src.menu) ? src.menu : isObj(src.menu) ? Object.entries(src.menu).map(([group, items]) => ({ group, items })) : [];
+    if (groupsIn.length > LIMITS.groups) fix(`В меню ${groupsIn.length} разделов — показываю первые ${LIMITS.groups}.`);
+    groupsIn.slice(0, LIMITS.groups).forEach((g, gi) => {
+      if (!isObj(g)) return fix(`Раздел меню №${gi + 1} пустой — пропустил.`);
+      const group = line(g.group || g.title || g.name, 40, 'Название раздела') || L.group(gi + 1);
+      const itemsIn = Array.isArray(g.items) ? g.items : [];
+      if (itemsIn.length > LIMITS.items) fix(`«${group}»: ${itemsIn.length} позиций — показываю первые ${LIMITS.items}.`);
+      const items = [];
+      itemsIn.slice(0, LIMITS.items).forEach(it => {
+        let name, price, note;
+        if (Array.isArray(it)) [name, price, note] = it;
+        else if (isObj(it)) ({ name, price, note } = it);
+        else if (typeof it === 'string') name = it;
+        name = line(name, 60, 'Название блюда');
+        if (!name) return;
+        note = line(note, 90, `Примечание к «${name}»`);
+        const p = priceOf(price, name);
+        if (p != null && typeof price === 'string' && /\d.*[\/;]\s*\d/.test(price)) note = line(note ? `${note} · ${price}` : price, 90);
+        if (seen.has(name.toLowerCase())) {
+          const renamed = line(`${name}, ${group.toLowerCase()}`, 60);
+          fix(`«${name}» встречается дважды — в разделе «${group}» назвал «${renamed}».`);
+          name = renamed;
+        }
+        seen.add(name.toLowerCase());
+        items.push(note ? [name, p, note] : [name, p]);
+      });
+      if (!items.length) return fix(`Раздел «${group}» без блюд — пропустил.`);
+      let role = ROLES.includes(g.role) ? g.role : guessRole(group, items.map(i => i[0]).join(' '));
+      if (g.role && g.role !== role) fix(`Раздел «${group}»: роль «${g.role}» неизвестна — поставил «${role}».`);
+      const one = line(g.one, 30) || L.one[role];
+      const priced = items.filter(i => i[1] != null);
+      let star = line(g.star, 60);
+      const starItem = items.find(i => i[0].toLowerCase() === star.toLowerCase() && i[1] != null);
+      if (starItem) star = starItem[0];
+      else {
+        const was = star;
+        star = priced.length ? priced[0][0] : '';
+        if (was && star) fix(`«${group}»: советовать «${was}» нельзя (нет в разделе или без цены) — советую «${star}».`);
+      }
+      c.menu.push({ group, role, one, star, items });
+    });
+    const allItems = c.menu.flatMap(g => g.items);
+    if (!allItems.length) errors.push('В меню нет ни одного блюда (поле menu → items).');
+    const unpriced = allItems.filter(i => i[1] == null).length;
+    if (unpriced) fix(`${unpriced} поз. без цены — показаны с «цену уточняйте», в корзину не добавляются.`);
+    const pricedNames = new Map(allItems.filter(i => i[1] != null).map(i => [i[0].toLowerCase(), i[0]]));
+    const rolesHave = new Set(c.menu.filter(g => g.items.some(i => i[1] != null)).map(g => g.role));
+
+    // ---------- Допродажі ----------
+    c.combo = null;
+    if (isObj(src.combo)) {
+      const roles = [...new Set((Array.isArray(src.combo.roles) ? src.combo.roles : []).filter(r => rolesHave.has(r)))];
+      if (roles.length >= 2) {
+        let percent = int(src.combo.percent);
+        if (!(percent >= 5 && percent <= 20)) { fix(`Скидка комбо «${src.combo.percent}» — поставил ${percent > 20 ? 20 : 10}%.`); percent = percent > 20 ? 20 : 10; }
+        c.combo = { roles, percent, title: line(src.combo.title, 40, 'Название комбо') || roles.map(r => c.menu.find(g => g.role === r).group).join(' + ') };
+      } else fix('Комбо убрал: в меню нет двух нужных разделов с ценами.');
+    }
+    const ups = Array.isArray(src.upsell) ? src.upsell.filter(r => rolesHave.has(r)) : [];
+    c.upsell = [...new Set([...ups, ...ROLES.filter(r => rolesHave.has(r))])];
+    c.addon = '';
+    if (src.addon) {
+      const a = pricedNames.get(String(src.addon).toLowerCase().trim());
+      if (a) c.addon = a; else fix(`Мелкая допродажа «${src.addon}»: такой позиции с ценой нет — убрал.`);
+    }
+    const modesIn = Array.isArray(src.modes) ? src.modes : [];
+    c.modes = [];
+    modesIn.forEach(m => {
+      const key = Array.isArray(m) ? m[0] : isObj(m) ? m.value || m.key : m;
+      if (!MODE_LABEL[key] || c.modes.some(x => x[0] === key)) return;
+      c.modes.push([key, line(Array.isArray(m) ? m[1] : isObj(m) ? m.label : '', 20) || L.modes[key]]);
+    });
+    // Доставка без відомої ціни лишається: на сайті «вартість уточнюйте», у суму не йде
+    c.delivery = null;
+    if (isObj(src.delivery)) {
+      const fee = int(src.delivery.fee), freeFrom = int(src.delivery.freeFrom);
+      c.delivery = { fee: fee >= 0 ? fee : null, freeFrom: freeFrom > 0 ? freeFrom : null };
+    }
+    if (c.modes.some(m => m[0] === 'delivery') && !c.delivery) c.delivery = { fee: null, freeFrom: null };
+    if (!c.modes.length) {
+      c.modes = c.delivery ? [['delivery', L.modes.delivery], ['pickup', L.modes.pickup]] : [['pickup', L.modes.pickup], ['hall', L.modes.hall]];
+      if (modesIn.length) fix('Способы получения не распознал — поставил стандартные.');
+    }
+    c.loyalty = null;
+    if (isObj(src.loyalty) && line(src.loyalty.reward, 60)) {
+      c.loyalty = { goal: clamp(int(src.loyalty.goal) || 6, 3, 12), reward: line(src.loyalty.reward, 60) };
+    }
+
+    // ---------- Хіти й фото ----------
+    c.hits = [];
+    (Array.isArray(src.hits) ? src.hits : []).forEach(h => {
+      if (!isObj(h) || c.hits.length >= LIMITS.hits) return;
+      const ref = pricedNames.get(String(h.ref || h.name || '').toLowerCase().trim());
+      if (!ref) return fix(`Хит «${h.ref || h.name || '?'}»: такой позиции с ценой в меню нет — убрал.`);
+      if (c.hits.some(x => x.ref === ref)) return;
+      c.hits.push({ tag: line(h.tag, 16) || L.hit, ref, photo: h.photo != null ? h.photo : h.img != null ? h.img : null, alt: line(h.alt, 80) || ref });
+    });
+    if (!c.hits.length && pricedNames.size) {
+      c.menu.forEach(g => { if (g.star && c.hits.length < LIMITS.hits) c.hits.push({ tag: L.hit, ref: g.star, photo: null, alt: g.star }); });
+      fix('Хитов нет — показал «звёзд» разделов.');
+    }
+    c.bg = src.bg != null ? src.bg : null;
+    c.photoUrls = {};
+    const pu = isObj(opts.photoUrls) ? opts.photoUrls : isObj(src.photoUrls) ? src.photoUrls : {};
+    for (const [k, v] of Object.entries(pu)) if (/^(https?:|data:image\/|blob:|\.?\/|[\w-]+\/)/.test(String(v))) c.photoUrls[String(k)] = String(v);
+    // Фото за номером, якого не передали (вставили відповідь Claude без «Розвідки») — кажемо прямо
+    const lost = [c.bg, ...c.hits.map(h => h.photo)].filter(n => n != null && /^\d+$/.test(String(n)) && !c.photoUrls[String(n)]);
+    if (lost.length) fix(`Фото № ${[...new Set(lost)].join(', ')} не переданы — показываю без них. Добавьте фото в окне «Демо».`);
+
+    // ---------- Колір: акцент читається на чорному, напис на акценті — контрастний ----------
+    let accent = hex(src.accent);
+    if (!accent) { accent = base.accent || '#f0cf9b'; if (src.accent) fix(`Цвет «${src.accent}» не распознал — взял цвет формата.`); }
+    // Колір бренду лишаємо як є: під тло конкретного стилю його підганяє setStyle (fitFill / fitText)
+    c.accent = accent;
+    c.accentInk = inkFor(accent);
+
+    // ---------- Тексти ----------
+    let title = Array.isArray(src.title) ? src.title : typeof src.title === 'string' ? src.title.split(/\n|\s\/\s/) : [];
+    title = title.map(t => line(t, 48, 'Строка заголовка')).filter(Boolean);
+    if (title.length > 2) { fix('Заголовок длиннее 2 строк — оставил первые две.'); title = title.slice(0, 2); }
+    if (!title.length) { title = [`${c.brand}.`, L.title2]; fix('Заголовка нет — поставил название заведения.'); }
+    c.title = title;
+    c.subtitle = typeof src.subtitle === 'string' ? src.subtitle.split('\n').map(s => line(s, 160)).filter(Boolean).slice(0, 2).join('\n') : '';
+    c.cta = line(src.cta, 28) || L.cta;
+    c.sample = [...new Set((Array.isArray(src.sample) ? src.sample : []).filter(s => SAMPLE_KEYS.includes(s)))];
+    // Меню-приклад → і хіти з нього приклад: на головному екрані вони інакше виглядають справжніми
+    if (c.sample.includes('menu') && !c.sample.includes('hits')) { c.sample.push('hits'); fix('Меню — пример, поэтому хиты тоже отметил как пример.'); }
+    // Акція-приклад (sample: offers) не виходить у героя як справжня знижка
+    c.pill = Array.isArray(src.pill) && line(src.pill[0], 14) && line(src.pill[1], 60) ? [line(src.pill[0], 14), line(src.pill[1], 60)]
+      : c.combo && !c.sample.includes('offers') ? ['Комбо', line(L.pill(c.combo.title, c.combo.percent), 60)] : null;
+    c.hitsTitle = line(src.hitsTitle, 40) || L.hitsTitle;
+    c.menuTitle = line(src.menuTitle, 40) || L.menuTitle;
+    c.menuNote = line(src.menuNote, 200) || L.menuNote(CUR);
+    c.factsTitle = line(src.factsTitle, 48) || L.factsTitle;
+    c.contactsTitle = line(src.contactsTitle, 40) || L.contactsTitle;
+    c.facts = [];
+    (Array.isArray(src.facts) ? src.facts : []).forEach(f => {
+      const big = line(Array.isArray(f) ? f[0] : isObj(f) ? f.big || f.title : '', 24, 'Факт');
+      const text = line(Array.isArray(f) ? f[1] : isObj(f) ? f.text : '', 120, 'Описание факта');
+      if (big && text && c.facts.length < LIMITS.facts) c.facts.push([big, text]);
+    });
+    c.review = null;
+    // Відгук із Google на сайті-демо не показуємо: правила Google забороняють зберігати вміст Places
+    if (isObj(src.review) && String(src.review.source || '').toLowerCase() === 'google') fix('Отзыв из Google убрал: на демо их не показываем (правила Google).');
+    else if (isObj(src.review) && line(src.review.text, 600)) {
+      let text = line(src.review.text, 600);
+      if (text.length > 320) {
+        const cut = text.slice(0, 320), end = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('! '));
+        text = (end > 120 ? cut.slice(0, end + 1) : cut.replace(/\s+\S*$/, '') + '…');
+        fix('Отзыв слишком длинный — сократил по предложению.');
+      }
+      c.review = { text, name: line(src.review.name, 40) || L.guest, role: line(src.review.role, 40) || L.guestRole };
+    }
+
+    // ---------- Контакти ----------
+    // телефон за кодом країни (немає cc — український, як було: +380 XX XXX XX XX, 0XX…, 9 цифр)
+    c.phone = telNorm(src.phone || '', CC);
+    if (src.phone && !c.phone) fix(CC === '380' ? `Телефон «${src.phone}» не похож на украинский — спрятал кнопки звонка.` : `Телефон «${src.phone}» не похож на номер с кодом +${CC} — спрятал кнопки звонка.`);
+    const ig = String(src.instagram || '').trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/^@/, '').replace(/[/?#].*$/, '');
+    c.instagram = /^[a-z0-9._]{1,30}$/i.test(ig) ? ig : '';
+    if (src.instagram && !c.instagram) fix(`Instagram «${src.instagram}» не распознал — спрятал.`);
+    c.hours = null;
+    const hm = t => { const m = String(t || '').trim().match(/^(\d{1,2})[:.](\d{2})$/); return m && +m[1] <= 24 && +m[2] < 60 ? `${+m[1]}:${m[2]}` : ''; };
+    let hIn = src.hours;
+    if (typeof hIn === 'string') { const m = hIn.match(/(\d{1,2}[:.]\d{2})\s*[–—-]\s*(\d{1,2}[:.]\d{2})/); hIn = m ? { open: m[1], close: m[2] } : null; }
+    if (isObj(hIn) && hm(hIn.open) && hm(hIn.close)) c.hours = { days: line(hIn.days, 24) || L.days, open: hm(hIn.open), close: hm(hIn.close) };
+    else if (src.hours) fix('Часы работы не распознал — спрятал.');
+
+    c.id = line(src.id, 60) || c.brand.toLowerCase().replace(/[^a-zа-яіїєґ0-9]+/gi, '-').replace(/^-|-$/g, '');
+    return { cfg: errors.length ? null : c, errors, fixes };
+  }
+
+  return { parseLoose, normalize, fitText, fitFill, hex, STYLE_KEYS, locale, telNorm, telMask };
+})();
+
+/* ---------- «Свій дизайн» (config.kind = 'page'): сторінку верстає Claude, рушій лише чистить і показує ----------
+   Сторінка — тільки HTML і CSS. Скрипти, обробники on…, фрейми, <base>, meta http-equiv, javascript:-посилання,
+   чужі картинки — вирізаються, і про кожне є рядок у звіті. Кошик, форму, години, рядок «це демо» й події дає набір
+   kit/rz-kit.js (його ставить рушій). Фото — лише свої: «photo:N» у src / srcset / url() → адреса фото N.
+   На сайті демо друга стіна — CSP (script-src лише 'self' + хеші рушія), у «Розвідці» — пісочниця iframe. */
+const FL_PAGE = (() => {
+  const FONT_URL = /^https:\/\/fonts\.(googleapis|gstatic)\.com\//i;
+  const DROP = 'script,noscript,iframe,frame,frameset,object,embed,applet,base,portal,video,audio,source,track,canvas,math';
+  const URL_ATTRS = ['href', 'src', 'action', 'formaction', 'xlink:href', 'poster', 'background', 'ping', 'data', 'cite', 'manifest', 'longdesc'];
+  const PHOTO = /photo:(\d{1,2})\b/g;
+  // 3.6: фото страв з меню самого закладу (Poster, ChoiceQR) — їхні власні знімки, як на ручних сайтах «Лацзяо» / «Чічілакі».
+  // Ті самі адреси дозволені в CSP сайту демо (tools/demo-site/build.js, MENU_IMG_HOSTS) — міняти разом.
+  const MENU_IMG = /^https:\/\/(img\.postershop\.me|img\.ps\.me|cdn-media\.choiceqr\.com)\/[^\s"'<>()]+$/i;
+  const okImg = v => /^photo:\d{1,2}$/.test(v) || MENU_IMG.test(v) || /^data:image\/(png|jpe?g|webp|gif|svg\+xml)[;,]/i.test(v) || v === '';
+  const plural = (n, a, b, c) => { const m = n % 10, h = n % 100; return m === 1 && h !== 11 ? a : m >= 2 && m <= 4 && (h < 12 || h > 14) ? b : c; };
+
+  // відповідь Claude → текст сторінки: блок ```html … ```, або від <!doctype / <html до </html>
+  function extract(raw) {
+    let s = String(raw || '');
+    const fence = s.match(/```(?:html)?\s*([\s\S]*?)```/i);
+    if (fence && /<(html|body|!doctype)/i.test(fence[1])) s = fence[1];
+    const a = s.search(/<!doctype html|<html[\s>]/i), b = s.toLowerCase().lastIndexOf('</html>');
+    if (a >= 0) s = s.slice(a, b > a ? b + 7 : undefined);
+    return s.trim();
+  }
+  // url(…) у CSS: лишаємо свої фото, data:image і посилання на #id (svg); решта → none
+  function cssUrls(css, bad) {
+    return String(css).replace(/@import\s+(url\()?\s*(['"]?)([^'")\s;]+)\2\s*\)?[^;]*;?/gi, (m, _u, _q, url) => FONT_URL.test(url) ? m : (bad.push('@import ' + url.slice(0, 60)), ''))
+      .replace(/url\(\s*(['"]?)(.*?)\1\s*\)/gi, (m, _q, url) => {
+        const u = url.trim();
+        if (/^photo:\d{1,2}$/.test(u) || MENU_IMG.test(u) || /^data:image\//i.test(u) || u.startsWith('#') || FONT_URL.test(u)) return m;
+        bad.push(u.slice(0, 60)); return 'none';
+      });
+  }
+
+  // → { html, errors[], fixes[], items, priced, photos[] }; photoUrls: { N: адреса } (немає — помилка «фото № …»)
+  function clean(raw, o) {
+    o = o || {};
+    const errors = [], fixes = [];
+    const src = extract(raw);
+    if (!/<body[\s>]/i.test(src) && !/<(main|section|header|div)[\s>]/i.test(src)) {
+      return { html: '', errors: ['Не вижу страницы: в ответе нет HTML. Скопируйте весь блок ```html … ``` из ответа Claude.'], fixes, items: 0, priced: 0, photos: [] };
+    }
+    const doc = new DOMParser().parseFromString(src, 'text/html');
+    let n;
+    // 1) усе, що виконує код або тягне чуже
+    const scripts = doc.querySelectorAll('script').length;
+    n = 0; doc.querySelectorAll(DROP).forEach(e => { e.remove(); n++; });
+    if (scripts) fixes.push(`Убрано ${scripts} ${plural(scripts, 'скрипт', 'скрипта', 'скриптов')} — корзину, форму и часы даёт набор программы.`);
+    if (n - scripts > 0) fixes.push(`Убрано ${n - scripts} ${plural(n - scripts, 'встроенный элемент', 'встроенных элемента', 'встроенных элементов')} (фрейм, видео, <base>…).`);
+    n = 0; doc.querySelectorAll('link').forEach(l => {
+      const rel = (l.getAttribute('rel') || '').toLowerCase(), href = l.getAttribute('href') || '';
+      if (/^(stylesheet|preconnect)$/.test(rel) && FONT_URL.test(href)) return;
+      if (rel === 'preconnect' && /^https:\/\/fonts\.(googleapis|gstatic)\.com\/?$/i.test(href)) return;
+      l.remove(); n++;
+    });
+    if (n) fixes.push(`Убрано ${n} ${plural(n, 'ссылка', 'ссылки', 'ссылок')} на чужие файлы в <head> (разрешены только шрифты Google).`);
+    doc.querySelectorAll('meta').forEach(m => { if (m.hasAttribute('http-equiv')) m.remove(); });
+    doc.querySelectorAll('form').forEach(f => { f.removeAttribute('action'); f.removeAttribute('method'); f.removeAttribute('target'); });
+    // 2) атрибути: on…, javascript:, чужі картинки, url() у style
+    let ev = 0, js = 0; const extImg = [], extCss = [];
+    doc.querySelectorAll('*').forEach(e => {
+      for (const a of [...e.attributes]) {
+        const name = a.name.toLowerCase(), v = a.value.trim();
+        if (name.startsWith('on')) { e.removeAttribute(a.name); ev++; continue; }
+        if (URL_ATTRS.includes(name) && /^\s*(javascript|vbscript|data:text|data:application)/i.test(v)) { e.removeAttribute(a.name); js++; continue; }
+        if (name === 'srcdoc') { e.removeAttribute(a.name); continue; }
+        if (name === 'style') e.setAttribute('style', cssUrls(v, extCss));
+      }
+      const tag = e.tagName.toLowerCase();
+      if (tag === 'img' || tag === 'image') {
+        const s = (e.getAttribute('src') || e.getAttribute('href') || '').trim();
+        if (!okImg(s)) { extImg.push(s.slice(0, 60)); e.removeAttribute('src'); e.removeAttribute('href'); e.setAttribute('data-rz-noimg', ''); }
+        const ss = e.getAttribute('srcset');
+        if (ss && ss.split(',').some(p => !okImg(p.trim().split(/\s+/)[0]))) e.removeAttribute('srcset');
+      }
+    });
+    doc.querySelectorAll('img[data-rz-noimg]').forEach(i => (i.closest('picture') || i).remove());
+    if (ev) fixes.push(`Убрано ${ev} ${plural(ev, 'обработчик', 'обработчика', 'обработчиков')} onclick/onload… — действия даёт набор через data-атрибуты.`);
+    if (js) fixes.push(`Убрано ${js} javascript:-${plural(js, 'ссылка', 'ссылки', 'ссылок')}.`);
+    if (extImg.length) fixes.push(`Убрано ${extImg.length} ${plural(extImg.length, 'картинка', 'картинки', 'картинок')} с чужих адресов — в демо только свои фото (photo:N) и фото из меню заведения (Poster, ChoiceQR).`);
+    doc.querySelectorAll('style').forEach(st => { st.textContent = cssUrls(st.textContent, extCss); });
+    if (extCss.length) fixes.push(`В стилях убрано ${extCss.length} ${plural(extCss.length, 'чужой адрес', 'чужих адреса', 'чужих адресов')} (фоны и @import не из шрифтов Google).`);
+    // 3) позиції набору
+    let items = 0, priced = 0, badPrice = 0;
+    const ids = new Set();
+    doc.querySelectorAll('[data-item][data-name]').forEach(e => {
+      const id = e.getAttribute('data-item').trim();
+      if (!id || ids.has(id)) return;
+      ids.add(id); items++;
+      const p = (e.getAttribute('data-price') || '').replace(/\s/g, '').replace(',', '.');
+      if (p === '') return;
+      if (isFinite(+p) && +p > 0) priced++; else { e.setAttribute('data-price', ''); badPrice++; }
+    });
+    if (badPrice) fixes.push(`${badPrice} ${plural(badPrice, 'цена не число', 'цены не числа', 'цен не числа')} — показано как «цену уточняйте».`);
+    // 4.0: перенесённый свой сайт (config.imp) — без корзины, это обычная страница заведения
+    if (!items && !o.imp) errors.push('На странице нет ни одного блюда с разметкой набора (data-item + data-name + data-price) — корзина не заработает. Попросите Claude: «добавь разметку набора к каждому блюду».');
+    // 4) фото photo:N → адреси
+    const photos = new Set(), urls = o.photoUrls || {}, missing = new Set();
+    const sub = s => String(s).replace(PHOTO, (m, k) => { const key = String(+k); photos.add(+k); if (urls[key]) return urls[key]; missing.add(+k); return m; });
+    doc.querySelectorAll('[src],[srcset],[style],[data-img],image[href]').forEach(e => {
+      ['src', 'srcset', 'style', 'data-img', 'href'].forEach(a => { const v = e.getAttribute(a); if (v && v.includes('photo:')) e.setAttribute(a, sub(v)); });
+    });
+    doc.querySelectorAll('style').forEach(st => { if (st.textContent.includes('photo:')) st.textContent = sub(st.textContent); });
+    if (missing.size && !o.noPhotoCheck) errors.push(`На странице есть фото № ${[...missing].sort((a, b) => a - b).join(', ')}, а в окне «Демо» их нет — добавьте эти фото или попросите Claude убрать номер.`);
+    // 5) мова, viewport, набір: токени й стилі набору — першими (бренд сторінки їх перевизначає), скрипт — останнім
+    const html = doc.documentElement, head = doc.head;
+    // 3.9: мова / код телефону / валюта з config (їх задає програма) главніші за ті, що поставив Claude; набір читає їх з <body data-…>.
+    // Немає в config — атрибути сторінки не чіпаємо, lang="uk" (або data-lang, який поставив сам Claude)
+    const lc = FL_CHECK.locale({ lang: o.lang, cc: o.cc, cur: o.cur, tz: o.tz }).loc;
+    ['lang', 'cc', 'cur', 'tz'].forEach(k => { if (lc[k]) doc.body.setAttribute('data-' + k, lc[k]); });
+    html.setAttribute('lang', lc.lang || FL_CHECK.locale({ lang: doc.body.getAttribute('data-lang') }).loc.lang || 'uk');
+    if (!head.querySelector('meta[charset]')) { const m = doc.createElement('meta'); m.setAttribute('charset', 'utf-8'); head.prepend(m); }
+    if (!head.querySelector('meta[name="viewport"]')) { const m = doc.createElement('meta'); m.name = 'viewport'; m.content = 'width=device-width, initial-scale=1'; head.append(m); }
+    if (!doc.title) { const t = doc.createElement('title'); t.textContent = o.name || 'Демо'; head.append(t); }
+    const kit = o.kit || {};
+    const first = head.querySelector('link, style');
+    if (kit.inline) {   // прев’ю в «Розвідці»: файли набору вбудовано (пісочниця не читає файли поруч)
+      const st = doc.createElement('style'); st.textContent = kit.tokens + '\n' + kit.css; head.insertBefore(st, first);
+    } else {
+      ['tokens.css', 'rz-kit.css'].forEach(f => { const l = doc.createElement('link'); l.rel = 'stylesheet'; l.href = (kit.base || 'kit/') + f; head.insertBefore(l, first); });
+    }
+    const s = doc.createElement('script');
+    if (kit.inline) s.textContent = kit.js; else s.src = (kit.base || 'kit/') + 'rz-kit.js';
+    Object.entries(kit.data || {}).forEach(([k, v]) => { if (v != null && v !== '') s.dataset[k] = String(v); });
+    doc.body.append(s);
+    const out = '<!doctype html>\n' + html.outerHTML;
+    // контроль: браузер розбере готовий текст ще раз (srcdoc / document.write) — розбір після серіалізації може
+    // «ожити» (mXSS через svg/math/style). Тому перевіряємо саме повторний розбір: скрипт рівно один — набору.
+    const again = new DOMParser().parseFromString(out, 'text/html'), bad = [];
+    const sc = again.querySelectorAll('script');
+    if (sc.length !== 1 || sc[0] !== again.body.lastElementChild) bad.push('script');
+    again.querySelectorAll('*').forEach(e => { for (const a of e.attributes) {
+      if (/^on/i.test(a.name) || (URL_ATTRS.includes(a.name.toLowerCase()) && /^\s*(javascript|vbscript|data:text)/i.test(a.value)) || a.name.toLowerCase() === 'srcdoc') bad.push(a.name);
+    } });
+    if (again.querySelector(DROP.replace('script,', '') + ',meta[http-equiv]')) bad.push('embed');
+    if (bad.length) return { html: '', errors: ['У сторінці лишився код, який не вдалося безпечно прибрати (' + [...new Set(bad)].join(', ') + '). Попросіть Claude зробити сторінку заново — без скриптів і обробників.'], fixes, items, priced, photos: [] };
+    return { html: out, errors, fixes, items, priced, photos: [...photos].sort((a, b) => a - b) };
+  }
+  return { extract, clean };
+})();
+
+(() => {
+  const root = document.documentElement;
+  const $ = id => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  // Сайт демо (rz-demo.pages.dev/<slug>): tools/demo-site/build.js підставляє сюди {sb, anon, photos}.
+  // Локально (файл, вікно «Розвідки», ?cfg=…) — null, і все працює як раніше.
+  const DEMO_REMOTE = null; // rz-demo-remote
+  const RS = DEMO_REMOTE && /^(https:\/\/|http:\/\/localhost:\d+$)/.test(DEMO_REMOTE.sb || '') && DEMO_REMOTE.anon ? DEMO_REMOTE : null;   // localhost — стенд перевірки
+  const SLUG = (() => { try { return RS ? decodeURIComponent(location.pathname.split('/')[1] || '').toLowerCase() : ''; } catch (e) { return ''; } })();
+  let shown = false;   // демо з сервера показане — тепер можна рахувати події
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp01 = v => Math.min(1, Math.max(0, v));
+  const plural = (n, a, b, c) => n % 10 === 1 && n % 100 !== 11 ? a : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? b : c;
+
+  /* ---------- 3.9: підписи рушія — uk (як до 3.9, літера в літеру) і ru. Мову, валюту й код телефону дає config (lang/cc/cur);
+     вбудовані формати й config без цих полів — uk, ₴, +380. Статичні підписи розмітки — STATIC нижче ---------- */
+  const TX = {
+    uk: {
+      nb: /(\d) (см|шт\.|л|г|хв)(?![а-яіїєґ])/g, grn: ' гривень', orders: ['замовлення', 'замовлення', 'замовлень'],
+      toCart: 'До кошика', addTo: n => `Додати до кошика: ${n}`, addToP: (n, p) => `Додати до кошика: ${n}, ${p}`, qty: n => `Кількість: ${n}`, less: 'Менше', more: 'Більше',
+      live: (n, s) => `У кошику позицій: ${n}, разом ${s}`, liveEmpty: 'Кошик порожній',
+      inCart: n => `${n} — у кошику`, comboMiss: p => `До комбо −${p}% бракує: `, advise: 'Радимо додати: ', stamps: (n, g) => `Штампів: ${n} із ${g}`,
+      removed: n => `Прибрано: ${n}`, undo: 'Повернути', empty: 'Кошик порожній', emptyHint: 'Додайте страви з меню — кнопка «+» біля кожної позиції.',
+      repeat: 'Повторити минуле замовлення', toMenu: 'Перейти до меню', each: p => `${p} за шт.`,
+      comboDone: t => `Комбо «${t}» зібрано. `, comboSave: (p, d) => `Знижка ${p}% на набір: −${d}.`, comboAdd: l => `Додайте ${l} — `, comboGet: p => `і отримаєте комбо −${p}%.`, and: ' і ',
+      freeMore: 'Ще ', freeRest: f => ` — і доставка безкоштовна (зараз ${f}).`, freeDone: 'Доставка безкоштовна.',
+      addMore: 'Додайте до замовлення', closesCombo: p => ` · закриває комбо −${p}%`,
+      card: 'Картка гостя', cardSample: 'Картка гостя · приклад', stampEach: r => `Штамп за кожне замовлення: ${r}.`,
+      dishes: 'Страви', combo: p => `Комбо −${p}%`, delivery: 'Доставка', feeAsk: 'вартість уточнюйте', free: 'безкоштовно', total: 'Разом', checkout: s => `Оформити замовлення · ${s}`,
+      vCart: 'Ваше замовлення', vCheckout: 'Оформлення', vDone: 'Замовлення прийнято',
+      closedNote: h => `Зараз ми зачинені. Замовлення приймемо, а підтвердимо після відкриття — з ${h}.`,
+      errName: 'Вкажіть ім’я, щоб ми знали, як до вас звертатися.', errPhone: m => `Вкажіть номер у форматі ${m}.`, errAddr: 'Вкажіть вулицю та номер будинку.',
+      rCombo: (p, d) => `Комбо −${p}%: −${d}`, rDelivery: x => `Доставка: ${x}`, rFeeAsk: 'вартість уточнимо', rTotal: s => `Разом: ${s}`, rPay: p => `Оплата: ${p}`, rNote: n => `Коментар: ${n}`,
+      thanks: (n, no) => `Дякуємо, ${n}! Замовлення № ${no} прийнято.`, callSoon: p => `Зателефонуємо на ${p} протягом 5 хвилин, щоб підтвердити.`,
+      callLater: (p, h) => `Зараз ми зачинені — зателефонуємо на ${p} після відкриття, з ${h}.`,
+      cardFull: r => `Картку заповнено: ${r}. Нагадайте про це під час наступного замовлення.`, cardPlus: (o, r) => `+1 штамп. Ще ${o} — і ${r}.`,
+      demoMode: 'Демо-режим: замовлення нікуди не надсилається.',
+      openNow: h => `Зараз відчинено — до ${h}`, closedNow: h => `Зараз зачинено — працюємо з ${h}`, ask: 'ціну уточнюйте',
+      banner: t => `${t}: зберіть набір — знижка в кошику порахується сама.`, offerWords: ['Комбо', 'картка гостя', ' й '], offersTail: ' — приклад акцій: налаштуємо так, як захочете.',
+      sampleMenu: 'Меню наведене для прикладу — ваші страви й ціни підставимо за 10 хвилин.', samplePrices: 'Ціни орієнтовні — звіримо з вами перед запуском.',
+      hitsSample: ' · приклад', tagSample: 'Приклад', factsSample: 'Приклад — напишемо про ваш заклад вашими словами.',
+      demoNote: b => `Демо-макет для «${b}»: замовлення нікуди не надсилаються.`, demoNoteSample: ' Позначене як приклад — для ілюстрації.'
+    },
+    ru: {
+      nb: /(\d) (см|шт\.|л|г|мин)(?![а-яё])/g, grn: ' гривен', orders: ['заказ', 'заказа', 'заказов'],
+      toCart: 'В корзину', addTo: n => `Добавить в корзину: ${n}`, addToP: (n, p) => `Добавить в корзину: ${n}, ${p}`, qty: n => `Количество: ${n}`, less: 'Меньше', more: 'Больше',
+      live: (n, s) => `В корзине позиций: ${n}, итого ${s}`, liveEmpty: 'Корзина пуста',
+      inCart: n => `${n} — в корзине`, comboMiss: p => `До комбо −${p}% не хватает: `, advise: 'Советуем добавить: ', stamps: (n, g) => `Штампов: ${n} из ${g}`,
+      removed: n => `Убрано: ${n}`, undo: 'Вернуть', empty: 'Корзина пуста', emptyHint: 'Добавьте блюда из меню — кнопка «+» рядом с каждой позицией.',
+      repeat: 'Повторить прошлый заказ', toMenu: 'Перейти в меню', each: p => `${p} за шт.`,
+      comboDone: t => `Комбо «${t}» собрано. `, comboSave: (p, d) => `Скидка ${p}% на набор: −${d}.`, comboAdd: l => `Добавьте ${l} — `, comboGet: p => `и получите комбо −${p}%.`, and: ' и ',
+      freeMore: 'Ещё ', freeRest: f => ` — и доставка бесплатная (сейчас ${f}).`, freeDone: 'Доставка бесплатная.',
+      addMore: 'Добавьте к заказу', closesCombo: p => ` · закрывает комбо −${p}%`,
+      card: 'Карта гостя', cardSample: 'Карта гостя · пример', stampEach: r => `Штамп за каждый заказ: ${r}.`,
+      dishes: 'Блюда', combo: p => `Комбо −${p}%`, delivery: 'Доставка', feeAsk: 'стоимость уточняйте', free: 'бесплатно', total: 'Итого', checkout: s => `Оформить заказ · ${s}`,
+      vCart: 'Ваш заказ', vCheckout: 'Оформление', vDone: 'Заказ принят',
+      closedNote: h => `Сейчас мы закрыты. Заказ примем, а подтвердим после открытия — с ${h}.`,
+      errName: 'Укажите имя, чтобы мы знали, как к вам обращаться.', errPhone: m => `Укажите номер в формате ${m}.`, errAddr: 'Укажите улицу и номер дома.',
+      rCombo: (p, d) => `Комбо −${p}%: −${d}`, rDelivery: x => `Доставка: ${x}`, rFeeAsk: 'стоимость уточним', rTotal: s => `Итого: ${s}`, rPay: p => `Оплата: ${p}`, rNote: n => `Комментарий: ${n}`,
+      thanks: (n, no) => `Спасибо, ${n}! Заказ № ${no} принят.`, callSoon: p => `Перезвоним на ${p} в течение 5 минут, чтобы подтвердить.`,
+      callLater: (p, h) => `Сейчас мы закрыты — перезвоним на ${p} после открытия, с ${h}.`,
+      cardFull: r => `Карта заполнена: ${r}. Напомните об этом при следующем заказе.`, cardPlus: (o, r) => `+1 штамп. Ещё ${o} — и ${r}.`,
+      demoMode: 'Демо-режим: заказ никуда не отправляется.',
+      openNow: h => `Сейчас открыто — до ${h}`, closedNow: h => `Сейчас закрыто — работаем с ${h}`, ask: 'цену уточняйте',
+      banner: t => `${t}: соберите набор — скидка в корзине посчитается сама.`, offerWords: ['Комбо', 'карта гостя', ' и '], offersTail: ' — пример акций: настроим так, как захотите.',
+      sampleMenu: 'Меню приведено для примера — ваши блюда и цены подставим за 10 минут.', samplePrices: 'Цены ориентировочные — сверим с вами перед запуском.',
+      hitsSample: ' · пример', tagSample: 'Пример', factsSample: 'Пример — напишем о вашем заведении вашими словами.',
+      demoNote: b => `Демо-макет для «${b}»: заказы никуда не отправляются.`, demoNoteSample: ' Отмеченное как пример — для иллюстрации.'
+    }
+  };
+  let LANG = 'uk', T = TX.uk, CUR = '₴', CC = '380';
+  // «30 см», «8 шт.», «0,4 л» не розриваються переносом
+  const nb = s => s.replace(T.nb, '$1 $2');
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = nb(String(text)); return n; };
+  const uah = n => n + ' ' + CUR;
+  const say = n => CUR === '₴' ? n + T.grn : uah(n);   // сума для екранного читача: «70 гривень» як було, інша валюта — «70 ₽»
+  const orders = n => `${n} ${plural(n, ...T.orders)}`;
+
+  // Статичні підписи розмітки: українські знімаємо з самої розмітки при старті (тож uk не змінюється ні на літеру), ru — тут.
+  // add(вузол, 'text' | атрибут, ru[, слово]): зі словом — міняється лише воно (текстовий вузол поруч з іконкою зберігає пробіли)
+  const STATIC = [];
+  {
+    const q = s => document.querySelector(s);
+    const tnode = (host, word) => host ? [...host.childNodes].find(n => n.nodeType === 3 && n.textContent.includes(word)) || null : null;
+    const add = (node, prop, ru, word) => {
+      if (!node) return;
+      const uk = prop === 'text' ? node.textContent : node.getAttribute(prop);
+      if (uk == null) return;
+      STATIC.push({ node, prop, uk, ru: word ? uk.replace(word, ru) : ru });
+    };
+    add(q('.brand'), 'aria-label', 'В начало страницы');
+    add(q('.nav-links'), 'aria-label', 'Основная навигация');
+    add(q('.nav-links a[href="#about"]'), 'text', 'О нас');
+    add(q('.nav-links a[href="#reviews"]'), 'text', 'Отзывы');
+    add(q('.nav-links a[href="#contacts"]'), 'text', 'Контакты');
+    add(tnode(q('.btn-cart'), 'Кошик'), 'text', 'Корзина', 'Кошик');
+    add(q('.call-short'), 'text', 'Позвонить');
+    add(q('.hits-head a'), 'text', 'Всё меню');
+    add(q('.menu-foot button'), 'text', 'Перейти в корзину');
+    document.querySelectorAll('#contacts .contact-label').forEach(n => add(n, 'text', { 'Адреса': 'Адрес', 'Години роботи': 'Часы работы' }[n.textContent] || n.textContent));
+    add(q('#mapLink'), 'text', 'Проложить маршрут');
+    add(q('#contacts a.link[data-t="tel"]'), 'text', 'Позвонить');
+    add(q('#instaLink'), 'text', 'Открыть страницу');
+    add(tnode(q('#fab'), 'Кошик'), 'text', 'Корзина', 'Кошик');
+    add(tnode(q('#barCall'), 'Подзвонити'), 'text', 'Позвонить', 'Подзвонити');
+    add(tnode(q('#barCart'), 'Кошик'), 'text', 'Корзина', 'Кошик');
+    add(q('#toastClose'), 'aria-label', 'Закрыть подсказку');
+    add(q('#cartClose'), 'aria-label', 'Закрыть корзину');
+    add(q('#orderForm fieldset legend'), 'text', 'Как получите заказ');
+    add(q('label[for="fName"]'), 'text', 'Ваше имя');
+    add(q('#fName'), 'placeholder', 'Например, Анна…');
+    add(q('label[for="fAddress"]'), 'text', 'Адрес доставки');
+    add(q('#fAddress'), 'placeholder', 'Улица, дом, квартира…');
+    // оплата: і підпис, і значення (воно йде в чек «Оплата: …»)
+    const PAY_RU = { 'Готівкою': ['Наличными', 'Готівкою', 'Наличными'], 'Карткою під час отримання': ['Картой при получении', 'Карткою', 'Картой'] };
+    document.querySelectorAll('#orderForm input[name="pay"]').forEach(r => {
+      const ru = PAY_RU[r.value];
+      if (!ru) return;
+      add(r, 'value', ru[0]);
+      add(tnode(r.parentNode, ru[1]), 'text', ru[2], ru[1]);
+    });
+    add(tnode(q('label[for="fNote"]'), 'Коментар'), 'text', 'Комментарий', 'Коментар');
+    add(q('label[for="fNote"] span'), 'text', '(необязательно)');
+    add(q('#fNote'), 'placeholder', 'Например: без лука, домофон не работает…');
+    add(q('#submitBtn'), 'text', 'Подтвердить заказ');
+    add(q('#backBtn'), 'text', 'Назад в корзину');
+    add(q('#doneBtn'), 'text', 'Вернуться в меню');
+    add(q('#cfgError h2'), 'text', 'Не удалось показать демо');
+  }
+  // мова сторінки: словник, валюта, код телефону, <html lang>, статичні підписи, підказка телефону у формі.
+  // Для uk / без полів кожне значення дорівнює тому, що вже є в розмітці, — нічого не переписується
+  function setLocale(cfg) {
+    LANG = cfg && cfg.lang === 'ru' ? 'ru' : 'uk';
+    T = TX[LANG];
+    CUR = (cfg && cfg.cur) || '₴';
+    CC = (cfg && cfg.cc) || '380';
+    if (root.lang !== LANG) root.lang = LANG;
+    STATIC.forEach(s => {
+      const v = LANG === 'ru' ? s.ru : s.uk;
+      if (s.prop === 'text') { if (s.node.textContent !== v) s.node.textContent = v; }
+      else if (s.node.getAttribute(s.prop) !== v) { s.node.setAttribute(s.prop, v); if (s.prop === 'value') s.node.value = v; }
+    });
+    const ph = FL_CHECK.telMask(CC) + '…';
+    if ($('fPhone').getAttribute('placeholder') !== ph) $('fPhone').setAttribute('placeholder', ph);
+  }
+  const toMin = t => { const [h, m] = t.split(':'); return h * 60 + +m; };
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem('fl:' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem('fl:' + k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  // *слово* → <em>слово</em>, решта — звичайний текст
+  function rich(target, str) {
+    target.textContent = '';
+    str.split(/\*(.+?)\*/).forEach((part, i) => { if (part) target.append(i % 2 ? el('em', '', part) : part); });
+  }
+  function fill(name, fn) { document.querySelectorAll(`[data-t="${name}"]`).forEach(fn); }
+  function photo(src, alt, w, h, eager) {
+    const img = el('img');
+    Object.assign(img, { alt, width: w, height: h, decoding: 'async', loading: eager ? 'eager' : 'lazy' });
+    img.onerror = () => img.remove();
+    img.src = src;
+    return img;
+  }
+  function button(cls, text, key, onClick, label) {
+    const b = el('button', cls, text);
+    b.type = 'button';
+    if (key) b.dataset.k = key;
+    if (label) b.setAttribute('aria-label', label);
+    b.addEventListener('click', onClick);
+    return b;
+  }
+
+  /* ---------- Стан ---------- */
+  let F, KEY, ITEMS = {}, cart = {}, mode = '', view = 'cart', removed = null, isOpen = true, words = [];
+  const dlg = $('cart'), form = $('orderForm');
+
+  function calc() {
+    const lines = Object.entries(cart).map(([id, qty]) => ({ ...ITEMS[id], qty, sum: ITEMS[id].price * qty }));
+    const count = lines.reduce((s, l) => s + l.qty, 0), subtotal = lines.reduce((s, l) => s + l.sum, 0);
+    let discount = 0, sets = 0, missing = [];
+    if (F.combo && count) {
+      // комбо: з кожної ролі беремо найдешевші одиниці — по одній на набір
+      const units = F.combo.roles.map(r => lines.filter(l => l.role === r).flatMap(l => Array(l.qty).fill(l.price)).sort((a, b) => a - b));
+      sets = Math.min(...units.map(u => u.length));
+      discount = Math.round(units.reduce((s, u) => s + u.slice(0, sets).reduce((a, b) => a + b, 0), 0) * F.combo.percent / 100);
+      if (!sets) missing = F.combo.roles.filter((r, i) => !units[i].length);
+    }
+    const goods = subtotal - discount;
+    const d = mode === 'delivery' ? F.delivery : null;
+    const fee = d && count && d.fee != null ? (d.freeFrom && goods >= d.freeFrom ? 0 : d.fee) : 0;
+    return { lines, count, subtotal, discount, sets, missing, goods, fee, d, toFree: d && d.freeFrom ? Math.max(0, d.freeFrom - goods) : 0, total: goods + fee };
+  }
+  const groupOf = role => F.menu.find(g => g.role === role);
+  const byName = name => Object.values(ITEMS).find(i => i.name === name);
+  // Що порадити: спершу те, чого бракує до комбо, далі ролі за порядком upsell, наостанок — дрібний додаток
+  function suggestions(c, limit) {
+    const have = new Set(c.lines.map(l => l.role)), out = [];
+    for (const role of [...c.missing, ...F.upsell]) {
+      if (have.has(role) || out.some(i => i.role === role)) continue;
+      const g = groupOf(role), item = g && (byName(g.star) || g.items.map(i => byName(i[0])).find(Boolean));
+      if (item) out.push(item);
+    }
+    const extra = F.addon && byName(F.addon);
+    if (extra && !cart[extra.id]) out.push(extra);
+    return out.slice(0, limit);
+  }
+  const listOne = roles => roles.map(r => groupOf(r).one).join(T.and);
+
+  /* ---------- Кнопки «додати» / лічильник ---------- */
+  function renderCtl(box) {
+    const [scope, id] = box.dataset.ctl.split(':'), item = ITEMS[id], qty = cart[id] || 0;
+    box.textContent = '';
+    if (!item) return;
+    if (!qty) {
+      box.append(scope === 'hit'
+        ? button('add-wide', T.toCart, `${scope}:${id}:plus`, () => change(id, 1, scope), T.addTo(item.name))
+        : button('add-btn', '+', `${scope}:${id}:plus`, () => change(id, 1, scope), T.addTo(item.name)));
+      return;
+    }
+    const s = el('div', 'stepper');
+    s.setAttribute('role', 'group');
+    s.setAttribute('aria-label', T.qty(item.name));
+    const out = el('output', '', qty);
+    s.append(button('', '−', `${scope}:${id}:minus`, () => change(id, -1, scope), T.less), out, button('', '+', `${scope}:${id}:plus`, () => change(id, 1, scope), T.more));
+    box.append(s);
+  }
+  function ctl(scope, id) { const b = el('span', 'ctl'); b.dataset.ctl = `${scope}:${id}`; return b; }
+
+  function change(id, delta, scope) {
+    const was = cart[id] || 0, qty = Math.max(0, Math.min(20, was + delta));
+    if (qty) cart[id] = qty; else delete cart[id];
+    removed = !qty && was && scope === 'cart' ? { id, qty: was } : null;
+    sync();
+    if (delta > 0 && qty > was && ITEMS[id]) hit('cart_add', { item: ITEMS[id].name, qty });
+    if (delta > 0 && !dlg.open) offer(id);
+  }
+
+  /* ---------- Синхронізація всього, що залежить від кошика ---------- */
+  function sync() {
+    store.set('cart:' + KEY, cart);
+    const focusKey = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.k : null;
+    const c = calc();
+    document.querySelectorAll('[data-ctl]').forEach(renderCtl);
+    fill('count', n => {
+      const changed = n.textContent !== String(c.count);
+      n.textContent = c.count;
+      if (n.closest('.btn-cart')) n.hidden = !c.count;
+      if (changed && c.count) { n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump'); }
+    });
+    fill('sum', n => n.textContent = '· ' + uah(c.total));
+    $('fab').hidden = !c.count;
+    $('barCart').hidden = !c.count;
+    $('barCall').hidden = !!c.count || !F.phone;
+    $('live').textContent = c.count ? T.live(c.count, say(c.total)) : T.liveEmpty;
+    if (dlg.open) { renderCart(c); renderTotals(c); }
+    if (focusKey && (!document.activeElement || document.activeElement === document.body || !document.activeElement.isConnected || document.activeElement === dlg)) {
+      const scopeRoot = dlg.open ? dlg : document;
+      const base = focusKey.replace(/:(plus|minus)$/, '');
+      const next = (removed && scopeRoot.querySelector('[data-k="undo"]')) || scopeRoot.querySelector(`[data-k="${focusKey}"]`) || scopeRoot.querySelector(`[data-k="${base}:plus"]`);
+      if (next) next.focus(); else if (dlg.open) $('cartTitle').focus();
+    }
+    onScroll();
+  }
+
+  /* ---------- Підказка після додавання: «а до цього — …» ---------- */
+  let toastTimer = 0, toastItem = null;
+  function offer(id) {
+    const c = calc(), item = ITEMS[id];
+    toastItem = suggestions(c, 3).find(s => s.role !== item.role) || null;
+    $('toastText').textContent = T.inCart(item.name);
+    $('toastOffer').hidden = !toastItem;
+    if (toastItem) {
+      const p = $('toastOfferText');
+      p.textContent = '';
+      const combo = c.missing.includes(toastItem.role) && c.missing.length === 1;
+      p.append(combo ? T.comboMiss(F.combo.percent) : T.advise, el('b', '', toastItem.name));
+      $('toastAdd').textContent = `+ ${uah(toastItem.price)}`;
+      $('toastAdd').setAttribute('aria-label', T.addToP(toastItem.name, say(toastItem.price)));
+    }
+    $('toast').classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 7000);
+  }
+  function hideToast() { clearTimeout(toastTimer); $('toast').classList.remove('on'); }
+  $('toastClose').addEventListener('click', hideToast);
+  $('toastAdd').addEventListener('click', () => { if (toastItem) change(toastItem.id, 1, 'toast'); });
+
+  /* ---------- Кошик ---------- */
+  function stampsRow(n) {
+    const row = el('div', 'stamps');
+    for (let i = 1; i <= F.loyalty.goal; i++) row.append(el('i', i <= n ? 'on' : '', i <= n ? '✓' : i));
+    row.append(el('i', 'gift', '★'));
+    row.setAttribute('role', 'img');
+    row.setAttribute('aria-label', T.stamps(n, F.loyalty.goal));
+    return row;
+  }
+  function renderCart(c) {
+    const body = $('cartBody'), foot = $('cartFoot');
+    body.textContent = '';
+    foot.textContent = '';
+    if (removed && ITEMS[removed.id]) {
+      const n = el('div', 'notice');
+      const r = removed;
+      n.append(el('span', '', T.removed(ITEMS[r.id].name)), button('', T.undo, 'undo', () => { cart[r.id] = r.qty; removed = null; sync(); $('cartTitle').focus(); }));
+      body.append(n);
+    }
+    if (!c.count) {
+      const e = el('div', 'cart-empty');
+      e.append(el('strong', '', T.empty), el('p', '', T.emptyHint));
+      const last = store.get('last:' + KEY, null);
+      if (last && Object.keys(last).some(id => ITEMS[id])) {
+        e.append(button('btn-line', T.repeat, 'repeat', () => {
+          cart = {};
+          for (const [id, q] of Object.entries(last)) if (ITEMS[id]) cart[id] = q;
+          removed = null; sync(); $('cartTitle').focus();
+        }));
+      }
+      body.append(e);
+      foot.append(button('btn-main', T.toMenu, 'tomenu', () => { closeCart(); $('menu').scrollIntoView(); }));
+      return;
+    }
+
+    const list = el('ul', 'lines');
+    c.lines.forEach(l => {
+      const li = el('li'), name = el('div', 'line-name', l.name);
+      name.append(el('div', 'line-each tnum', T.each(uah(l.price))));
+      const right = el('div');
+      right.append(el('div', 'line-sum tnum', uah(l.sum)));
+      li.append(name, right, ctl('cart', l.id));
+      list.append(li);
+    });
+    body.append(list);
+    list.querySelectorAll('[data-ctl]').forEach(renderCtl);
+
+    if (F.combo) {
+      const h = el('p', 'hint' + (c.sets ? ' done' : ''));
+      if (c.sets) h.append(el('b', '', T.comboDone(F.combo.title)), T.comboSave(F.combo.percent, uah(c.discount)));
+      else h.append(T.comboAdd(listOne(c.missing)), el('b', '', T.comboGet(F.combo.percent)));
+      body.append(h);
+    }
+    if (c.d && c.d.freeFrom) {
+      const h = el('p', 'hint' + (c.toFree ? '' : ' done'));
+      if (c.toFree) h.append(T.freeMore, el('b', '', uah(c.toFree)), T.freeRest(uah(c.d.fee)));
+      else h.append(el('b', '', T.freeDone));
+      const bar = el('div', 'progress'), fillEl = el('i');
+      fillEl.style.transform = `scaleX(${clamp01(c.goods / c.d.freeFrom)})`;
+      bar.append(fillEl);
+      h.append(bar);
+      body.append(h);
+    }
+
+    const sug = suggestions(c, 3);
+    if (sug.length) {
+      const box = el('div');
+      box.append(el('div', 'block-title', T.addMore));
+      sug.forEach(s => {
+        const row = el('div', 'sug'), name = el('div', 'sug-name', s.name);
+        name.append(el('small', 'tnum', uah(s.price) + (c.missing.includes(s.role) && c.missing.length === 1 ? T.closesCombo(F.combo.percent) : '')));
+        row.append(name, button('add-btn', '+', `sug:${s.id}:plus`, () => change(s.id, 1, 'sug'), T.addTo(s.name)));
+        box.append(row);
+      });
+      body.append(box);
+    }
+
+    if (F.loyalty) {
+      const stamps = store.get('stamps:' + KEY, 0);
+      const loy = el('div');
+      loy.append(el('div', 'block-title', (F.sample || []).includes('offers') ? T.cardSample : T.card), el('p', 'muted', T.stampEach(F.loyalty.reward)), stampsRow(stamps));
+      loy.lastChild.previousSibling.style.fontSize = '16px';
+      body.append(loy);
+    }
+
+    const totals = el('div', 'totals');
+    totals.id = 'cartTotals';
+    foot.append(totals, button('btn-main', '', 'checkout', () => setView('checkout')));
+  }
+  function renderTotals(c) {
+    const rows = [[T.dishes, uah(c.subtotal)]];
+    if (c.discount) rows.push([T.combo(F.combo.percent), '−' + uah(c.discount), 'save']);
+    if (c.d) rows.push(c.d.fee == null ? [T.delivery, T.feeAsk] : [T.delivery, c.fee ? uah(c.fee) : T.free, c.fee ? '' : 'save']);
+    rows.push([T.total, uah(c.total), 'grand']);
+    [$('cartTotals'), $('checkoutTotals')].forEach(box => {
+      if (!box) return;
+      box.textContent = '';
+      rows.forEach(([a, b, cls]) => box.append(el('span', cls || '', a), el('span', 'tnum ' + (cls || ''), b)));
+    });
+    const go = dlg.querySelector('[data-k="checkout"]');
+    if (go) go.textContent = T.checkout(uah(c.total));
+  }
+
+  function setView(v) {
+    view = v;
+    dlg.querySelectorAll('[data-view]').forEach(n => n.hidden = n.dataset.view !== v);
+    $('cartTitle').textContent = v === 'cart' ? T.vCart : v === 'checkout' ? T.vCheckout : T.vDone;
+    if (v === 'checkout') {
+      $('closedNote').hidden = isOpen || !F.hours;
+      if (F.hours) $('closedNote').textContent = T.closedNote(F.hours.open);
+      syncMode();
+    }
+    const c = calc();
+    if (v === 'cart') renderCart(c);
+    renderTotals(c);
+    dlg.querySelectorAll('.cart-body').forEach(b => b.scrollTop = 0);
+    $('cartTitle').focus();
+  }
+  function openCart() {
+    hideToast();
+    removed = null;
+    if (!dlg.open) { dlg.showModal(); root.classList.add('locked'); }
+    setView('cart');
+    hit('cart_open', { n: calc().count }, 'cart_open');
+  }
+  // Блокування прокрутки знімаємо самі: подія close може прийти із запізненням
+  function closeCart() { if (dlg.open) dlg.close(); root.classList.remove('locked'); }
+  dlg.addEventListener('close', () => root.classList.remove('locked'));
+  dlg.addEventListener('cancel', () => root.classList.remove('locked'));
+  dlg.addEventListener('click', e => { if (e.target === dlg) closeCart(); });
+  $('cartClose').addEventListener('click', closeCart);
+  $('backBtn').addEventListener('click', () => setView('cart'));
+  $('doneBtn').addEventListener('click', closeCart);
+  document.querySelectorAll('[data-open-cart]').forEach(b => b.addEventListener('click', openCart));
+
+  /* ---------- Оформлення ---------- */
+  function syncMode() {
+    $('addressField').hidden = mode !== 'delivery';
+    renderTotals(calc());
+  }
+  function setError(input, errId, text) {
+    const e = $(errId);
+    e.textContent = text || '';
+    e.hidden = !text;
+    input.setAttribute('aria-invalid', text ? 'true' : 'false');
+    return !text;
+  }
+  // Номер за кодом країни (config.cc). Немає — український мобільний, як було: +380 XX XXX XX XX або 0XX XXX XX XX
+  const normPhone = raw => FL_CHECK.telNorm(raw, CC);
+  ['fName', 'fPhone', 'fAddress'].forEach(id => $(id).addEventListener('input', e => {
+    if (e.target.getAttribute('aria-invalid') === 'true') setError(e.target, 'e' + id.slice(1), '');
+  }));
+  $('fPhone').addEventListener('blur', e => { const p = normPhone(e.target.value); if (p) e.target.value = p; });
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const c = calc();
+    if (!c.count) { setView('cart'); return; }
+    const name = $('fName').value.trim(), phone = normPhone($('fPhone').value), address = $('fAddress').value.trim();
+    const okName = setError($('fName'), 'eName', name ? '' : T.errName);
+    const okPhone = setError($('fPhone'), 'ePhone', phone ? '' : T.errPhone(FL_CHECK.telMask(CC)));
+    const okAddr = setError($('fAddress'), 'eAddress', mode !== 'delivery' || address.length > 4 ? '' : T.errAddr);
+    if (!okName) return $('fName').focus();
+    if (!okPhone) return $('fPhone').focus();
+    if (!okAddr) return $('fAddress').focus();
+    hit('checkout', { n: c.count, sum: c.total, mode });   // лише що натиснули «Оформити»: ім’я, телефон, адреса нікуди не йдуть
+
+    const modeLabel = F.modes.find(m => m[0] === mode)[1];
+    const no = String(Date.now()).slice(-4);
+    const pay = new FormData(form).get('pay');
+    let stamps = store.get('stamps:' + KEY, 0) + 1;
+    const full = !!F.loyalty && stamps >= F.loyalty.goal;
+    if (F.loyalty) store.set('stamps:' + KEY, full ? 0 : stamps);
+    store.set('last:' + KEY, cart);
+    store.set('guest', { name, phone, address });
+
+    const receipt = [
+      ...c.lines.map(l => `${l.qty} × ${l.name} — ${uah(l.sum)}`),
+      c.discount ? T.rCombo(F.combo.percent, uah(c.discount)) : '',
+      c.d ? T.rDelivery(c.d.fee == null ? T.rFeeAsk : c.fee ? uah(c.fee) : T.free) : '',
+      T.rTotal(uah(c.total)),
+      ' ',
+      `${modeLabel}${mode === 'delivery' ? ': ' + address : ''}`,
+      T.rPay(pay.toLowerCase()),
+      $('fNote').value.trim() ? T.rNote($('fNote').value.trim()) : ''
+    ].filter(Boolean).join('\n');
+
+    const body = $('doneBody');
+    body.textContent = '';
+    body.append(
+      el('div', 'done-mark', '✓'),
+      el('h3', 'done-title', T.thanks(name, no)),
+      el('p', '', isOpen || !F.hours ? T.callSoon(phone) : T.callLater(phone, F.hours.open)),
+      el('div', 'receipt', receipt)
+    );
+    if (F.loyalty) {
+      const loy = el('div');
+      loy.append(el('div', 'block-title', (F.sample || []).includes('offers') ? T.cardSample : T.card),
+        el('p', '', full ? T.cardFull(F.loyalty.reward) : T.cardPlus(orders(F.loyalty.goal - stamps), F.loyalty.reward)),
+        stampsRow(full ? F.loyalty.goal : stamps));
+      body.append(loy);
+    }
+    body.append(el('p', 'muted', T.demoMode));
+    body.lastChild.style.fontSize = '15px';
+
+    cart = {};
+    removed = null;
+    $('fNote').value = '';
+    view = 'done';
+    sync();
+    setView('done');
+  });
+
+  /* ---------- Формат ---------- */
+  // Фото зі «Свого закладу»: номер → адреса з photoUrls (їх дає «Розвідка»), або пряма адреса, або нічого
+  function photoSrc(v) {
+    if (v == null || v === '') return '';
+    const byNum = F.photoUrls && F.photoUrls[String(v)];
+    if (byNum) return byNum;
+    return typeof v === 'string' && /^(https?:|data:image\/|blob:|\.?\/|[\w-]+\/)/.test(v) ? v : '';
+  }
+  const hide = (node, yes) => { if (node) node.hidden = !!yes; };
+
+  // Шрифти стилю вантажимо лише тоді, коли стиль справді показано
+  const STYLE_FONTS = {
+    ranok: 'family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600;700',
+    teplo: 'family=Nunito:wght@400;600;700;800&family=Lora:ital,wght@1,500;1,600',
+    vulytsia: 'family=Unbounded:wght@600;700&family=Rubik:wght@400;500;600;700'
+  };
+  function setStyle(style) {
+    root.dataset.style = style;
+    if (STYLE_FONTS[style] && !document.querySelector(`link[data-style-fonts="${style}"]`)) {
+      const l = document.createElement('link');
+      Object.assign(l, { rel: 'stylesheet', href: `https://fonts.googleapis.com/css2?${STYLE_FONTS[style]}&display=swap` });
+      l.dataset.styleFonts = style;
+      document.head.append(l);
+    }
+    // Тло стилю беремо з CSS, щоб не дублювати палітру тут
+    const m = getComputedStyle(document.body).backgroundColor.match(/\d+/g) || [0, 0, 0];
+    const bg = '#' + m.slice(0, 3).map(v => (+v).toString(16).padStart(2, '0')).join('');
+    const fill = FL_CHECK.fitFill(F.accent, bg);
+    root.style.setProperty('--accent', fill.fill);
+    root.style.setProperty('--accent-ink', fill.fill === F.accent && F.accentInk ? F.accentInk : fill.ink);
+    root.style.setProperty('--accent-text', FL_CHECK.fitText(F.accent, bg));
+    const light = root.dataset.style === 'ranok' || root.dataset.style === 'teplo';
+    document.querySelector('meta[name="color-scheme"]').content = light ? 'light' : 'dark';
+    document.querySelector('meta[name="theme-color"]').content = bg;
+  }
+  const navLink = id => document.querySelector(`.nav-links a[href="#${id}"]`);
+  const NOTE_DEMO = $('demoNote').textContent;
+
+  // key — вбудований формат або 'custom'; cfg — перевірені дані свого закладу (FL_CHECK.normalize)
+  function apply(key, replay, cfg) {
+    const fmt = cfg ? cfg.format : key;
+    const base = FORMATS[fmt] || FORMATS[DEFAULT_FORMAT];
+    F = cfg ? cfg : { ...FORMATS[key], sample: [] };
+    KEY = cfg ? 'c:' + cfg.id : key;
+    setLocale(cfg);   // 3.9: вбудовані формати — завжди uk; свій заклад — config.lang / cc / cur
+    if (!cfg && params.get('brand')) F.brand = params.get('brand').slice(0, 40);
+    if (!cfg && params.get('city')) F.city = params.get('city').slice(0, 40);
+    const place = [F.address, F.city].filter(Boolean).join(', ');
+    const tel = F.phone ? 'tel:+' + F.phone.replace(/\D/g, '') : '';
+    const H = F.hours;
+    const now = new Date(), minutes = now.getHours() * 60 + now.getMinutes();
+    if (H) {
+      const o = toMin(H.open), cl = toMin(H.close);
+      isOpen = cl > o ? minutes >= o && minutes < cl : minutes >= o || minutes < cl;   // «до 02:00» — через північ
+    } else isOpen = true;
+    const openText = !H ? '' : isOpen ? T.openNow(H.close) : T.closedNow(H.open);
+
+    closeCart();
+    hideToast();
+    root.dataset.format = fmt;
+    root.dataset.custom = cfg ? '1' : '';
+    root.style.setProperty('--accent', F.accent);
+    root.style.setProperty('--accent-ink', F.accentInk);
+    setStyle(cfg ? F.style : FL_CHECK.STYLE_KEYS.includes(params.get('style')) ? params.get('style') : 'nich');
+    document.title = `${F.brand} — ${[F.kind, F.city].filter(Boolean).join(', ')}`;
+
+    fill('brand', n => n.textContent = F.brand);
+    fill('phone', n => n.textContent = F.phone);
+    fill('tel', n => { if (tel) n.href = tel; else n.removeAttribute('href'); n.hidden = !tel; });
+    hide(document.querySelector('#contacts [data-t="phone"]').closest('.contact'), !tel);
+    hide(document.querySelector('.hero-text .pill'), !F.pill);
+    if (F.pill) { fill('pillBadge', n => n.textContent = F.pill[0]); fill('pillText', n => n.textContent = F.pill[1]); }
+    fill('cta', n => n.textContent = F.cta);
+    fill('hitsTitle', n => n.textContent = F.hitsTitle);
+    fill('menuNote', n => n.textContent = F.menuNote);
+    if (F.review) { fill('reviewName', n => n.textContent = F.review.name); fill('reviewRole', n => n.textContent = F.review.role); }
+    $('brandIcon').innerHTML = base.icon;   // іконка лише з вбудованих форматів — не з даних
+    // Свій заклад: логотипа в нас немає, а чашка формату «кафе» над китайським рестораном бреше — лише назва
+    hide($('brandIcon').parentNode, !!cfg);
+
+    const title = $('heroTitle');
+    title.textContent = '';
+    F.title.forEach(line => { const s = el('span'); rich(s, line); title.append(s); });
+    title.style.setProperty('--tl', Math.max(12, ...F.title.map(l => l.replace(/\*/g, '').length)));   // довжина найдовшого рядка — для широких шрифтів
+    const sub = $('subtitle');
+    sub.textContent = '';
+    (F.subtitle || '').split('\n').forEach((line, i) => { if (i) sub.append(el('br'), ' '); sub.append(line); });
+    hide(sub, !F.subtitle);
+    $('heroMeta').textContent = [openText, place].filter(Boolean).join(' · ');
+    hide($('heroMeta').parentNode, !openText && !place);
+    hide($('openDot'), !H);
+    $('openDot').classList.toggle('closed', !isOpen);
+
+    const bg = $('stageBg');
+    bg.textContent = '';
+    // Свого фото немає — не підставляємо чужий інтер’єр і не малюємо замість нього сяйво: хіти стоять просто на тлі
+    const bgSrc = cfg ? photoSrc(F.bg) : F.bg;
+    bg.parentNode.classList.toggle('no-photo', !bgSrc);
+    if (bgSrc && /\.(mp4|webm)(\?|$)/i.test(bgSrc)) {
+      const v = el('video');
+      Object.assign(v, { muted: true, loop: true, autoplay: true, playsInline: true, src: bgSrc });
+      bg.append(v);
+    } else if (bgSrc) {
+      const img = photo(bgSrc, '', 1920, 1080, true);
+      img.fetchPriority = 'high';
+      bg.append(img);
+    }
+
+    // Меню → позиції кошика
+    ITEMS = {};
+    rich($('menuTitle'), F.menuTitle);
+    const menu = $('menuGrid');
+    menu.textContent = '';
+    F.menu.forEach((g, gi) => {
+      const box = el('div', 'menu-group'), list = el('ul', 'menu-list');
+      box.append(el('h3', '', g.group), list);
+      g.items.forEach(([name, price, note], ii) => {
+        const id = `${gi}-${ii}`;
+        const li = el('li'), item = el('span', 'menu-item', name);
+        if (note) item.append(el('small', '', note));
+        if (price == null) {   // ціни немає в даних — не вигадуємо, у кошик не йде
+          li.append(item, el('span', 'menu-dots'), el('span', 'menu-price ask', T.ask), el('span', 'ctl'));
+        } else {
+          ITEMS[id] = { id, name, price, role: g.role };
+          li.append(item, el('span', 'menu-dots'), el('span', 'menu-price tnum', uah(price)), ctl('menu', id));
+        }
+        list.append(li);
+      });
+      menu.append(box);
+    });
+    const banner = $('comboBanner');
+    banner.textContent = '';
+    banner.hidden = !F.combo;
+    if (F.combo) banner.append(el('strong', '', T.combo(F.combo.percent)), T.banner(F.combo.title));
+    // Що в демо — приклад: кажемо прямо, поруч із самим блоком
+    const sample = F.sample || [];
+    const offers = sample.includes('offers') && (F.combo || F.loyalty)
+      ? `${[F.combo && T.offerWords[0], F.loyalty && T.offerWords[1]].filter(Boolean).join(T.offerWords[2])}${T.offersTail}` : '';
+    $('menuSample').textContent = [sample.includes('menu') ? T.sampleMenu
+      : sample.includes('prices') ? T.samplePrices : '', offers].filter(Boolean).join(' ');
+    hide($('menuSample'), !$('menuSample').textContent);
+
+    const hits = $('hitsGrid');
+    hits.textContent = '';
+    fill('hitsTitle', n => rich(n, F.hitsTitle + (sample.includes('hits') ? T.hitsSample : '')));   // на телефоні бейджів хітів не видно
+    F.hits.forEach(d => {
+      const item = byName(d.ref);
+      if (!item) return;
+      const card = el('article', 'dish'), bodyEl = el('div', 'dish-body'), info = el('div', 'dish-info');
+      const src = cfg ? photoSrc(d.photo != null ? d.photo : d.img) : d.img;
+      const tag = sample.includes('hits') ? T.tagSample : d.tag;
+      info.append(el('span', 'dish-name', item.name), el('span', 'dish-price tnum', uah(item.price)));
+      if (src) {
+        const ph = el('div', 'dish-photo');
+        ph.append(photo(src, d.alt || item.name, 640, 480, true), el('span', 'dish-tag', tag));
+        card.append(ph);
+        bodyEl.append(info);
+      } else bodyEl.append(el('span', 'dish-note', tag), info);   // без фото — без букви-заглушки: позначка над назвою
+      bodyEl.append(ctl('hit', item.id));
+      card.append(bodyEl);
+      hits.append(card);
+    });
+    hide($('hits'), !hits.children.length);
+
+    rich($('factsTitle'), F.factsTitle);
+    const facts = $('factsGrid');
+    facts.textContent = '';
+    F.facts.forEach(([big, text]) => { const c = el('div', 'fact'); c.append(el('strong', '', big), el('p', '', text)); facts.append(c); });
+    $('factsSample').textContent = sample.includes('facts') ? T.factsSample : '';
+    hide($('factsSample'), !$('factsSample').textContent);
+    hide($('about'), !F.facts.length);
+    hide(navLink('about'), !F.facts.length);
+
+    const rv = $('reviewText');
+    rv.textContent = '';
+    words = [];
+    if (F.review) {   // відгук — лише справжній; немає — немає й блоку
+      words = F.review.text.split(/\s+/).map(w => rv.appendChild(el('span', '', w)));
+      rv.append(el('span', 'close', '”'));
+      $('avatar').textContent = F.review.name.trim().charAt(0);
+    }
+    hide($('reviews'), !F.review);
+    hide(navLink('reviews'), !F.review);
+
+    rich($('contactsTitle'), F.contactsTitle);
+    $('addressValue').textContent = place;
+    hide($('addressValue').closest('.contact'), !place);
+    $('mapLink').href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([F.brand, place].filter(Boolean).join(', '));
+    hide($('hoursValue').closest('.contact'), !H);
+    if (H) { $('hoursValue').textContent = `${H.days} ${H.open}–${H.close}`; $('openNote').textContent = openText; }
+    const handle = (F.instagram || '').replace(/^@/, '');
+    $('instaCard').hidden = !handle;
+    if (handle) { $('instaValue').textContent = '@' + handle; $('instaLink').href = 'https://instagram.com/' + encodeURIComponent(handle); }
+    $('copyright').textContent = `© ${now.getFullYear()} ${[F.brand, F.city].filter(Boolean).join(', ')}`;
+    // Підпис унизу: свій заклад бачить його завжди, навіть без демо-панелі
+    $('demoNote').textContent = cfg ? `${T.demoNote(F.brand)}${sample.length ? T.demoNoteSample : ''}` : NOTE_DEMO;
+    hide($('demoNote'), !cfg && !demo);
+
+    // Кошик і форма цього формату
+    const saved = store.get('cart:' + KEY, {});
+    cart = {};
+    for (const [id, q] of Object.entries(saved || {})) if (ITEMS[id] && q > 0) cart[id] = Math.min(20, q | 0);
+    removed = null;
+    mode = F.modes[0][0];
+    const seg = $('modeSeg');
+    seg.textContent = '';
+    F.modes.forEach(([value, label], i) => {
+      const l = el('label'), r = el('input');
+      Object.assign(r, { type: 'radio', name: 'mode', value, checked: !i });
+      r.addEventListener('change', () => { mode = value; syncMode(); sync(); });
+      l.append(r, label);
+      seg.append(l);
+    });
+    const guest = store.get('guest', null);
+    if (guest) { $('fName').value = guest.name || ''; $('fPhone').value = guest.phone || ''; $('fAddress').value = guest.address || ''; }
+
+    $('switcher').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.format === key)));
+    if (replay) {
+      const hero = $('hero');
+      hero.classList.remove('enter');
+      void hero.offsetWidth;
+      hero.classList.add('enter');
+      // адресу не чіпаємо на сайті демо (посилання закладу лишається чистим); у фреймі з opaque origin replaceState кидає
+      if (!RS && !params.get('cfg') && !params.get('d')) { params.set('format', key); try { history.replaceState(null, '', '?' + params); } catch (e) {} }
+    }
+    sync();
+  }
+
+  /* ---------- Прокрутка: паралакс героя, слова відгуку, нижня панель ---------- */
+  const hero = $('hero'), heroText = $('heroText'), hitsPanel = $('hits'), reviewBox = $('reviewBox'), actionBar = $('actionBar');
+  let ticking = false;
+  function onScroll() {
+    ticking = false;
+    const vh = innerHeight, small = innerWidth <= 700;
+    if (!reduced) {
+      // герой: start start → end start
+      const hr = hero.getBoundingClientRect();
+      const p = clamp01(-hr.top / hr.height);
+      const fade = 1 - clamp01(p * 2);
+      heroText.style.transform = `translate3d(0, ${-(small ? 90 : 200) * p}px, 0)`;
+      heroText.style.opacity = fade;
+      heroText.style.pointerEvents = fade < .3 ? 'none' : '';
+      hitsPanel.style.transform = `translate3d(0, ${-(small ? 40 : 110) * p}px, 0)`;
+    }
+    // відгук: start end → end center
+    const rr = reviewBox.getBoundingClientRect();
+    const rp = reduced ? 1 : clamp01((vh - rr.top) / (rr.height + vh / 2));
+    const n = words.length;
+    words.forEach((w, i) => {
+      const t = clamp01(rp * n - i);
+      w.style.opacity = .25 + .75 * t;
+      w.style.color = `color-mix(in srgb, hsl(var(--foreground)) ${Math.round(t * 100)}%, hsl(var(--muted-foreground)))`;
+    });
+    const showBar = small && (scrollY > 420 || Object.keys(cart).length > 0);
+    actionBar.classList.toggle('on', showBar);
+    actionBar.inert = !showBar;
+  }
+  const requestTick = () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } };
+  addEventListener('scroll', requestTick, { passive: true });
+  addEventListener('resize', requestTick);
+
+  /* ---------- Демо-панель ---------- */
+  const switcher = $('switcher');
+  for (const [key, f] of Object.entries(FORMATS)) {
+    const b = el('button', '', f.label);
+    b.type = 'button';
+    b.dataset.format = key;
+    b.setAttribute('aria-pressed', 'false');
+    b.addEventListener('click', () => { if (root.dataset.format !== key || root.dataset.custom === '1' || !F) apply(key, true); });
+    switcher.append(b);
+  }
+  const demo = !RS && params.get('bar') !== '0';   // на сайті демо панелі немає — це сторінка закладу
+  $('demoBar').hidden = !demo;
+  $('demoNote').hidden = !demo;
+  if (demo) root.style.setProperty('--bar-h', '52px');
+
+  /* ---------- «Свій дизайн»: прев'ю у «Розвідці» — пісочниця, сайт — заміна документа ---------- */
+  // Прев'ю: iframe sandbox без allow-same-origin — сторінка не бачить ні рушія, ні вікна програми. Файли набору в пісочниці
+  // поруч не прочитати (file://), тому вони вбудовуються: kit/rz-kit-bundle.js (збирає kit/make-bundle.js) → window.RZ_KIT.
+  let pageFrame = null;
+  const kitInline = () => window.RZ_KIT ? Promise.resolve(window.RZ_KIT) : new Promise((ok, no) => {
+    const s = document.createElement('script');
+    s.src = 'kit/rz-kit-bundle.js';
+    s.onload = () => window.RZ_KIT ? ok(window.RZ_KIT) : no(new Error('нет RZ_KIT'));
+    s.onerror = () => no(new Error('не загрузился kit/rz-kit-bundle.js'));
+    document.head.append(s);
+  });
+  async function showPage(raw, opts) {
+    opts = opts || {};
+    const kit = await kitInline();
+    const r = FL_PAGE.clean(raw, { photoUrls: opts.photoUrls, name: opts.name, lang: opts.lang, cc: opts.cc, cur: opts.cur, tz: opts.tz, imp: !!opts.imp, kit: { inline: true, js: kit.js, css: kit.css, tokens: kit.tokens, data: { name: opts.name, src: opts.src } } });
+    if (r.errors.length) return r;
+    if (!pageFrame) {
+      pageFrame = document.createElement('iframe');
+      pageFrame.className = 'page-frame';
+      pageFrame.title = 'Демо — свій дизайн';
+      pageFrame.setAttribute('sandbox', 'allow-scripts allow-popups allow-popups-to-escape-sandbox');
+      document.body.append(pageFrame);
+    }
+    $('cfgError').hidden = true;
+    root.classList.add('page-mode');
+    pageFrame.srcdoc = r.html;
+    return r;
+  }
+  function hidePage() { if (pageFrame) { pageFrame.remove(); pageFrame = null; } root.classList.remove('page-mode'); }
+  // Сайт: документ рушія замінюється чистою сторінкою (document.open знімає всі обробники рушія). CSP сторінки лишається
+  // та сама — вбудовані скрипти не виконаються, набір іде файлом /kit/rz-kit.js ('self'). Події «відкрили» шле набір.
+  function sitePage(cfg, v) {
+    const base = RS.photos || RS.sb + '/storage/v1/object/public/demo-photos/', urls = {};
+    for (let k = 1; k <= 20; k++) urls[k] = base + encodeURIComponent(SLUG) + '/' + k + '.webp?v=' + (Number(v) || 0);
+    const r = FL_PAGE.clean(cfg.html, { photoUrls: urls, name: cfg.name, lang: cfg.lang, cc: cfg.cc, cur: cfg.cur, tz: cfg.tz, imp: !!cfg.imp, kit: { base: '/kit/', data: { name: cfg.name, src: cfg.src, sb: RS.sb, anon: RS.anon, slug: SLUG, own: OWN ? '1' : '' } } });
+    if (r.errors.length) return r;
+    document.open(); document.write(r.html); document.close();
+    return r;
+  }
+
+  /* ---------- Свій заклад: вставка, файл ?cfg=…, вікно «Розвідки» ---------- */
+  let customBtn = null;
+  function showCustom(raw, opts) {
+    const r = FL_CHECK.normalize(raw, { formats: FORMATS, photoUrls: opts && opts.photoUrls });
+    if (!r.cfg) return r;
+    hidePage();
+    if (!customBtn) {
+      customBtn = el('button', '', 'Свій');
+      customBtn.type = 'button';
+      customBtn.dataset.format = 'custom';
+      customBtn.addEventListener('click', () => { const t = store.get('custom', null); if (t && root.dataset.custom !== '1') showCustom(t); });
+      switcher.append(customBtn);
+    }
+    $('cfgError').hidden = true;
+    apply('custom', true, r.cfg);
+    $('switcher').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.format === 'custom')));
+    return r;
+  }
+  function showFatal(errors) {
+    const list = $('cfgErrorList');
+    list.textContent = '';
+    errors.forEach(e => list.append(el('li', '', e)));
+    $('cfgError').hidden = false;
+  }
+  function report(box, r) {
+    box.textContent = '';
+    const items = r.errors.length ? r.errors : r.fixes;
+    box.className = 'report' + (r.errors.length ? ' bad' : '');
+    if (!items.length) { box.hidden = true; return; }
+    box.append(el('li', 'report-head', r.errors.length ? 'Не могу показать:' : `Показано. Что поправил (${items.length}):`));
+    items.forEach(t => box.append(el('li', '', t)));
+    box.hidden = false;
+  }
+
+  const paste = $('paste'), pasteText = $('pasteText'), pasteReport = $('pasteReport'), pasteGo = $('pasteGo');
+  let pasteDone = false;
+  $('pasteBtn').addEventListener('click', () => {
+    pasteDone = false;
+    pasteGo.textContent = 'Показати';
+    pasteReport.hidden = true;
+    pasteText.value = store.get('custom', '') || '';
+    paste.showModal();
+    root.classList.add('locked');
+    pasteText.focus();
+    pasteText.select();
+  });
+  const closePaste = () => { if (paste.open) paste.close(); root.classList.remove('locked'); };
+  paste.addEventListener('close', () => root.classList.remove('locked'));
+  $('pasteCancel').addEventListener('click', closePaste);
+  pasteText.addEventListener('input', () => { if (pasteDone) { pasteDone = false; pasteGo.textContent = 'Показати'; } });
+  $('pasteForm').addEventListener('submit', e => {
+    e.preventDefault();
+    if (pasteDone) return closePaste();
+    const r = showCustom(pasteText.value);
+    report(pasteReport, r);
+    if (!r.cfg) { pasteText.focus(); return; }
+    store.set('custom', pasteText.value);
+    if (!r.fixes.length) return closePaste();
+    pasteDone = true;   // лишаємо вікно, щоб було видно, що підправлено
+    pasteGo.textContent = 'Готово';
+  });
+
+  // Вікно «Розвідки» (або будь-яка сторінка-обгортка) надсилає дані — відповідаємо звітом
+  addEventListener('message', e => {
+    if (RS) return;   // на сайті демо чужа вкладка не може підмінити сторінку закладу
+    const m = e.data;
+    // помилка набору в пісочниці прев'ю → вікну «Розвідки»
+    if (m && m.type === 'rzk:error' && pageFrame && e.source === pageFrame.contentWindow) { try { parent.postMessage({ type: 'fl:page-error', msg: String(m.msg || '').slice(0, 200), line: m.line | 0 }, '*'); } catch (err) {} return; }
+    if (!m || m.type !== 'fl:show') return;
+    const reply = rep => { try { if (e.source) e.source.postMessage(rep, '*'); } catch (err) {} };
+    if (m.page != null) {
+      showPage(m.page, m).then(r => {
+        if (r.errors.length) { hidePage(); showFatal(r.errors); }
+        reply({ type: 'fl:report', kind: 'page', ok: !r.errors.length, errors: r.errors, fixes: r.fixes, items: r.items, priced: r.priced, photos: r.photos });
+      }).catch(err => reply({ type: 'fl:report', kind: 'page', ok: false, errors: ['Движок не смог показать страницу: ' + String((err && err.message) || err)], fixes: [] }));
+      return;
+    }
+    let rep;
+    try {
+      const r = showCustom(m.cfg, m);
+      if (!r.cfg) showFatal(r.errors);
+      rep = { type: 'fl:report', ok: !!r.cfg, errors: r.errors, fixes: r.fixes };
+    } catch (err) {
+      // рушій не впав мовчки: вікно «Розвідки» має знати, що показ не вдався
+      rep = { type: 'fl:report', ok: false, errors: ['Движок не смог показать демо: ' + String((err && err.message) || err)], fixes: [] };
+    }
+    try { if (e.source) e.source.postMessage(rep, '*'); } catch (err) {}
+  });
+  window.FL = { normalize: (raw, o) => FL_CHECK.normalize(raw, { formats: FORMATS, ...(o || {}) }), show: showCustom, formats: FORMATS, page: FL_PAGE };
+  /* ---------- 4.0 Pro «Хочу так»: кнопка зв'язку з автором (config.want = {to, h}) ----------
+     Лише перевірені сервіси: адресу збирає рушій за шаблоном нижче, у конфігу тільки сервіс і нік (сервер ще й вирізає want не-Pro).
+     Список і шаблони — ті самі, що в src/want-btn.js (TO). Чіп унизу ліворуч (кошик рушія праворуч, на телефоні — над його панеллю),
+     у шаблоні — ще блок після підвалу. Гість із QR-листівки (?f=qr) бачить «Хочете такий сайт для свого закладу?». */
+  const WANT_TO = {
+    tg: [h => 'https://t.me/' + h, /^[A-Za-z][A-Za-z0-9_]{4,31}$/, 'Telegram', 1], tgc: [h => 'https://t.me/' + h, /^[A-Za-z][A-Za-z0-9_]{4,31}$/, 'Telegram', 1],
+    kwork: [h => 'https://kwork.ru/user/' + h, /^[A-Za-z0-9_-]{2,32}$/, 'Kwork'], fh: [h => 'https://freelancehunt.com/freelancer/' + h + '.html', /^[A-Za-z0-9_-]{2,40}$/, 'Freelancehunt'],
+    upwork: [h => 'https://www.upwork.com/freelancers/~' + h, /^[0-9a-f]{18}$/, 'Upwork'], fiverr: [h => 'https://www.fiverr.com/' + h, /^[a-z0-9_]{3,30}$/, 'Fiverr'],
+    flru: [h => 'https://www.fl.ru/users/' + h + '/', /^[A-Za-z0-9_-]{2,32}$/, 'FL.ru']
+  };
+  function wantBar(w, brand, lang, isPage) {
+    const t = w && WANT_TO[w.to], h = String((w && w.h) || '');
+    if (!t || !t[1].test(h) || document.querySelector('.want-chip')) return;
+    const uk = lang !== 'ru', qr = params.get('f') === 'qr', who = t[3] ? '@' + h : h;
+    const tx = uk ? { by: 'Сайт зробив', q: 'Хочете такий сайт?', go: 'Хочу так', end: 'Хочете такий сайт для свого закладу?', endP: a => a + ' зробить такий самий — з вашим меню й фото.', endB: 'Хочу так — написати', msg: b => 'Привіт! Хочу такий сайт, як «' + b + '», для свого закладу.' }
+                  : { by: 'Сайт сделал', q: 'Хотите такой сайт?', go: 'Хочу так', end: 'Хотите такой сайт для своего заведения?', endP: a => a + ' сделает такой же — с вашим меню и фото.', endB: 'Хочу так — написать', msg: b => 'Привет! Хочу такой сайт, как «' + b + '», для своего заведения.' };
+    const url = t[0](h) + (w.to === 'tg' && brand ? '?text=' + encodeURIComponent(tx.msg(String(brand).slice(0, 60))) : '');
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const css = document.createElement('style');
+    css.textContent = `.want-chip{position:fixed;left:16px;bottom:16px;z-index:2147483001;display:flex;align-items:center;gap:10px;max-width:calc(100% - 32px);padding:6px;border-radius:14px;
+      background:hsl(0 0% 8% / .92);color:#fff;font:500 15px/1.2 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+      box-shadow:0 8px 24px hsl(0 0% 0% / .28),0 0 0 1px hsl(0 0% 100% / .08);transition:transform 260ms cubic-bezier(.22,1,.36,1),opacity 200ms;transform:translateY(var(--want-up,0px))}
+    .want-by{min-width:0;padding:0 2px 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .want-by small{display:block;font-size:12px;font-weight:400;color:hsl(0 0% 100% / .62)}
+    .want-go{flex:none;display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:10px;background:#fff;color:#111;font:600 15px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;text-decoration:none}
+    .want-go:focus-visible,.want-end a:focus-visible{outline:2px solid #fff;outline-offset:2px}
+    .want-chip.mini .want-by{display:none}
+    .want-end{padding:56px 24px 64px;background:hsl(0 0% 8%);color:#fff;font:400 17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+    .want-end>div{max-width:760px;margin:0 auto}
+    .want-end h2{margin:0 0 8px;font:700 clamp(26px,4vw,38px)/1.15 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;letter-spacing:-.02em}
+    .want-end p{margin:0 0 24px;color:hsl(0 0% 100% / .7);max-width:44ch}
+    .want-end a{display:inline-flex;align-items:center;min-height:52px;padding:0 22px;border-radius:12px;background:#fff;color:#111;font-weight:600;text-decoration:none}
+    @media (max-width:700px){.want-chip{left:12px;right:12px;bottom:12px;max-width:none}.want-by{flex:1}.want-chip.mini{right:auto}.want-end{padding:48px 16px 120px}.want-end a{width:100%;justify-content:center}}`;
+    document.head.append(css);
+    const sent = new Set();
+    const tap = where => {   // нажатие — подія 'want' (свій перегляд ?own=1 не рахуємо)
+      if (!RS || OWN || navigator.webdriver || sent.has(where)) return; sent.add(where);
+      fetch(RS.sb + '/rest/v1/rpc/rz_demo_hit', { method: 'POST', keepalive: true, headers: { apikey: RS.anon, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_slug: SLUG, p_sid: SID, p_ev: 'want', p_data: { mode: w.to, src: qr ? 'qr' : '' } }) }).catch(() => {});
+    };
+    const a = (cls, text) => `<a class="${cls}" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>`;
+    const chip = document.createElement('div');
+    chip.className = 'want-chip';
+    chip.innerHTML = `<span class="want-by">${esc(qr ? tx.q : tx.by + ' ' + who)}<small>${esc(qr ? who + ' · ' + t[2] : t[2])}</small></span>${a('want-go', tx.go)}`;
+    chip.querySelector('a').addEventListener('click', () => tap('chip'));
+    document.body.append(chip);
+    if (!isPage) {   // сторінка «Свій дизайн» — у фреймі на весь екран, туди лише чіп
+      const end = document.createElement('section');
+      end.className = 'want-end';
+      end.innerHTML = `<div><h2>${esc(tx.end)}</h2><p>${esc(tx.endP(who))}</p>${a('', tx.endB)}</div>`;
+      end.querySelector('a').addEventListener('click', () => tap('end'));
+      document.body.append(end);
+      new IntersectionObserver(([e]) => { chip.style.opacity = e.isIntersecting ? '0' : ''; chip.style.pointerEvents = e.isIntersecting ? 'none' : ''; }).observe(end);
+    }
+    const bar = document.querySelector('.action-bar');
+    const lift = () => { const on = bar && bar.classList.contains('on') && getComputedStyle(bar).display !== 'none'; chip.style.setProperty('--want-up', on ? -(bar.offsetHeight + 4) + 'px' : '0px'); };
+    if (bar) new MutationObserver(lift).observe(bar, { attributes: true, attributeFilter: ['class', 'style'] });
+    addEventListener('resize', lift); lift();
+    let lastY = scrollY;
+    addEventListener('scroll', () => { const y = scrollY; if (Math.abs(y - lastY) < 24) return; chip.classList.toggle('mini', y > lastY && y > 400); lastY = y; }, { passive: true });
+  }
+  FL.want = wantBar;
+
+
+  /* ---------- Сайт демо: дані з сервера за адресою, події відвідування ---------- */
+  // Свої перегляди не рахуються: «Розвідка» відкриває демо з ?own=1 — мітка лишається в цьому браузері.
+  // У sandbox-iframe (прев’ю у «Розвідці») localStorage/sessionStorage кидають помилку — тому все в try/catch.
+  const OWN = (() => {
+    if (!RS) return true;
+    try { if (params.has('own')) localStorage.setItem('rz_own', '1'); return localStorage.getItem('rz_own') === '1'; } catch (e) { return params.has('own'); }
+  })();
+  const SID = (() => {
+    let s = '';
+    try { s = sessionStorage.getItem('rz_sid') || ''; } catch (e) {}
+    if (!/^[A-Za-z0-9_-]{8,40}$/.test(s)) {
+      const a = new Uint8Array(12);
+      try { crypto.getRandomValues(a); } catch (e) { for (let i = 0; i < a.length; i++) a[i] = Math.random() * 256 | 0; }
+      s = Array.from(a, b => 'abcdefghijklmnopqrstuvwxyz0123456789'[b % 36]).join('');
+      try { sessionStorage.setItem('rz_sid', s); } catch (e) {}
+    }
+    return s;
+  })();
+  const hitOnce = new Set();
+  let hitCount = 0, menuSeen = false;
+  // Подія на сервер: лише назва дії й дрібниці (позиція, кількість, сума) — ні імені, ні телефону, ні адреси
+  function hit(ev, data, once) {
+    if (!RS || !shown || OWN || navigator.webdriver) return;
+    if (once) { if (hitOnce.has(once)) return; hitOnce.add(once); }
+    if (++hitCount > 40) return;   // сервер і так тримає 60 на сесію; більше з однієї сторінки — шум
+    fetch(RS.sb + '/rest/v1/rpc/rz_demo_hit', {
+      method: 'POST', keepalive: true, headers: { apikey: RS.anon, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_slug: SLUG, p_sid: SID, p_ev: ev, p_data: data || {} })
+    }).catch(() => {});
+  }
+  // «Відкрили» — лише після 2 с на видимій сторінці (прев’ю посилань і фонові вкладки не рахуються);
+  // далі «долистали до меню» і вехи часу на сторінці: 30 с, 1, 2, 5 хв
+  // 4.0 «Відкритка з QR» («Розвідка», postcard.js): QR веде на демо з ?f=qr — «відкрили» йде з позначкою src: 'qr'
+  const fromQr = () => { try { return new URLSearchParams(location.search).get('f') === 'qr'; } catch (e) { return false; } };
+  function track() {
+    let visMs = 0, last = document.visibilityState === 'visible' ? Date.now() : 0;
+    const add = () => { const now = Date.now(); if (last) visMs += now - last; last = document.visibilityState === 'visible' ? now : 0; };
+    const tick = () => {
+      add();
+      if (visMs >= 2000) hit('open', fromQr() ? { w: innerWidth, src: 'qr' } : { w: innerWidth }, 'open');
+      if (hitOnce.has('open')) {
+        if (menuSeen) hit('menu', {}, 'menu');
+        for (const s of [30, 60, 120, 300]) if (visMs >= s * 1000) hit('ping', { ms: s * 1000 }, 'ping' + s);
+      }
+      if (visMs < 300000) setTimeout(tick, visMs < 2000 ? 500 : 5000);
+    };
+    document.addEventListener('visibilitychange', add);
+    setTimeout(tick, 500);
+    const menu = $('menu'), mark = menu && (menu.querySelector('h2') || menu);
+    if (mark && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver(es => {
+        if (!es.some(e => e.isIntersecting)) return;
+        menuSeen = true;
+        if (hitOnce.has('open')) hit('menu', {}, 'menu');
+        if (hitOnce.has('menu')) io.disconnect();
+      }, { threshold: 0.5 });
+      io.observe(mark);
+    }
+  }
+  // Фото демо — за номером із відповіді Claude: <photos><slug>/<N>.webp?v=<версія> (v — щоб CDN віддав нове фото)
+  function demoPhotos(cfg, v) {
+    const out = {}, nums = [];
+    if (cfg && typeof cfg === 'object') {
+      nums.push(cfg.bg);
+      if (Array.isArray(cfg.hits)) cfg.hits.forEach(h => h && nums.push(h.photo != null ? h.photo : h.img));
+    }
+    const base = RS.photos || RS.sb + '/storage/v1/object/public/demo-photos/';
+    nums.forEach(n => { if (n != null && /^([1-9]|1\d|20)$/.test(String(n))) out[String(n)] = base + encodeURIComponent(SLUG) + '/' + n + '.webp?v=' + (Number(v) || 0); });
+    return out;
+  }
+
+  const cfgUrl = params.get('cfg');
+  if (RS) {
+    root.classList.add('loading');   // поки вантажимо — не показуємо вбудований приклад
+    apply(DEFAULT_FORMAT, false);
+    // поки демо не показане, під плашкою помилки стоїть вбудований приклад — його назва не повинна лишатися у вкладці.
+    // 3.15: і сам приклад (український заклад) під плашкою не показуємо — клас nodemo
+    const fatal = list => { document.title = 'Демо'; root.classList.add('nodemo'); showFatal(list); };
+    // 3.15: конфігу немає — мова плашки з браузера гостя: uk → українська, інакше російська
+    const navLang = () => /^uk\b/i.test(String(navigator.language || '')) ? 'uk' : 'ru';
+    const MSG = { uk: { nf: 'Демо не знайдено — можливо, його вже прибрали або в посиланні помилка.', net: 'Немає зв’язку з сервером демо. Оновіть сторінку трохи згодом.' },
+      ru: { nf: 'Демо не найдено — возможно, его уже убрали или в ссылке ошибка.', net: 'Нет связи с сервером демо. Обновите страницу чуть позже.' } };
+    let cfgLang = '';
+    const msg = k => { const l = cfgLang || navLang(); if (!cfgLang) setLocale({ lang: l }); return MSG[l][k]; };
+    const notFound = () => fatal([msg('nf')]);
+    // 4.0 «Відкритка з QR»: /q/<код> — вічне посилання з відкритки → поточне демо цього закладу (rz_card_go), з міткою ?f=qr;
+    // демо немає — підпис і контакт автора з відкритки замість «не знайдено»
+    const cardCode = (() => { const p = location.pathname.split('/'); return SLUG === 'q' && /^[a-z0-9]{4,16}$/i.test(p[2] || '') ? p[2].toLowerCase() : ''; })();
+    if (cardCode) fetch(RS.sb + '/rest/v1/rpc/rz_card_go', {
+      method: 'POST', cache: 'no-store', headers: { apikey: RS.anon, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_code: cardCode })
+    })
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(d => {
+        if (d && /^[a-z0-9-]{3,64}$/.test(d.slug || '')) { location.replace('/' + d.slug + '?f=qr'); return; }
+        if (!d || !(d.sign || d.contact)) return notFound();
+        const uk = navLang() === 'uk'; setLocale({ lang: uk ? 'uk' : 'ru' });   // і заголовок плашки — мовою гостя
+        fatal([uk ? 'Демо оновлюється. Напишіть автору, він надішле актуальне посилання:' : 'Демо обновляется. Напишите автору, он пришлёт актуальную ссылку:',
+          [d.sign, d.contact].filter(Boolean).join(' · ')]);
+      })
+      .catch(() => fatal([msg('net')]))
+      .finally(() => root.classList.remove('loading'));
+    else if (!/^[a-z0-9-]{3,64}$/.test(SLUG)) { notFound(); root.classList.remove('loading'); }
+    else fetch(RS.sb + '/rest/v1/rpc/rz_demo_get', {
+      method: 'POST', cache: 'no-store', headers: { apikey: RS.anon, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_slug: SLUG })
+    })
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(d => {
+        if (!d || !d.config) return notFound();
+        setLocale(FL_CHECK.locale(d.config).loc);   // 3.9: і плашка помилки — мовою демо (для uk нічого не міняє)
+        cfgLang = FL_CHECK.locale(d.config).loc.lang || 'uk';
+        wantBar(d.config.want, d.config.brand || d.config.name || '', cfgLang, d.config.kind === 'page');   // 4.0 Pro «Хочу так»
+        if (d.config.kind === 'page') { const r = sitePage(d.config, d.v); if (r.errors.length) fatal(r.errors); return; }
+        const r = showCustom(d.config, { photoUrls: demoPhotos(d.config, d.v) });
+        if (!r.cfg) return fatal(r.errors);
+        shown = true;
+        track();
+      })
+      .catch(() => fatal([msg('net')]))
+      .finally(() => root.classList.remove('loading'));
+  } else if (cfgUrl) {
+    root.classList.add('loading');   // поки вантажимо — не показуємо вбудований приклад
+    apply(DEFAULT_FORMAT, false);
+    fetch(cfgUrl, { cache: 'no-store' }).then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(t => { const r = showCustom(t); if (!r.cfg) showFatal(r.errors); })
+      .catch(() => showFatal(['Не вдалося завантажити дані демо. Перевірте посилання або спробуйте пізніше.']))
+      .finally(() => root.classList.remove('loading'));
+  } else {
+    const savedCustom = params.get('format') === 'custom' ? store.get('custom', null) : null;
+    apply(FORMATS[params.get('format')] ? params.get('format') : DEFAULT_FORMAT, false);
+    if (savedCustom) showCustom(savedCustom);
+  }
+})();
+</script>
+</body>
+</html>

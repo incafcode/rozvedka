@@ -1,0 +1,94 @@
+{
+  "name": "rozvidka",
+  "version": "5.0.4",
+  "description": "Rozvedka — поиск заведений и работа с лидами",
+  "main": "boot.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win"
+  },
+  "keywords": [],
+  "author": "Rozvedka",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^26.15.3",
+    "playwright": "^1.63.0"
+  },
+  "productName": "Розвідка",
+  "build": {
+    "appId": "ua.rozvidka.app",
+    "productName": "Rozvidka",
+    "files": [
+      "boot.js",
+      "main.js",
+      "preload.js",
+      "llm.js",
+      "tracker.js",
+      "tglib.js",
+      "qr.js",
+      "telegram.js",
+      "instagram.js",
+      "social.js",
+      "telebot.js",
+      "miniapp.js",
+      "account.js",
+      "updater.js",
+      "account.json",
+      "version.json",
+      "rzshell.js",
+      "rznet.js",
+      "localbase.js",
+      "preload-web.js",
+      "preload-local.js",
+      "offline.html",
+      "offline.js",
+      "shell-blank.html",
+      "shell-tg.html",
+      "shell-tg.js",
+      "shell-llm.html",
+      "shell-llm.js",
+      "shell-local.css",
+      "src/**",
+      "build/icon.png",
+      "build/icon.ico",
+      "!**/*.map",
+      "edition.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Розвідка",
+      "artifactName": "Rozvidka-Setup-${version}.exe"
+    },
+    "portable": {
+      "artifactName": "Rozvidka-Portable-${version}.exe"
+    },
+    "electronLanguages": [
+      "en-US",
+      "ru",
+      "uk"
+    ]
+  }
+}

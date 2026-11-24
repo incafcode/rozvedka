@@ -1,0 +1,26 @@
+
+.lscore.odds{color:var(--ink);border-color:var(--line2);font-weight:500}
+.lscore.odds.lo,.lscore.odds.off{color:var(--ink3);font-weight:400}
+.lscore.odds.off{border-style:dashed}
+.lscore.odds.st{color:var(--ink2);font-weight:400}
+.lscore.odds.rep{color:#BFE3FF;border-color:rgba(var(--replied-rgb),.45)}
+.card-why{margin:2px 0 0;font-size:12px;line-height:1.35;color:var(--ink2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-width:0}
+.card-why.lo{color:var(--ink3)}
+.odds-c{font-variant-numeric:tabular-nums;white-space:nowrap;cursor:help}
+.odds-c.lo,.odds-c.off,.odds-c.st{color:var(--ink3);cursor:default}
+.odds-c.rep{color:#BFE3FF}
+.odds-sec h4{text-transform:none;letter-spacing:0;font-size:15px;color:var(--ink);font-weight:600}
+.odds-sec .hint{margin:-6px 0 10px}
+.odds-g{margin:0 0 10px}
+.odds-g h5{margin:0 0 4px;font-size:12px;font-weight:500;color:var(--ink3)}
+.odds-r{display:flex;justify-content:space-between;gap:12px;padding:2px 0;font-size:13px}
+.odds-r span{min-width:0;color:var(--ink2)}
+.odds-r i{font-style:normal;color:var(--ink3);margin-right:6px}
+.odds-r b{font-weight:500;color:var(--ink3);white-space:nowrap;font-variant-numeric:tabular-nums}
+.odds-r b.up{color:var(--ink)}
+.odds-pairs{margin:8px 0 0;padding:8px 0 0;border-top:1px solid var(--line)}
+.odds-ph{font-size:12px;color:var(--ink3);margin:0 0 4px}
+.odds-p{display:flex;justify-content:space-between;gap:10px;padding:2px 0;font-size:13px}
+.odds-p span{color:var(--ink2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.odds-p b{font-weight:500;white-space:nowrap;font-variant-numeric:tabular-nums}
+.odds-p.gray span,.odds-p.gray b,.odds-p.more{color:var(--ink3);opacity:.7}

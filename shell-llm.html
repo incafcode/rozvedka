@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'">
+<title>Rozvedka — ИИ</title>
+<link rel="stylesheet" href="shell-local.css"></head>
+<body><main>
+  <h1>ИИ в Rozvedka</h1>
+  <p>Сервис, адрес и ключ хранятся только в этой программе (зашифрованы Windows). Сайт присылает лишь текст запроса — ключа он не видит.</p>
+  <form id="f">
+    <label for="svc">Сервис</label>
+    <select id="svc">
+      <option value="gemini">Google Gemini — есть бесплатный ключ</option>
+      <option value="anthropic">Claude (Anthropic)</option>
+      <option value="openai">OpenAI (ChatGPT)</option>
+      <option value="deepseek">DeepSeek</option>
+      <option value="openrouter">OpenRouter</option>
+      <option value="custom">Другой сервис (свой адрес)</option>
+    </select>
+    <div id="baseRow" hidden><label for="base">Адрес API (https://…)</label><input id="base" autocomplete="off" maxlength="300" placeholder="https://…/v1"></div>
+    <label for="key">Ключ <span id="have"></span></label><input id="key" type="password" autocomplete="off" maxlength="400" placeholder="вставьте новый ключ или оставьте пустым">
+    <label for="model">Модель (необязательно)</label><input id="model" autocomplete="off" maxlength="120">
+    <div class="row"><button class="primary" type="submit">Сохранить и проверить</button><button type="button" id="bClear">Забыть ключ</button><button type="button" id="bClose">Закрыть</button></div>
+  </form>
+  <div class="msg" id="msg" role="status"></div>
+</main><script src="shell-llm.js"></script></body></html>

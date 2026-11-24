@@ -1,0 +1,12 @@
+
+.claim-plate{display:flex;align-items:center;gap:8px;margin:0;padding:8px 10px;border-radius:10px;background:rgba(255,170,60,.12);border:1px solid rgba(255,170,60,.38);color:var(--ink);font-size:12.5px;line-height:1.35}
+.claim-plate .ic{flex:none;color:#ffb35c}
+.claim-plate b{flex:none;font-weight:650}
+.claim-plate span{min-width:0;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.claim-plate.big{align-items:flex-start;gap:12px;margin:10px 0 4px;padding:12px 14px;font-size:13px;line-height:1.5}
+.claim-plate.big .ic{margin-top:2px}
+.claim-plate.big div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.claim-plate.big b{font-size:14px}
+.claim-plate.big span{white-space:normal}
+.card.claimed > :not(.claim-plate):not(.card-hide){opacity:.45;transition:opacity .15s var(--ease-out)}
+.card.claimed:hover > :not(.claim-plate):not(.card-hide),.card.claimed:focus-visible > :not(.claim-plate):not(.card-hide){opacity:.8}

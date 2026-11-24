@@ -1,0 +1,189 @@
+/* ==========================================================================
+   rz-kit.css — оформлення частин, які малює набір rz-kit.js на сторінці «Свій дизайн»:
+   рядок «це демо», лічильник у кнопці «+», плашка кошика знизу, тост «Додано», шторки страви й кошика.
+   Бере лише ролі з tokens.css — тож під брендом сторінки виглядає своїм. Класи з префіксом rzk-.
+   ========================================================================== */
+
+.rzk-demo {
+  display: block !important;
+  margin: 0; padding: var(--sp-in) var(--gutter);
+  background: var(--n-12); color: var(--n-1);
+  font: var(--type-small); text-align: left;
+}
+.rzk-demo b { font-weight: var(--fw-semibold); }
+
+.rzk-lock { overflow: hidden; }
+.rzk-num { font-variant-numeric: tabular-nums; }
+
+/* лічильник замість кнопки «додати» */
+.rzk-step {
+  display: inline-flex; align-items: center; gap: 0;
+  height: var(--control-h-sm); border-radius: var(--radius-ctl);
+  background: var(--accent); color: var(--accent-ink);
+  font: var(--type-label); font-variant-numeric: tabular-nums;
+  vertical-align: middle;
+}
+.rzk-step button {
+  all: unset; box-sizing: border-box; cursor: pointer;
+  display: grid; place-items: center;
+  width: var(--tap); height: 100%;
+  border-radius: var(--radius-ctl);
+}
+.rzk-step button:hover { background: var(--accent-hover); }
+.rzk-step button:focus-visible { outline: 2px solid var(--focus, var(--accent)); outline-offset: 2px; }
+.rzk-step output { min-width: 1.5em; text-align: center; }
+.rzk-step svg, .rzk-ic { width: var(--icon-sm, 18px); height: var(--icon-sm, 18px); flex: none; }
+
+/* кнопки набору (у шторках і плашці) */
+.rzk-btn {
+  all: unset; box-sizing: border-box; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-in);
+  min-height: var(--control-h); padding: 0 var(--control-px, 20px);
+  border-radius: var(--radius-ctl);
+  background: var(--accent); color: var(--accent-ink);
+  font: var(--type-label); font-variant-numeric: tabular-nums;
+  transition: background var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out);
+}
+.rzk-btn:hover { background: var(--accent-hover); }
+.rzk-btn:active { transform: scale(var(--press-scale, .98)); }
+.rzk-btn:focus-visible, .rzk-link:focus-visible, .rzk-plus:focus-visible, .rzk-x:focus-visible { outline: 2px solid var(--focus, var(--accent)); outline-offset: 2px; }
+.rzk-btn[aria-busy="true"] { cursor: progress; }
+.rzk-btn.wide { width: 100%; }
+.rzk-btn.ghost { background: transparent; color: var(--text); box-shadow: inset 0 0 0 1px var(--line-strong); }
+.rzk-btn.ghost:hover { background: var(--hover); }
+.rzk-link {
+  all: unset; cursor: pointer; color: var(--accent-text);
+  font: var(--type-label); text-decoration: underline; text-underline-offset: 3px;
+  min-height: var(--tap); display: inline-flex; align-items: center;
+}
+.rzk-plus {
+  all: unset; box-sizing: border-box; cursor: pointer; flex: none;
+  display: grid; place-items: center;
+  width: var(--tap); height: var(--tap); border-radius: var(--radius-ctl);
+  background: var(--accent-soft); color: var(--accent-on-soft);
+}
+.rzk-plus:hover { background: var(--accent); color: var(--accent-ink); }
+
+/* плашка кошика знизу */
+.rzk-bag {
+  position: fixed; z-index: var(--z-sticky);
+  left: 50%; bottom: max(var(--sp-el), env(safe-area-inset-bottom));
+  width: min(calc(100% - 2 * var(--gutter)), 32rem);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-el);
+  padding: var(--sp-in) var(--sp-in) var(--sp-in) var(--sp-el);
+  border-radius: var(--radius-panel);
+  background: var(--surface); color: var(--text);
+  box-shadow: var(--shadow-3);
+  transform: translate(-50%, calc(100% + 40px)); opacity: 0; pointer-events: none;
+  transition: transform var(--dur-3) var(--ease-out), opacity var(--dur-3) var(--ease-out);
+}
+.rzk-bag.on { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+.rzk-bag .s { display: grid; line-height: 1.25; }
+.rzk-bag .s b { font: var(--type-title); font-variant-numeric: tabular-nums; }
+.rzk-bag .s span { font: var(--type-small); color: var(--text-muted); }
+
+/* тост «Додано» з порадою «Поруч добре» */
+.rzk-toast {
+  position: fixed; z-index: var(--z-toast);
+  left: 50%; bottom: calc(max(var(--sp-el), env(safe-area-inset-bottom)) + 76px);
+  width: min(calc(100% - 2 * var(--gutter)), 32rem);
+  padding: var(--sp-el); border-radius: var(--radius-panel);
+  background: var(--n-12); color: var(--n-1);
+  box-shadow: var(--shadow-3);
+  transform: translate(-50%, 12px); opacity: 0; pointer-events: none;
+  transition: transform var(--dur-3) var(--ease-out), opacity var(--dur-3) var(--ease-out);
+}
+.rzk-toast.on { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+.rzk-toast p { margin: 0; font: var(--type-label); }
+.rzk-toast .pair { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-el); margin-top: var(--sp-in); font: var(--type-small); }
+.rzk-toast .pair .rzk-plus { background: var(--n-1); color: var(--n-12); }
+
+/* шторки: страва й кошик. На телефоні — знизу, на широкому — праворуч */
+.rzk-sheet {
+  box-sizing: border-box; border: 0; padding: 0; margin: auto 0 0;
+  width: 100%; max-width: 100%; max-height: min(92dvh, 100%);
+  background: var(--bg); color: var(--text);
+  border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+  box-shadow: var(--shadow-sheet);
+  font: var(--type-body);
+  overflow: auto; overscroll-behavior: contain;
+}
+.rzk-sheet::backdrop { background: var(--overlay, rgb(0 0 0 / .5)); }
+.rzk-sheet[open] { display: flex; flex-direction: column; animation: rzk-up var(--dur-sheet) var(--ease-sheet); }
+@keyframes rzk-up { from { transform: translateY(40px); opacity: 0; } }
+@media (min-width: 760px) {
+  .rzk-sheet { margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: min(30rem, 100%); border-radius: var(--radius-sheet) 0 0 var(--radius-sheet); }
+  @keyframes rzk-up { from { transform: translateX(40px); opacity: 0; } }
+}
+.rzk-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-el); padding: var(--sp-el) var(--sp-el) 0; }
+.rzk-head h2 { margin: 0; font: var(--type-h3); }
+.rzk-head p { margin: 4px 0 0; color: var(--text-muted); font: var(--type-small); font-variant-numeric: tabular-nums; }
+.rzk-x { all: unset; box-sizing: border-box; cursor: pointer; flex: none; display: grid; place-items: center; width: var(--tap); height: var(--tap); border-radius: var(--radius-ctl); color: var(--text); }
+.rzk-x:hover { background: var(--hover); }
+.rzk-body { flex: 1; padding: var(--sp-el); display: grid; align-content: start; gap: var(--sp-el); }
+.rzk-foot { position: sticky; bottom: 0; padding: var(--sp-el); background: var(--bg); border-top: 1px solid var(--line); display: grid; gap: var(--sp-in); }
+.rzk-sum { display: flex; justify-content: space-between; font: var(--type-title); font-variant-numeric: tabular-nums; }
+
+/* страва */
+.rzk-img { margin: 0; aspect-ratio: var(--ratio-dish, 4 / 3); overflow: hidden; background: var(--bg-subtle); }
+.rzk-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rzk-meta { margin: 0; color: var(--text-muted); font: var(--type-small); font-variant-numeric: tabular-nums; }
+.rzk-desc { margin: 0; max-width: var(--w-text); }
+.rzk-buy { display: flex; gap: var(--sp-in); align-items: center; }
+.rzk-buy .rzk-btn { flex: 1; }
+.rzk-qty { display: inline-flex; align-items: center; height: var(--control-h); border-radius: var(--radius-ctl); box-shadow: inset 0 0 0 1px var(--line-strong); font: var(--type-label); font-variant-numeric: tabular-nums; }
+.rzk-qty button { all: unset; cursor: pointer; display: grid; place-items: center; width: var(--tap); height: 100%; }
+.rzk-qty output { min-width: 1.75em; text-align: center; }
+
+/* рядки: кошик і «Поруч добре» */
+.rzk-h { margin: 0; font: var(--type-label); }
+.rzk-hint { margin: 0; color: var(--text-muted); font: var(--type-small); }
+.rzk-line { display: grid; grid-template-columns: auto 1fr auto; gap: var(--sp-el); align-items: center; padding-bottom: var(--sp-el); border-bottom: 1px solid var(--line); }
+.rzk-line:last-child { border-bottom: 0; padding-bottom: 0; }
+.rzk-line .th { width: 56px; height: 48px; border-radius: var(--radius-xs); object-fit: cover; background: var(--bg-subtle); display: block; }
+.rzk-line .th.none { visibility: hidden; }
+.rzk-line .t { display: grid; gap: 2px; min-width: 0; }
+.rzk-line .t b { font: var(--type-title); overflow-wrap: anywhere; }
+.rzk-line .t span { color: var(--text-muted); font: var(--type-small); font-variant-numeric: tabular-nums; }
+.rzk-line .c { display: grid; justify-items: end; gap: 2px; }
+.rzk-line .rm { all: unset; cursor: pointer; color: var(--text-muted); font: var(--type-small); text-decoration: underline; padding: 4px 0; }
+.rzk-lines { display: grid; gap: var(--sp-el); }
+.rzk-ups { display: grid; gap: var(--sp-el); padding-top: var(--sp-el); border-top: 1px solid var(--line); }
+.rzk-undo { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-el); padding: var(--sp-in) var(--sp-el); border-radius: var(--radius-ctl); background: var(--bg-subtle); font: var(--type-small); }
+.rzk-empty { display: grid; gap: var(--sp-el); justify-items: start; padding: var(--sp-el) 0; }
+.rzk-empty h3 { margin: 0; font: var(--type-h3); }
+.rzk-empty p { margin: 0; color: var(--text-muted); }
+
+/* форма */
+.rzk-form { display: grid; gap: var(--sp-el); }
+.rzk-f { display: grid; gap: 6px; }
+.rzk-f label, .rzk-f .l { font: var(--type-label); }
+.rzk-f input, .rzk-f textarea {
+  box-sizing: border-box; width: 100%; min-height: var(--control-h);
+  padding: 10px 14px; border: 1px solid var(--line-strong); border-radius: var(--radius-ctl);
+  background: var(--field, var(--surface)); color: var(--text); font: var(--type-body); font-size: max(16px, 1rem);
+}
+.rzk-f textarea { min-height: 88px; resize: vertical; }
+.rzk-f input:focus-visible, .rzk-f textarea:focus-visible { outline: 2px solid var(--focus, var(--accent)); outline-offset: 1px; }
+.rzk-f .err { display: none; margin: 0; color: var(--err); font: var(--type-small); }
+.rzk-f.bad input { border-color: var(--err); }
+.rzk-f.bad .err { display: block; }
+.rzk-seg { display: flex; flex-wrap: wrap; gap: var(--sp-in); }
+.rzk-seg label { position: relative; display: inline-flex; align-items: center; min-height: var(--control-h-sm); padding: 0 16px; border-radius: var(--radius-ctl); box-shadow: inset 0 0 0 1px var(--line-strong); cursor: pointer; font: var(--type-label); }
+.rzk-seg input { position: absolute; opacity: 0; pointer-events: none; }
+.rzk-seg label:has(input:checked) { background: var(--accent-soft); color: var(--accent-on-soft); box-shadow: inset 0 0 0 2px var(--accent); }
+.rzk-seg label:has(input:focus-visible) { outline: 2px solid var(--focus, var(--accent)); outline-offset: 2px; }
+.rzk-done { display: grid; gap: var(--sp-el); justify-items: start; }
+.rzk-done h3 { margin: 0; font: var(--type-h3); }
+.rzk-done p { margin: 0; color: var(--text-muted); }
+.rzk-spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: rzk-rot .7s linear infinite; }
+@keyframes rzk-rot { to { transform: rotate(360deg); } }
+
+/* фільтр: сховані позиції */
+[data-item][hidden], [data-group][hidden] { display: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rzk-sheet[open] { animation: none; }
+  .rzk-spin { animation-duration: 2s; }
+}
+.rzk-line.noimg { grid-template-columns: 1fr auto; }

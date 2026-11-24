@@ -1,0 +1,93 @@
+
+@font-face{font-family:"Inter";src:url(fonts/inter-cyr.woff2) format("woff2");font-weight:400 700;font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"Inter";src:url(fonts/inter-lat.woff2) format("woff2");font-weight:400 700;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+.look-sw{margin:4px 0 10px}
+html.rz-graphite{
+  --font:"Inter","Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;
+  --r-pill:999px; --r-lg:18px; --r-md:12px; --r-sm:8px; --r:12px;
+  --c1:#F5F5F7; --c2:#F5F5F7; --c1-rgb:245,245,247; --c2-rgb:245,245,247;
+  --ink:#F5F5F7; --ink2:#C7C7CC; --ink3:#86868B; --ink4:#6E6E73;
+  --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.11);
+  --gr-stage:#000; --gr-chrome:#0A0A0B; --gr-card:#151517; --gr-card-top:#1B1B1D; --gr-edge:rgba(255,255,255,.075);
+}
+html.rz-graphite body{font-family:var(--font);letter-spacing:-.011em;background:var(--gr-stage);-webkit-font-smoothing:antialiased}
+html.rz-graphite #bg{opacity:.42}
+html.rz-graphite.rz-palred #bg{filter:grayscale(1);opacity:.32}
+html.rz-graphite body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(900px 420px at 62% -160px,rgba(255,255,255,.075),rgba(255,255,255,0) 70%)}
+html.rz-graphite h2,html.rz-graphite th{text-transform:none;letter-spacing:-.005em;font-size:12.5px;font-weight:600;color:var(--ink3)}
+html.rz-graphite .tb-name{text-transform:none;letter-spacing:-.01em;font-size:12.5px;font-weight:600;color:var(--ink)}
+html.rz-graphite .hint{color:var(--ink4)}
+html.rz-graphite.rz-graphite :is(#rz-look,.titlebar,aside.side,.rail){background:rgba(8,8,9,.92)!important;backdrop-filter:none!important}
+html.rz-graphite.rz-graphite :is(#rz-look,#main .toolbar,#main .stats){background:rgba(0,0,0,.72)!important;backdrop-filter:none!important}
+html.rz-graphite .rail{border-right-color:var(--line)}
+html.rz-graphite.rz-graphite :is(#rz-look,.card,.mcard,.brow){background:linear-gradient(180deg,var(--gr-card-top),var(--gr-card) 64px)!important;border:1px solid var(--gr-edge)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.045)!important;backdrop-filter:none!important}
+html.rz-graphite .card{border-radius:18px;padding:16px 16px 13px;gap:3px;transition:border-color .25s var(--ease-out),background-color .25s var(--ease-out),transform .25s var(--ease-out)}
+html.rz-graphite .card:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.16)!important}
+html.rz-graphite.rz-graphite :is(#rz-look,.card.active){border-color:rgba(245,245,247,.55)!important}
+html.rz-graphite .cards{gap:14px}
+html.rz-graphite .card-top .lead{height:24px;padding:0 10px 0 9px;border-radius:999px!important;background:rgba(255,255,255,.055)!important;border:1px solid rgba(255,255,255,.09)!important;font-size:12px;font-weight:500;color:var(--ink2)!important;letter-spacing:-.005em}
+html.rz-graphite .card-top .lead.hot{background:rgba(245,245,247,.1)!important;border-color:rgba(245,245,247,.2)!important;color:var(--ink)!important}
+html.rz-graphite .card-top .lead .lt{color:inherit}
+html.rz-graphite :is(.sbadge,.lscore){background:none!important;border:0!important;padding:0 0 0 2px;font-size:12px;font-weight:500;color:var(--ink4)!important;min-width:0;font-variant-numeric:tabular-nums}
+html.rz-graphite .card-rating{font-size:13px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+html.rz-graphite .card-rating :is(svg,.ic,i){color:var(--ink3)!important;fill:currentColor}
+html.rz-graphite .card-name{font-size:17px;font-weight:600;letter-spacing:-.022em;line-height:1.24;margin-top:12px}
+html.rz-graphite .card-city{font-size:13px;color:var(--ink3);letter-spacing:-.01em}
+html.rz-graphite .card-foot{border-top-color:rgba(255,255,255,.06);padding-top:12px}
+html.rz-graphite .stats{color:var(--ink3);font-size:12.5px}
+html.rz-graphite .stats b{color:var(--ink);font-weight:600}
+html.rz-graphite .cbtn,html.rz-graphite .cbtn:is(.ch-ig,.ch-tg,.ch-viber,.ch-wa,.ch-fb){width:32px;height:32px;border-radius:10px;color:#D2D2D7;background:transparent;border:1px solid rgba(255,255,255,.12)}
+html.rz-graphite .cbtn:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);color:#fff}
+html.rz-graphite .cbtn.ghost{opacity:.5}
+html.rz-graphite .genbtn .ic,html.rz-graphite .genbtn svg{color:#D2D2D7!important;stroke:currentColor}
+html.rz-graphite .stat-add{color:var(--ink2)}
+html.rz-graphite .stat-add:hover{color:var(--ink)}
+html.rz-graphite :is(.input,select.input){background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);border-radius:999px}
+html.rz-graphite textarea.input{border-radius:14px}
+html.rz-graphite :is(.seg,.pgsw){border-radius:999px;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+html.rz-graphite :is(.seg,.pgsw) button{border-radius:999px}
+html.rz-graphite :is(.seg,.pgsw) button[aria-pressed="true"]{background:#F5F5F7;color:#000;box-shadow:none}
+html.rz-graphite :is(.seg,.pgsw) button[aria-pressed="true"] b{color:#3A3A3E}
+html.rz-graphite :is(.chip,.sph-t,.sph-c){border-radius:999px}
+html.rz-graphite .sph-t.on{background:#F5F5F7;border-color:#F5F5F7;color:#000}
+html.rz-graphite .sph-t.on b{color:#3A3A3E}
+html.rz-graphite.rz-graphite :is(#rz-look,.btn.primary){background:#F5F5F7!important;color:#000!important;border-radius:999px!important}
+html.rz-graphite .btn.primary::before,html.rz-graphite .btn.primary::after{display:none}
+html.rz-graphite .rail-btn{color:var(--ink3);border-radius:14px}
+html.rz-graphite .rail-btn[aria-selected="true"]{background:rgba(255,255,255,.09);color:var(--ink)}
+html.rz-graphite .rail-btn[aria-selected="true"]::before{display:none}
+html.rz-graphite .rail-btn span{font-size:10.5px;letter-spacing:-.005em}
+html.rz-graphite .rail-badge{background:#F5F5F7;color:#000}
+html.rz-graphite .ac-me .ac-ring{background:none!important;box-shadow:none!important}
+html.rz-graphite .ac-ava{background:#2C2C2E!important;color:#F5F5F7!important}
+html.rz-graphite .gfxopt{border-radius:14px}
+html.rz-btn-plain.rz-btn-plain :is(#rz-look,.btn,.cbtn){backdrop-filter:none!important;box-shadow:none!important}
+html.rz-btn-plain .btn::before,html.rz-btn-plain .btn::after{display:none!important}
+html.rz-btn-flat.rz-btn-plain :is(#rz-look,.btn,.cbtn){background:rgba(255,255,255,.11)!important;border:1px solid transparent!important;border-radius:10px!important}
+html.rz-btn-flat.rz-btn-plain :is(#rz-look,.btn:hover,.cbtn:hover){background:rgba(255,255,255,.18)!important}
+html.rz-btn-flat.rz-btn-plain :is(#rz-look,.cbtn:is(.ch-ig,.ch-tg,.ch-viber,.ch-wa,.ch-fb)){background:color-mix(in srgb,currentColor 20%,transparent)!important}
+html.rz-btn-flat.rz-btn-plain :is(#rz-look,.btn.primary){background:var(--c1)!important;color:#fff!important}
+html.rz-btn-flat.rz-graphite.rz-btn-plain :is(#rz-look,.btn.primary){color:#000!important}
+html.rz-btn-flat.rz-graphite.rz-btn-plain :is(#rz-look,.cbtn){color:#E5E5EA!important}
+html.rz-btn-line.rz-btn-plain :is(#rz-look,.btn,.cbtn){background:transparent!important;border:1.5px solid rgba(255,255,255,.3)!important}
+html.rz-btn-line.rz-btn-plain :is(#rz-look,.cbtn,.btn.icon){border-radius:50%!important}
+html.rz-btn-line.rz-btn-plain :is(#rz-look,.btn:not(.icon)){border-radius:999px!important}
+html.rz-btn-line.rz-btn-plain :is(#rz-look,.btn:hover,.cbtn:hover){background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.55)!important}
+html.rz-btn-line.rz-btn-plain :is(#rz-look,.btn.primary){border-color:var(--c1)!important;color:var(--ink)!important}
+html.rz-btn-quiet.rz-btn-plain :is(#rz-look,.btn,.cbtn){background:transparent!important;border:1px solid transparent!important;border-radius:8px!important}
+html.rz-btn-quiet.rz-btn-plain :is(#rz-look,.cbtn){color:var(--ink3)!important}
+html.rz-btn-quiet.rz-btn-plain :is(#rz-look,.btn:hover,.cbtn:hover){background:rgba(255,255,255,.08)!important;color:var(--ink)!important}
+html.rz-btn-quiet.rz-btn-plain :is(#rz-look,.btn.primary){background:rgba(255,255,255,.1)!important}
+html.rz-btn-quiet.rz-btn-plain :is(#rz-look,.btn:not(.icon):not(.primary)){text-decoration:underline;text-decoration-color:rgba(255,255,255,.25);text-underline-offset:3px}
+html:is(.rz-btn-flat,.rz-btn-line) .cbtn.ghost{border-style:dashed!important}
+.card > .rz-mt{pointer-events:none}
+.rz-mt canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+html.rz-map-under .card > .rz-mt{position:absolute;inset:0;border-radius:inherit;overflow:hidden;z-index:0}
+html.rz-map-under .card > .rz-mt::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,10,11,.8) 0%,rgba(10,10,11,.52) 42%,rgba(10,10,11,0) 80%);transition:opacity .4s}
+html.rz-map-under .card.rz-mt-on > .rz-mt::after{opacity:.75}
+html.rz-map-under .card > :is(.card-top,.card-name,.card-city,.card-foot,.tags,.card-next){position:relative;z-index:1}
+html.rz-map-thumb .card > .rz-mt{position:absolute;left:14px;top:50px;width:44px;height:44px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.1);z-index:1}
+html.rz-map-thumb.rz-graphite .card > .rz-mt{left:16px;top:54px}
+html.rz-map-thumb .card.rz-mt-has :is(.card-name,.card-city){padding-left:56px}
+.rz-idle > canvas.rz-stream{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}

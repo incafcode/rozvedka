@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://tiles.openfreemap.org; worker-src blob:; frame-src 'self' file:; object-src 'none'; base-uri 'none';">
+<title>Rozvedka</title>
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="account.css">
+<link rel="stylesheet" href="visual.css">
+<link rel="stylesheet" href="demo.css">
+<link rel="stylesheet" href="vcard.css">
+<link rel="stylesheet" href="postcard.css">
+<link rel="stylesheet" href="sites.css">
+<link rel="stylesheet" href="claims.css">
+<link rel="stylesheet" href="spheres.css">
+<link rel="stylesheet" href="sub.css">
+<link rel="stylesheet" href="help.css">
+<link rel="stylesheet" href="ai.css">
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<link rel="stylesheet" href="map.css">
+<link rel="stylesheet" href="look.css">
+<link rel="stylesheet" href="panel.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M10.7 5.1A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-2.2 3.2M6.6 6.6A16.6 16.6 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m2 2 20 20"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5-12-7.5Z"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4.5h6V7m-8.5 0 .8 12.5h9.4L17.5 7"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9L12 3.5Z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+    <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6" fill="currentColor"/></symbol>
+    <symbol id="i-tg" viewBox="0 0 24 24"><path d="M21 4.5 2.8 11.4c-.8.3-.8 1.4 0 1.7l4.4 1.5 1.7 5.2c.2.7 1.1.9 1.6.4l2.5-2.4 4.6 3.4c.6.4 1.4.1 1.6-.6L22 5.6c.2-.8-.4-1.4-1-1.1Z"/><path d="m7.2 14.6 10.3-7.1-7.6 8.5"/></symbol>
+    <symbol id="i-viber" viewBox="0 0 24 24"><path d="M12 2.8c-4.9 0-8.7 1.6-8.7 7.7 0 3.1 1 5 2.8 6.1v3.7c0 .5.6.8 1 .4l2.6-2.8c.8.1 1.5.1 2.3.1 4.9 0 8.7-1.6 8.7-7.5S16.9 2.8 12 2.8Z"/><path d="M9.3 7.7c.5-.4 1-.3 1.3.2l.6 1c.2.4.1.9-.3 1.1l-.4.3c.4 1.1 1.2 2 2.4 2.5l.3-.4c.3-.4.7-.5 1.1-.3l1 .6c.5.3.6.9.2 1.3-.7.8-1.6 1-2.6.6a7.8 7.8 0 0 1-4.3-4.3c-.4-1-.1-1.9.7-2.6Z"/></symbol>
+    <symbol id="i-wa" viewBox="0 0 24 24"><path d="M3.5 20.5 4.8 16A8.6 8.6 0 1 1 8 19.3l-4.5 1.2Z"/><path d="M9 8.3c.3-.6.8-.6 1.1-.1l.7 1.4c.1.3 0 .6-.2.8l-.4.4c.5 1.1 1.4 2 2.5 2.5l.4-.4c.2-.2.5-.3.8-.2l1.4.7c.5.3.5.8-.1 1.2-.8.6-1.8.7-2.9.2a7 7 0 0 1-3.6-3.6c-.4-1-.4-2.1.3-2.9Z"/></symbol>
+    <symbol id="i-fb" viewBox="0 0 24 24"><path d="M14.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4a21 21 0 0 0-2.3-.1c-2.3 0-3.9 1.4-3.9 4v2.2H8.8v3h2.6V21"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="m4 20 4.2-1 10.3-10.3a2.1 2.1 0 0 0-3-3L5.2 16 4 20Z"/><path d="m14 7 3 3"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2.5"/><path d="M15.5 8.5V6A2.5 2.5 0 0 0 13 3.5H6A2.5 2.5 0 0 0 3.5 6v7A2.5 2.5 0 0 0 6 15.5h2.5"/></symbol>
+    <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></symbol>
+    <symbol id="i-rows" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h3.2l1.6 4-2 1.3a10.5 10.5 0 0 0 4.9 4.9l1.3-2 4 1.6V17a2 2 0 0 1-2 2A14 14 0 0 1 3 6a2 2 0 0 1 2-2Z"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.3 2.4 3.5 5.2 3.5 8.5s-1.2 6.1-3.5 8.5c-2.3-2.4-3.5-5.2-3.5-8.5S9.7 5.9 12 3.5Z"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.5 13.9 9l5.6 1.9-5.6 1.9L12 18.5l-1.9-5.7L4.5 10.9 10.1 9 12 3.5Z"/><path d="M19 3v4M17 5h4"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 5h16l-6.2 7.4V19l-3.6-1.8v-4.8L4 5Z"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.6 7.6 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.6 7.6 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.7 7.7 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.6 7.6 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.6 7.6 0 0 0 2.6-1.5l2.4 1 2-3.4-2-1.6Z"/></symbol>
+    <symbol id="i-board" viewBox="0 0 24 24"><rect x="3.5" y="4" width="4.5" height="16" rx="1.5"/><rect x="9.75" y="4" width="4.5" height="11" rx="1.5"/><rect x="16" y="4" width="4.5" height="7" rx="1.5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3.5 12.2V4.5a1 1 0 0 1 1-1h7.7l8.3 8.3a1.4 1.4 0 0 1 0 2l-6.3 6.3a1.4 1.4 0 0 1-2 0L3.5 12.2Z"/><circle cx="8" cy="8" r="1.4"/></symbol>
+    <symbol id="i-screen" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="12" rx="2.5"/><path d="M8.5 20h7M12 16.5V20"/><path d="m7 13 3.2-3.4 2.6 2.3L17 8"/></symbol>
+    <symbol id="i-keys"viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><path d="M6.5 10h.01M10.2 10h.01M13.8 10h.01M17.5 10h.01M7 14h10"/></symbol>
+    <symbol id="i-base" viewBox="0 0 24 24"><ellipse cx="12" cy="6.5" rx="7.5" ry="3"/><path d="M4.5 6.5V12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6.5M4.5 12v5.5c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V12"/></symbol>
+    <symbol id="i-message" viewBox="0 0 24 24"><path d="M20 12.5a7.5 7.5 0 0 1-11 6.6L4 20.5l1.4-4.6A7.5 7.5 0 1 1 20 12.5Z"/></symbol>
+  </defs>
+</svg>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="bg-veil" aria-hidden="true"></div>
+<header class="titlebar" id="titlebar"><span class="tb-coin" aria-hidden="true"><svg class="tb-logo" viewBox="0 0 100 100" width="20" height="20"><path fill="currentColor" fill-rule="evenodd" d="M17 33 29 11h10v73l-5-6Z M43 11h28l12 22-40 20Z M43 21v21l27-11-7-10Z M43 59l40-20-33 54-7-9Z"/></svg></span><span class="tb-name" aria-hidden="true">Rozvedka</span><span class="tb-ver" id="tbVer" aria-hidden="true"></span><span class="tb-full" id="tbFull" role="alert" hidden title="Сделайте «Экспорт CSV» и почистите Базу (партии «Выгружено») — тогда запись снова пойдёт">Изменения не сохраняются — место в хранилище кончилось</span><span class="tb-sp"></span><div class="tb-live" id="tbLive" role="group" aria-label="Связь"></div><div class="tb-chips" id="tbChips" role="group" aria-label="Сегодня в Базе"></div><i class="tb-bar" id="tbBar" aria-hidden="true"></i></header>
+<div class="app">
+<aside class="side">
+  <nav class="rail" role="tablist" aria-label="Разделы" aria-orientation="vertical">
+    <button type="button" class="rail-btn" role="tab" id="rb-search" data-tab="search" data-grp="work" aria-controls="tab-search" aria-selected="false"><svg class="ic"><use href="#i-search"/></svg><span>Поиск</span></button>
+    <button type="button" class="rail-btn" role="tab" id="rb-chats" data-tab="chats" data-grp="work" aria-controls="tab-chats" aria-selected="false"><svg class="ic"><use href="#i-tg"/></svg><span>Чаты</span><b class="rail-badge" id="chatsBadge" hidden></b></button>
+    <button type="button" class="rail-btn" role="tab" id="rb-filter" data-tab="filter" data-grp="work" aria-controls="tab-filter" aria-selected="false"><svg class="ic"><use href="#i-filter"/></svg><span>Отбор</span></button>
+    <button type="button" class="rail-btn" role="tab" id="rb-msg" data-tab="msg" data-grp="work" aria-controls="tab-msg" aria-selected="false"><svg class="ic"><use href="#i-message"/></svg><span>Сообщения</span><b class="rail-badge" id="msgBadge" hidden></b></button>
+    <button type="button" class="rail-btn" role="tab" id="rb-hidden" data-tab="hidden" data-grp="work" aria-controls="tab-hidden" aria-selected="false"><svg class="ic"><use href="#i-base"/></svg><span>База</span><b class="rail-badge" id="hiddenBadge" hidden></b></button>
+    <button type="button" class="rail-btn" role="tab" id="rb-ai" data-tab="ai" data-grp="tools" aria-controls="tab-ai" aria-selected="false"><svg class="ic"><use href="#i-spark"/></svg><span>ИИ</span></button>
+    <button type="button" class="rail-btn" role="tab" id="rb-keys" data-tab="keys" data-grp="tools" aria-controls="tab-keys" aria-selected="false"><svg class="ic"><use href="#i-keys"/></svg><span>Клавиши</span></button>
+    <button type="button" class="rail-btn" role="tab" id="rb-gfx" data-tab="gfx" data-grp="tools" aria-controls="tab-gfx" aria-selected="false"><svg class="ic"><use href="#i-screen"/></svg><span>Графика</span></button>
+    <button type="button" class="rail-btn" role="tab" id="rb-settings" data-tab="settings" data-grp="acct" aria-controls="tab-settings" aria-selected="false"><svg class="ic"><use href="#i-gear"/></svg><span>Настройки</span></button>
+  </nav>
+  <div class="side-main">
+  <h1 class="sr-only">Rozvedka</h1>
+  <div class="brand" id="brand"><canvas id="wordmark" role="img" aria-label="Rozvedka"></canvas></div>
+  <div class="updbar" id="updBar" role="status" hidden>
+    <div><b id="updTitle">Доступна новая версия</b><span id="updNotes"></span></div>
+    <button type="button" class="btn glass primary" id="updBtn">Перезапустить</button>
+  </div>
+  <p class="sub">Ищет бизнес без сайта или с&nbsp;шаблонной страницей: QR-меню, запись, каталог</p>
+    <div class="tabs">
+    <section class="tabp" id="tab-search" role="tabpanel" aria-label="Поиск" data-tab="search" hidden>
+  
+  <div id="g2Src">
+  <h2>Где искать</h2>
+  <div class="seg" role="group" aria-label="Источник поиска"><button type="button" data-g2src="google" aria-pressed="true" style="width:auto;padding:0 12px">Google Карты</button><button type="button" data-g2src="2gis" aria-pressed="false" style="width:auto;padding:0 12px">2ГИС</button></div>
+  <div id="g2Box" hidden>
+  <label for="g2Key">Ключ 2ГИС (Places API)</label>
+  <div class="row">
+    <input class="input mono" id="g2Key" name="g2Key" type="password" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off" spellcheck="false">
+    <button class="btn glass icon" id="g2Toggle" type="button" aria-label="Показать ключ" title="Показать ключ"><morph-icon class="mi" data-mi="Eye" size="16" stroke-width="1.9" aria-hidden="true"></morph-icon></button>
+  </div>
+  <p class="hint">Где взять: зарегистрируйтесь в&nbsp;<a href="#" data-href="https://platform.2gis.ru/">Менеджере Платформы 2ГИС</a> → «Главная» → «Создать демо-ключ»&nbsp;— бесплатно, один раз: месяц и&nbsp;1000 запросов. Дальше&nbsp;— подписка с&nbsp;Places API (пакет 10&nbsp;000 запросов в&nbsp;месяц&nbsp;— около 6&nbsp;700&nbsp;₽). Телефоны и&nbsp;сайты мест 2ГИС отдаёт только ключам с&nbsp;доступом к&nbsp;контактам&nbsp;— его подключает отдел продаж 2ГИС (<a href="#" data-href="https://dev.2gis.ru/api">заявка</a>). Без него найдутся места без сайта: название, адрес, рейтинг, ссылка на&nbsp;карточку 2ГИС, где виден телефон. Ключ хранится на&nbsp;сервере Rozvedka зашифрованным, на&nbsp;этом компьютере его нет.</p>
+  <p class="hint" id="g2Mode"></p>
+  <label for="g2Pages">Страниц на пару</label>
+  <select class="input" id="g2Pages"><option value="1">1 — до 50 мест</option><option value="2">2 — до 100 мест</option><option value="4">4 — до 200 мест</option><option value="10">10 — до 500 мест</option></select>
+  </div>
+  </div>
+  <h2>Города</h2>
+  <div class="chips" id="chips-cities"></div>
+  <div class="row"><input class="input" id="in-cities" aria-label="Добавить город" name="city" autocomplete="off" placeholder="Например, Васильков…"><button class="btn glass icon" type="button" data-add="cities" aria-label="Добавить город"><svg class="ic"><use href="#i-plus"/></svg></button></div>
+  <p class="tr-note" id="note-cities" aria-live="polite"></p>
+  <p class="hint" id="hint-cities">Пишите по-русски&nbsp;— название само переведётся на украинский, как в&nbsp;Google Картах. Можно несколько через запятую.</p>
+
+  <h2>Категории</h2>
+  <div class="chips" id="chips-cats"></div>
+  <div class="row"><input class="input" id="in-cats" aria-label="Добавить категорию" name="category" autocomplete="off" placeholder="Например, пиццерия…"><button class="btn glass icon" type="button" data-add="cats" aria-label="Добавить категорию"><svg class="ic"><use href="#i-plus"/></svg></button></div>
+  <p class="tr-note" id="note-cats" aria-live="polite"></p>
+  <div class="sph" id="sphBox"></div>
+  <p class="hint">Выберите сферу и отметьте готовые категории (синонимы склеены, тип Google подставится сам) или впишите свою. В Google уходит запрос «категория в&nbsp;городе».</p>
+
+  <h2>Параметры</h2>
+  <label for="pages">Страниц на запрос</label>
+  <select class="input" id="pages"><option value="1">1 — до 20 мест</option><option value="2">2 — до 40 мест</option><option value="3">3 — до 60 мест</option></select>
+  <details class="bldet tune">
+    <summary>Тонкая настройка: пауза и цена запроса</summary>
+    <div class="grid2">
+      <div><label for="delay">Пауза, мс</label><input class="input num" id="delay" type="number" inputmode="numeric" min="0" step="100"></div>
+      <div><label for="price">Цена за 1000, $</label><input class="input num" id="price" type="number" inputmode="decimal" min="0" step="0.5"></div>
+    </div>
+    <p class="hint">Пауза — между страницами одного запроса. Актуальную цену смотрите в&nbsp;Google Cloud → Billing.</p>
+  </details>
+  <label class="check"><input type="checkbox" id="skipRecent"> Не повторять пары «город × категория», которые уже искали за&nbsp;последние 14&nbsp;дней&nbsp;— Google отдаст те&nbsp;же места, а&nbsp;запрос платный</label>
+
+  <div class="estimate" id="estimate"></div>
+  <div class="row" style="margin-top:12px">
+    <button class="btn glass primary" id="startBtn" type="button" style="flex:1"><morph-icon class="mi" data-mi="Play" size="15" stroke-width="1.9" aria-hidden="true"></morph-icon>Начать поиск</button>
+    <button class="btn glass danger" id="stopBtn" type="button" disabled><svg class="ic"><use href="#i-stop"/></svg>Стоп</button>
+  </div>
+    </section>
+    <section class="tabp" id="tab-filter" role="tabpanel" aria-label="Отбор" data-tab="filter" hidden>
+  <h2>Признаки шаблонного меню</h2>
+  <div class="chips" id="chips-markers"></div>
+  <div class="row"><input class="input" id="in-markers" aria-label="Добавить признак шаблонного меню" name="marker" autocomplete="off" placeholder="Например, menu.ps.me…"><button class="btn glass icon" type="button" data-add="markers" aria-label="Добавить признак"><svg class="ic"><use href="#i-plus"/></svg></button></div>
+  <p class="hint">Если адрес сайта содержит один из признаков&nbsp;— это тёплый лид. Любой другой сайт считается собственным, и&nbsp;заведение скрывается.</p>
+
+  <h2>Исключить по названию</h2>
+  <div class="chips" id="chips-stop"></div>
+  <div class="row"><input class="input" id="in-stop" aria-label="Добавить стоп-слово" name="stopword" autocomplete="off" placeholder="Например, банкетный…"><button class="btn glass icon" type="button" data-add="stop" aria-label="Добавить слово"><svg class="ic"><use href="#i-plus"/></svg></button></div>
+  <p class="hint">Заведения с&nbsp;этими словами в&nbsp;названии не&nbsp;попадут в&nbsp;выдачу.</p>
+
+    </section>
+    <section class="tabp" id="tab-chats" role="tabpanel" aria-label="Чаты с клиентами" data-tab="chats" hidden>
+  <h2>Чаты с клиентами <span class="count" id="chatsCount"></span></h2>
+  <div id="chatsBody"><p class="hint">Загрузка…</p></div>
+    </section>
+    <section class="tabp" id="tab-msg" role="tabpanel" aria-label="Сообщения" data-tab="msg" hidden>
+  <h2>Сообщения</h2>
+  <p class="hint" style="margin:0 0 12px">Лента справа: кому ответить, что готово к отправке, кому ещё нужен текст. Нажмите значок канала на карточке&nbsp;— текст скопируется, чат откроется, карточка уйдёт в «Отправлено».</p>
+  <label for="dayGoal">Цель на день, сообщений</label>
+  <input class="input num" id="dayGoal" type="number" inputmode="numeric" min="1" max="500" step="1">
+  <h2 id="funnelLab">Итоги</h2>
+  <div class="pgsw" id="funnelP" role="group" aria-labelledby="funnelLab"><button type="button" data-fp="7">7 дней</button><button type="button" data-fp="30">30 дней</button><button type="button" data-fp="0">Всё время</button></div>
+  <div class="funnel" id="funnel"></div>
+  <p class="hint">Заведения, которым вы впервые написали из программы за период. «Ответили»&nbsp;— пришёл ответ в Telegram или Instagram, стоит метка «ответили» либо статус уже после разговора.</p>
+  <h2>Быстрые ответы</h2>
+  <p class="snip-for" id="snipFor"></p>
+  <div id="snipList"></div>
+  <details class="bldet">
+    <summary>Скрипт звонка</summary>
+    <textarea class="input tpl" id="callScript" rows="7" spellcheck="true" aria-label="Скрипт звонка"></textarea>
+    <p class="hint">Показывается, когда вы нажимаете «Позвонить» в карточке. Подстановки: <code>{название}</code> <code>{город}</code> <code>{деталь}</code>. <button type="button" class="linkbtn" id="callScriptReset">Вернуть стандартный</button></p>
+  </details>
+  <details class="bldet">
+    <summary>Добавить свой ответ</summary>
+    <form class="snip-add" id="snipAdd">
+      <input class="input" id="snipLabel" name="snipLabel" autocomplete="off" placeholder="Название, например: «Дорого»…" aria-label="Название ответа">
+      <textarea class="input tpl" id="snipText" rows="4" spellcheck="true" placeholder="Текст ответа. Можно {название} и {город}…" aria-label="Текст ответа"></textarea>
+      <button type="submit" style="align-self:flex-start">Сохранить ответ</button>
+    </form>
+  </details>
+  <details class="bldet">
+    <summary>Шаблон первого сообщения</summary>
+  <label for="tplHot">Для заведений без сайта</label>
+  <textarea class="input tpl" id="tplHot" rows="5" spellcheck="true"></textarea>
+  <label for="tplWarm">Для заведений с шаблонным меню</label>
+  <textarea class="input tpl" id="tplWarm" rows="5" spellcheck="true"></textarea>
+  <p class="hint">Текст копируется, когда вы открываете чат,&nbsp;— остаётся вставить <kbd>Ctrl</kbd>+<kbd>V</kbd>. Подстановки: <code>{название}</code> <code>{город}</code> <code>{рейтинг}</code> <code>{отзывы}</code>. <button type="button" class="linkbtn" id="tplReset">Вернуть стандартный текст</button></p>
+  </details>
+
+    </section>
+    <section class="tabp" id="tab-ai" role="tabpanel" aria-label="ИИ" data-tab="ai" hidden>
+  
+  <div class="ai-top">
+    <b class="ai-top-t">ИИ пишет сообщения за вас</b>
+    <span class="ai-top-s" id="aiTopSub">Три шага — и кнопка ✦ в карточке заведения сама пишет первое сообщение и ответы.</span>
+  </div>
+  <ol class="ai-flow">
+    <li class="ai-step" id="aiStep1">
+      <button type="button" class="ai-sh" data-aistep="1" aria-expanded="false" aria-controls="aiS1"><span class="ai-sn" aria-hidden="true">1</span><span class="ai-stt"><b>Подключить ИИ</b><small id="aiS1sum"></small></span><span class="ai-chev" aria-hidden="true"></span></button>
+      <div class="ai-sb" id="aiS1" hidden>
+        <div class="aisvc" id="aiSvc">
+          <div class="ai-status" id="aiStatus" aria-live="polite"></div>
+          <div class="ai-setup" id="aiSetup">
+            <label for="llmProvider">Сервис ИИ</label>
+            <select class="input" id="llmProvider"></select>
+            <ol class="aisteps" id="aiSteps"></ol>
+            <div id="llmBaseWrap" hidden><label for="llmBase">Адрес API</label><input class="input mono" id="llmBase" type="url" spellcheck="false" autocomplete="off" placeholder="https://…/v1"></div>
+            <label for="llmKey">Ключ</label>
+            <div class="row">
+              <input class="input mono" id="llmKey" type="password" placeholder="AIza…" autocomplete="off" spellcheck="false">
+              <button class="btn glass icon" id="toggleLlmKey" type="button" aria-label="Показать ключ" title="Показать ключ"><morph-icon class="mi" data-mi="Eye" size="16" stroke-width="1.9" aria-hidden="true"></morph-icon></button>
+            </div>
+            <div class="ai-keyacts">
+              <button class="btn glass" id="aiPaste" type="button" title="Вставить ключ из буфера"><morph-icon class="mi" data-mi="Copy" size="16" stroke-width="1.9" aria-hidden="true"></morph-icon><span>Вставить</span></button>
+              <button type="button" class="btn glass" id="aiCheck"><morph-icon class="mi" data-mi="Sparkles" size="16" stroke-width="1.9" aria-hidden="true"></morph-icon><span>Проверить</span></button>
+            </div>
+            <p class="ai-safe">Ключ хранится только на этом компьютере, зашифрованным.</p>
+            <details class="bldet" id="aiAdv">
+              <summary>Модель и пауза</summary>
+              <label for="llmModelSel">Модель</label>
+              <select class="input" id="llmModelSel"></select>
+              <input class="input mono" id="llmModel" spellcheck="false" autocomplete="off" placeholder="название модели" aria-label="Своя модель" hidden>
+              <label for="llmDelay">Пауза между запросами, мс</label>
+              <input class="input num" id="llmDelay" type="number" inputmode="numeric" min="0" step="250">
+              <p class="ai-safe">Пауза нужна, когда пишете тексты пачкой: бесплатные ключи ограничивают число запросов в минуту.</p>
+            </details>
+          </div>
+        </div>
+        <p class="ai-alt">Не получается с ключом? <button type="button" class="linkbtn" data-aireveal="chat">Можно без ключа — через чат с Claude</button></p>
+      </div>
+    </li>
+    <li class="ai-step" id="aiStep2">
+      <button type="button" class="ai-sh" data-aistep="2" aria-expanded="false" aria-controls="aiS2"><span class="ai-sn" aria-hidden="true">2</span><span class="ai-stt"><b>Что вы предлагаете</b><small id="aiS2sum"></small></span><span class="ai-chev" aria-hidden="true"></span></button>
+      <div class="ai-sb" id="aiS2" hidden>
+        <div class="pgsw ai-mode" id="aiMode" role="group" aria-label="Как ИИ пишет">
+          <button type="button" data-aimode="builtin" aria-pressed="true">Сайты-меню</button>
+          <button type="button" data-aimode="own" aria-pressed="false">Своя услуга</button>
+        </div>
+        <div class="ai-pane" id="aiBuiltin">
+          <p class="ai-lead">Готовые проверенные правила для сайтов-меню и похожих услуг: коротко, по делу, с вопросом в конце. Имя, регион и цена — из «Обо мне». Продаёте другое — выберите «Своя услуга».</p>
+          <details class="bldet">
+            <summary>Посмотреть и поправить правила</summary>
+            <p class="ai-safe">Правила первого сообщения (вариант A; вариант B — «сначала факт о заведении» — чередуется с ним между лидами). Действуют везде: ключ, запрос для Claude и файл экспорта. Ответы после «да» пишутся по своим встроенным правилам.</p>
+            <textarea class="input tpl" id="msgRules" rows="10" spellcheck="true" aria-label="Правила для сообщений"></textarea>
+            <button type="button" class="linkbtn" id="msgRulesReset" style="margin-top:6px">Вернуть стандартные правила</button>
+          </details>
+        </div>
+        <div class="ai-pane" id="aiOwnBox" hidden>
+          <button type="button" class="btn glass primary wide" id="aiWizOpen"><morph-icon class="mi" data-mi="Sparkles" size="16" stroke-width="1.9" aria-hidden="true"></morph-icon><span>Помочь с промптом</span></button>
+          <div class="ai-wiz" id="aiWiz" hidden>
+            <label for="aiWzWhat">1. Что вы предлагаете?</label>
+            <textarea class="input" id="aiWzWhat" rows="2" spellcheck="true" placeholder="Например: веду Instagram — контент-план, reels, оформление профиля"></textarea>
+            <label for="aiWzWho">2. Кто ваши клиенты?</label>
+            <input class="input" id="aiWzWho" autocomplete="off" placeholder="Например: кафе, салоны красоты, СТО">
+            <span class="ai-optlab" id="aiWzFirstLab">3. Что предложить первым шагом?</span>
+            <div class="ai-ex" id="aiWzFirst" role="group" aria-labelledby="aiWzFirstLab"></div>
+            <input class="input" id="aiWzFirstOwn" autocomplete="off" placeholder="Или своё: …" aria-label="Свой первый шаг">
+            <span class="ai-optlab" id="aiWzToneLab">Как обращаться</span>
+            <div class="pgsw ai-tone" id="aiWzTone" role="group" aria-labelledby="aiWzToneLab"></div>
+            <div class="ai-keyacts">
+              <button type="button" class="btn glass primary" id="aiWzGo"><span>Собрать</span></button>
+              <button type="button" class="btn glass" id="aiWzClose"><span>Отмена</span></button>
+            </div>
+          </div>
+          <label for="aiOwn" class="ai-ownlab">Ваш промпт — можно править</label>
+          <div class="ai-ex" id="aiOwnEx" role="group" aria-label="Примеры промпта"></div>
+          <textarea class="input tpl" id="aiOwn" rows="7" spellcheck="true" placeholder="Например: Я делаю сайты-визитки для салонов красоты за 5 дней. Пиши на «вы», коротко и без рекламных слов. Зацепись за то, чего у них нет, и предложи бесплатно показать набросок. Цену называй, только если спросят: {цена}."></textarea>
+          <p class="ai-safe">Название, город, рейтинг, отзывы и «Деталь» заведения ИИ получает сам. Можно писать <code>{имя}</code> <code>{регион}</code> <code>{цена}</code>.</p>
+          <details class="bldet" id="aiOwnMore">
+            <summary>Длина, ссылки, ответ после «да»</summary>
+            <div class="ai-opts">
+              <span class="ai-optlab" id="aiLenLab">Длина</span>
+              <div class="pgsw" id="aiLen" role="group" aria-labelledby="aiLenLab">
+                <button type="button" data-ailen="short">Коротко</button><button type="button" data-ailen="mid">Средне</button><button type="button" data-ailen="long">Подробно</button>
+              </div>
+              <label class="check"><input type="checkbox" id="aiAsk"> Заканчивать вопросом</label>
+              <label class="check"><input type="checkbox" id="aiLinks"> Можно давать ссылки (ваши: из промпта, «О себе», демо)</label>
+              <label class="check"><input type="checkbox" id="aiTypo"> Без «ИИ-шных» символов: длинных тире, ёлочек, эмодзи</label>
+            </div>
+            <label for="aiOwnYes">Когда ответили «да, интересно» — что писать</label>
+            <textarea class="input tpl" id="aiOwnYes" rows="3" spellcheck="true" placeholder="Необязательно. Например: дай ссылку на портфолио и назови цену {цена}. Предложи созвониться на 10 минут."></textarea>
+          </details>
+          <details class="bldet" id="aiABBox">
+            <summary>Сравнить два промпта</summary>
+            <p class="ai-safe">Напишите второй вариант — заведения по очереди получат A (основной) или B. Через пару недель станет видно, на какой отвечают чаще.</p>
+            <label class="check"><input type="checkbox" id="aiAB"> Чередовать A и B</label>
+            <label for="aiOwnB">Промпт B</label>
+            <textarea class="input tpl" id="aiOwnB" rows="5" spellcheck="true" placeholder="Например, тот же, но первым шагом — созвон на 10 минут вместо бесплатного разбора."></textarea>
+            <div class="ai-abres" id="aiABRes" aria-live="polite"></div>
+          </details>
+        </div>
+        <label for="aiLang">Язык сообщений заведениям</label>
+        <select class="input" id="aiLang"></select>
+        <details class="bldet" id="aiAboutBox">
+          <summary>О себе и предложении</summary>
+          <p class="ai-safe">ИИ пишет только из этого текста и данных заведения, ничего не придумывает. Здесь: кто вы, что делаете, примеры работ, цена.</p>
+          <textarea class="input tpl" id="llmAbout" rows="4" spellcheck="true" aria-label="О себе и оффере"></textarea>
+        </details>
+        <button type="button" class="btn glass wide ai-next" id="aiS2Done"><span>Готово — дальше</span></button>
+      </div>
+    </li>
+    <li class="ai-step" id="aiStep3">
+      <button type="button" class="ai-sh" data-aistep="3" aria-expanded="false" aria-controls="aiS3"><span class="ai-sn" aria-hidden="true">3</span><span class="ai-stt"><b>Проверить на заведении</b><small id="aiS3sum"></small></span><span class="ai-chev" aria-hidden="true"></span></button>
+      <div class="ai-sb" id="aiS3" hidden>
+        <p class="ai-lead">ИИ напишет первое сообщение для настоящего заведения из списка. Ничего не сохраняется, пока вы сами не нажмёте «В черновик».</p>
+        <div class="ai-try">
+          <button type="button" class="btn glass primary wide" id="aiTry"><morph-icon class="mi" data-mi="Sparkles" size="16" stroke-width="1.9" aria-hidden="true"></morph-icon><span>Попробовать на заведении</span></button>
+          <div id="aiTryOut" aria-live="polite"></div>
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <div class="ai-extra">
+    <b class="ai-xt">Помощники</b>
+    <label class="check"><input type="checkbox" id="aiDetailAuto"> «Деталь» из отзывов перед черновиками</label>
+    <p class="ai-safe" id="aiDetailNote">ИИ сам находит в отзывах Google одну зацепку («хвалят рибай», «долго ждать по выходным») — сообщение выходит конкретнее. Отзывы загружает сервер Rozvedka: один запрос из лимита поиска Google на заведение, один раз.</p>
+    <div class="ai-scorerow"><button type="button" class="btn glass" id="aiScoreBtn"><morph-icon class="mi" data-mi="Sparkles" size="16" stroke-width="1.9" aria-hidden="true"></morph-icon><span>Оценить ИИ</span></button><span class="ai-safe" id="aiScoreInfo"></span></div>
+    <p class="ai-safe">ИИ смотрит на каждое заведение в списке Парсера и ставит 1–5: насколько ваше предложение им нужно, с причиной. Сортировка «Сначала перспективные» это учитывает: в разбивке процента «ответят» у неё пометка «ИИ». Один запрос на заведение, до 40 за раз.</p>
+    <label class="check"><input type="checkbox" id="aiIntentOn"> Подсказывать, что ответило заведение</label>
+    <p class="ai-safe">Пришёл ответ — ИИ подскажет: «похоже, интерес → перевести в „Заинтересован“», «спрашивают цену → ответить ценой». Сам ничего не меняет.</p>
+  </div>
+
+  <details class="bldet ai-more" id="aiMore">
+    <summary>Ещё: без ключа, демо, статистика</summary>
+    <div class="ai-mblock" id="aiChatBox">
+      <b class="ai-xt">Без ключа — через чат с Claude</b>
+      <p class="ai-safe">Бесплатно в рамках подписки claude.ai. 1) Скопируйте запрос. 2) Вставьте его в чат с Claude. 3) Скопируйте ответ целиком и вставьте ниже — тексты разложатся по карточкам.</p>
+      <button type="button" class="btn glass wide" id="chatCopy"><morph-icon class="mi" data-mi="Copy" size="16" stroke-width="1.9" aria-hidden="true"></morph-icon>Скопировать запрос для Claude</button>
+      <p class="tr-note" id="chatInfo" aria-live="polite"></p>
+      <label for="chatReply">Ответ Claude</label>
+      <textarea class="input tpl" id="chatReply" rows="4" spellcheck="false" placeholder="Вставьте сюда ответ Claude целиком — черновики разложатся по карточкам…"></textarea>
+      <button type="button" class="btn glass wide" id="chatApply" style="margin-top:8px"><svg class="ic"><use href="#i-arrow"/></svg>Применить черновики</button>
+    </div>
+    <div class="ai-mblock">
+      <b class="ai-xt">Демо по нишам</b>
+      <p class="ai-safe">Готовые примеры под рукой. Если ниша лида совпала по словам (категория или название), первое сообщение упоминает готовый пример, а ссылка уходит в ответе после «так». Строки проверяются сверху вниз. Личное демо из карточки лида важнее.</p>
+      <div id="demoList"></div>
+      <button type="button" class="linkbtn" id="demoAdd" style="margin-top:6px">Добавить демо</button>
+    </div>
+    <div class="ai-mblock">
+      <b class="ai-xt">Какие тексты отвечают</b>
+      <p class="ai-safe">Сколько отправлено и сколько ответили по каждому варианту текста. Ответ засчитывается сообщению, после которого он пришёл.</p>
+      <div id="abStats"></div>
+    </div>
+  </details>
+
+    </section>
+    <section class="tabp" id="tab-hidden" role="tabpanel" aria-label="База" data-tab="hidden" hidden>
+  <h2>База <span class="count" id="hiddenCount"></span></h2>
+  <p class="hint" style="margin:0 0 12px">Всё, с чем вы уже работали. Выберите раздел&nbsp;— список откроется справа на всю страницу. «В работе»&nbsp;— лиды по стадиям, клик открывает карточку. «Стоп»&nbsp;— кому не пишем: в поиске они больше не появятся.</p>
+  <div id="blCats" role="group" aria-label="Стадии и категории"></div>
+
+  <details class="bldet">
+    <summary>Добавить вручную</summary>
+    <form id="blAdd" class="bladd">
+      <input class="input" id="blAddName" placeholder="Название заведения…" aria-label="Название" autocomplete="off">
+      <div class="grid2">
+        <input class="input" id="blAddCity" placeholder="Город…" aria-label="Город" autocomplete="off">
+        <select class="input" id="blAddCat" aria-label="Категория"></select>
+      </div>
+      <button type="submit" class="btn glass wide"><svg class="ic"><use href="#i-ban"/></svg>В стоп-лист</button>
+    </form>
+  </details>
+  <details class="bldet">
+    <summary>Категории</summary>
+    <div class="chips" id="blCatList"></div>
+    <div class="row"><input class="input" id="blCatNew" aria-label="Своя категория стопа" placeholder="Своя категория…" autocomplete="off"><button class="btn glass icon" type="button" id="blCatAdd" aria-label="Добавить категорию"><svg class="ic"><use href="#i-plus"/></svg></button></div>
+    <p class="hint">Встроенные удалить нельзя, свои — можно (записи переедут в «Другое»).</p>
+  </details>
+  <details class="bldet" id="funnelDet">
+    <summary>Отчёт по воронке</summary>
+    <div id="funnelBox"></div>
+  </details>
+    </section>
+    <section class="tabp" id="tab-keys" role="tabpanel" aria-label="Клавиши" data-tab="keys" hidden>
+  <h2>Клавиши</h2>
+  <p class="hint" style="margin:0 0 10px">Под левую руку&nbsp;— правая остаётся на мыши. Наведите курсор на карточку или откройте лида и&nbsp;жмите. Раскладка не важна: <kbd>S</kbd> и&nbsp;<kbd>Ы</kbd>&nbsp;— одна клавиша.</p>
+  <div id="keysMap" aria-hidden="true"></div>
+  <div id="keysBody"></div>
+  <label class="check" style="margin-top:14px"><input type="checkbox" id="keyHover"> Клавиши действуют на карточку под курсором</label>
+  <label class="check"><input type="checkbox" id="keyHints"> Показывать клавиши на кнопках панели</label>
+  <button type="button" class="linkbtn" id="keysReset" style="margin-top:12px">Вернуть стандартные клавиши</button>
+    </section>
+    <section class="tabp" id="tab-gfx" role="tabpanel" aria-label="Графика" data-tab="gfx" hidden>
+  <h2>Вид</h2>
+  <label id="lookThemeLab">Тема</label>
+  <div class="pgsw look-sw" id="lookTheme" role="group" aria-labelledby="lookThemeLab"><button type="button" data-v="red" aria-pressed="true">Красная</button><button type="button" data-v="graphite" aria-pressed="false">Графит</button></div>
+  <label id="lookBtnLab">Кнопки</label>
+  <div class="pgsw look-sw" id="lookBtn" role="group" aria-labelledby="lookBtnLab"><button type="button" data-v="glass" aria-pressed="true">Стекло</button><button type="button" data-v="flat" aria-pressed="false">Плоские</button><button type="button" data-v="line" aria-pressed="false">Контур</button><button type="button" data-v="quiet" aria-pressed="false">Тихие</button></div>
+  <label id="lookMapLab">Карта на&nbsp;карточке</label>
+  <div class="pgsw look-sw" id="lookMap" role="group" aria-labelledby="lookMapLab"><button type="button" data-v="none" aria-pressed="false">Нет</button><button type="button" data-v="under" aria-pressed="true">Подложка</button><button type="button" data-v="thumb" aria-pressed="false">Значок</button></div>
+  <p class="hint">«Графит»&nbsp;— чёрная сцена, угольные карточки и&nbsp;шрифт Inter, «Красная»&nbsp;— как было. Кнопки: «Стекло»&nbsp;— как было, «Плоские»&nbsp;— заливкой, «Контур»&nbsp;— круги с&nbsp;рамкой, «Тихие»&nbsp;— одни значки. Карта&nbsp;— улицы вокруг заведения, бесплатно, при наведении проявляется в&nbsp;цвете; нужны координаты места (их записывает поиск). Фон окна выбирается ниже.</p>
+  <h2 id="gfxPreLab">Наборы</h2>
+  <div class="gfxpre" id="gfxPre" role="group" aria-labelledby="gfxPreLab"></div>
+  <p class="hint">Набор ставит фон, цвет, яркость, плотность и&nbsp;скорость разом. <button type="button" class="linkbtn" id="gfxMineSave">Запомнить текущие как «Мой»</button></p>
+  <h2>Фон окна</h2>
+  <div class="gfxlist" id="gfxBg" role="group" aria-label="Фон окна"></div>
+  <div class="grid2">
+    <div><label for="gfxPgBase">В Базе</label><select class="input" id="gfxPgBase" name="gfxPgBase" data-gpage="base"></select></div>
+    <div><label for="gfxPgMsg">В Сообщениях</label><select class="input" id="gfxPgMsg" name="gfxPgMsg" data-gpage="msg"></select></div>
+  </div>
+  <p class="hint">У Базы и&nbsp;ленты сообщений может быть свой фон&nbsp;— по нему сразу видно, где вы находитесь.</p>
+  <h2 id="gfxPalLab">Цвет</h2>
+  <div class="pgsw" id="gfxPal" role="group" aria-labelledby="gfxPalLab"></div>
+  <div class="gfxtones" id="gfxTone" role="group" aria-label="Свой цвет" hidden></div>
+  <p class="hint">«Красный»&nbsp;— под цвет программы, «Родной»&nbsp;— как фон задуман автором, «Свой»&nbsp;— один из восьми тонов для любого фона.</p>
+  <label class="check"><input type="checkbox" id="gfxAccent"> Красить интерфейс в цвет фона</label>
+  <p class="hint">Кнопки, выделение, полоска прогресса и&nbsp;заголовок окна берут цвет у фона. С&nbsp;«Красным» ничего не меняется.</p>
+  <h2><label for="gfxBright">Яркость фона</label> <output class="count" id="gfxBrightVal" for="gfxBright"></output></h2>
+  <input class="rng" id="gfxBright" name="gfxBright" type="range" min="20" max="100" step="5">
+  <h2><label for="gfxSpeed">Скорость анимации</label> <output class="count" id="gfxSpeedVal" for="gfxSpeed"></output></h2>
+  <input class="rng" id="gfxSpeed" name="gfxSpeed" type="range" min="25" max="200" step="25">
+  <h2><label for="gfxPanel">Плотность панелей</label> <output class="count" id="gfxPanelVal" for="gfxPanel"></output></h2>
+  <input class="rng" id="gfxPanel" name="gfxPanel" type="range" min="50" max="130" step="5">
+  <p class="hint">Насколько боковая панель, шапка и&nbsp;карточки закрывают фон: меньше&nbsp;— фон просвечивает сильнее, больше&nbsp;— текст читается спокойнее.</p>
+  <h2 id="gfxQLab">Качество</h2>
+  <div class="pgsw" id="gfxQ" role="group" aria-labelledby="gfxQLab"></div>
+  <p class="hint" id="gfxQHint" aria-live="polite"></p>
+  <h2>Поведение</h2>
+  <label class="check"><input type="checkbox" id="gfxMotion"> Анимация фона</label>
+  <label class="check"><input type="checkbox" id="gfxPointer"> Фон тянется к курсору</label>
+  <label class="check"><input type="checkbox" id="gfxReact"> Фон показывает события</label>
+  <p class="hint gfxdemo">Во время поиска фон ярче и&nbsp;быстрее. Вспышка цветом события: <span id="gfxFlash"></span></p>
+  <label class="check"><input type="checkbox" id="gfxPause"> Останавливать фон, когда окно неактивно</label>
+  <label class="check"><input type="checkbox" id="gfxSplash"> Заставка при запуске — монета уходит в&nbsp;значок окна</label>
+  <label class="check"><input type="checkbox" id="gfxSound"> Звук монеты — короткий «дзынь», когда она садится в&nbsp;значок</label>
+  <label for="gfxIdle">Экран покоя</label>
+  <select class="input" id="gfxIdle" name="gfxIdle"><option value="0">Выключен</option><option value="1">Через 1 минуту</option><option value="3">Через 3 минуты</option><option value="5">Через 5 минут</option><option value="10">Через 10 минут</option></select>
+  <p class="hint" style="margin-bottom:8px">Если ничего не трогать, интерфейс гаснет и&nbsp;остаётся только фон. Любое движение мыши или клавиша возвращают всё обратно. Во время поиска не включается.</p>
+  <label class="check"><input type="checkbox" id="gfxIdleStream" checked> Лента вашей Базы на&nbsp;экране покоя&nbsp;— кому написали, кто ответил</label>
+  <label class="check"><input type="checkbox" id="gfxGlass"> Стекло на кнопках</label>
+  <p class="hint">Без анимации фон застывает и&nbsp;не реагирует на курсор. Без стекла кнопки не преломляют и&nbsp;не размывают фон.</p>
+  <h2 id="gfxGlassLab">Сила стекла</h2>
+  <div class="pgsw" id="gfxGlassLvl" role="group" aria-labelledby="gfxGlassLab"></div>
+  <p class="hint">Панель лида, меню, уведомления и&nbsp;шапка&nbsp;— матовое стекло над фоном, кнопки&nbsp;— «жидкое». Слабо&nbsp;— плотнее и&nbsp;спокойнее, сильно&nbsp;— фон виден ярче. На&nbsp;качестве «Низкое» стекло выключается само.</p>
+  <button type="button" class="linkbtn" id="gfxReset" style="margin-top:14px">Вернуть настройки графики по умолчанию</button>
+    </section>
+    <section class="tabp" id="tab-settings" role="tabpanel" aria-label="Настройки" data-tab="settings" hidden>
+  <h2>Обо мне</h2>
+  <p class="hint" id="meInProfile" hidden>Имя, регион и цена — в&nbsp;«Профиле»: там&nbsp;же они хранятся в&nbsp;учётке и&nbsp;заполнятся сами на&nbsp;новом компьютере. <button type="button" class="linkbtn" data-gopage="acct">Открыть профиль</button></p>
+  <div id="meBlock">
+  <p class="hint" style="margin:0 0 8px">Подставляется во все тексты программы: шаблоны, быстрые ответы, скрипт звонка, правила для ИИ.</p>
+  <label for="meName">Имя</label>
+  <input class="input" id="meName" name="meName" autocomplete="off" spellcheck="false" placeholder="Олена…">
+  <label for="meRegion">Где работаете&nbsp;— как в&nbsp;фразе «для закладів у&nbsp;…»</label>
+  <input class="input" id="meRegion" name="meRegion" autocomplete="off" placeholder="Львівській області…">
+  <label for="mePrice">Цена&nbsp;— как пишете клиенту</label>
+  <input class="input" id="mePrice" name="mePrice" autocomplete="off" placeholder="від 300$…">
+  <p class="hint" id="mePreview" aria-live="polite"></p>
+  </div>
+  <p class="hint">В&nbsp;своих шаблонах и&nbsp;ответах можно писать <code>{имя}</code> <code>{регион}</code> <code>{цена}</code>&nbsp;— подставятся сами.</p>
+  <label for="meCountry">Страна, где ищете заведения</label>
+  <select class="input" id="meCountry" name="meCountry"></select>
+  <label for="meCur">Валюта цен&nbsp;— подписка и&nbsp;запас запросов</label>
+  <select class="input" id="meCur" name="meCur"></select>
+  <label for="msgLang">Язык сообщений заведениям</label>
+  <select class="input" id="msgLang" name="msgLang"><option value="">По стране</option><option value="uk">Украинский</option><option value="ru">Русский</option></select>
+  <p class="hint" style="margin-top:6px">От страны зависят номера телефонов (как читать «067…» или «8&nbsp;(916)…», какие из&nbsp;них мобильные&nbsp;— для кнопок Telegram, Viber, WhatsApp), язык и&nbsp;регион поиска Google и&nbsp;город из&nbsp;адреса. Автоперевод названий на&nbsp;украинский&nbsp;— только для Украины. Язык сообщений (черновики, шаблоны, готовые ответы, скрипт звонка, правила для&nbsp;ИИ) по&nbsp;стране: Украина&nbsp;— украинский, остальные&nbsp;— русский; можно выбрать любой из&nbsp;списка или «Свой язык…»&nbsp;— на&nbsp;нём ИИ пишет заведениям, программа остаётся на&nbsp;русском. После смены языка окно перезагрузится.</p>
+
+  <h2>Доступ</h2>
+  <label for="apiKey">Ключ Google Places API (New)</label>
+  <div class="row">
+    <input class="input mono" id="apiKey" name="apiKey" type="password" placeholder="AIza…" autocomplete="off" spellcheck="false">
+    <button class="btn glass icon" id="toggleKey" type="button" aria-label="Показать ключ" title="Показать ключ"><morph-icon class="mi" data-mi="Eye" size="16" stroke-width="1.9" aria-hidden="true"></morph-icon></button>
+  </div>
+  <p class="hint">Хранится только на этом компьютере. В&nbsp;Google Cloud Console ограничьте ключ одним API&nbsp;— «Places API (New)».</p>
+
+  <h2>Соцсети</h2>
+  <label class="check"><input type="checkbox" id="autoSocial"> Искать Instagram сразу после поиска</label>
+  <label class="check"><input type="checkbox" id="autoBase"> Убирать лида из списка, когда меняется статус (он остаётся в «Базе»)</label>
+  <p class="hint">Сначала читаем сайт или шаблонное меню заведения и&nbsp;его страницы «контакты / оферта»&nbsp;— оттуда соцсети, доп. номера, почта и&nbsp;продавец (ФОП или ТОВ из&nbsp;реквизитов). Если Instagram там нет, ищем «название + город + instagram». Найденный профиль сверяем по&nbsp;его превью: совпали название и&nbsp;город&nbsp;— подтверждён сам, иначе помечен точкой&nbsp;— откройте и&nbsp;проверьте.</p>
+
+  <h2>Дожимы</h2>
+  <label for="followDays">Напоминать через, дней</label>
+  <input class="input num" id="followDays" type="number" inputmode="numeric" min="1" max="60" step="1">
+  <label for="followBoss">После «надо спросить руководство», дней</label>
+  <input class="input num" id="followBoss" name="followBoss" type="number" inputmode="numeric" min="1" max="60" step="1">
+  <p class="hint">Когда вы пишете заведению из программы, напоминание ставится автоматически — кроме первого сообщения: дожимов нет, кто не ответил, тому не нужно.</p>
+
+  <h2>Telegram</h2>
+  <div class="tgset" id="tgSet"><p class="hint">Загрузка…</p></div>
+
+  <h2>Telegram-бот</h2>
+  <div class="tgset" id="botSet"><p class="hint">Загрузка…</p></div>
+
+  <h2>Instagram</h2>
+  <div class="tgset" id="igSet"><p class="hint">Загрузка…</p></div>
+
+  <h2>Импорт</h2>
+  <button type="button" class="btn glass wide" data-import><svg class="ic"><use href="#i-download"/></svg>Импорт из таблицы (xlsx / csv)</button>
+  <p class="hint">Ваш трекер лидов или CSV, выгруженный из Rozvedka. Отказы и «не беспокоить» попадут в стоп с нужной категорией, заведения в работе — в Базу по стадиям.</p>
+
+  <h2>Экспорт</h2>
+  <label class="check" title="Добавит апостроф перед номером, чтобы Google Таблицы не принимали +380 за формулу"><input type="checkbox" id="sheetsFix"> CSV для Google Таблиц</label>
+  <h2>Автокопия</h2>
+  <p class="hint" id="bakInfo" style="margin:0 0 8px">Копия ещё не делалась.</p>
+  <div class="row"><button type="button" class="btn glass" id="bakNow" style="flex:1">Сделать копию сейчас</button><button type="button" class="btn glass" id="bakShow">Показать файл</button></div>
+  <button type="button" class="btn glass wide" id="bakRestore" style="margin-top:8px">Восстановить из копии…</button>
+  <p class="hint">Раз в день, сама. В&nbsp;Документы\Rozvidka лежит ровно четыре файла «авто-копия-…»: три последних дня по кругу и&nbsp;один недельный&nbsp;— новые затирают старые, папка не растёт.</p>
+    </section>
+    </div>
+    <div class="side-foot">
+  <div class="progress" role="progressbar" aria-label="Прогресс поиска" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><div id="bar"></div></div>
+  <p class="log" id="log" aria-live="polite"></p>
+  <p class="ver" id="appVer"></p>
+    </div>
+  </div>
+</aside>
+
+<main id="main" data-view="cards">
+  <div class="page" id="leadPage">
+  <div class="toolbar">
+    <div class="pgsw" role="group" aria-label="Страница"><button type="button" data-page="search" title="Новые лиды из поиска">Парсер <b data-pgn="lead"></b></button><button type="button" data-page="hidden" title="Всё, с чем уже работали">База <b data-pgn="base"></b></button><button type="button" data-page="msg" title="Кому ответить и что готово к отправке">Сообщения <b data-pgn="msg"></b></button></div>
+    <div class="searchbox"><svg class="ic"><use href="#i-search"/></svg><input class="input" id="fText" type="search" aria-label="Поиск по названию или адресу" placeholder="Поиск по названию или адресу…"></div>
+    <select class="input" id="fCity" aria-label="Город"><option value="">Все города</option></select>
+    <select class="input" id="fType" aria-label="Тип лида"><option value="">Все лиды</option><option value="hot">Без сайта</option><option value="warm">Шаблон (меню, запись, каталог)</option><option value="social">Только соцсеть</option><option value="own">Свой сайт</option><option value="unk">Сайт не указан</option></select>
+    <select class="input" id="fSphere" aria-label="Сфера" hidden><option value="">Все сферы</option></select>
+    <select class="input" id="fCrm" aria-label="Статус"><option value="">Новые (не тронутые)</option><option value="all">Все, включая базу</option></select>
+    <select class="input" id="fTag" aria-label="Метка"><option value="">Все метки</option></select>
+    <select class="input" id="sortSel" aria-label="Сортировка">
+      <option value="score:-1">Сначала перспективные</option>
+      <option value="reviews:-1">Больше отзывов</option>
+      <option value="rating:-1">Выше рейтинг</option>
+      <option value="firstSeen:-1">Сначала новые</option>
+      <option value="name:1">По названию</option>
+      <option value="crm:1">По статусу</option>
+      <option value="followUp:1">По дате дожима</option>
+      <option value="" hidden>Своя сортировка</option>
+    </select>
+    <div class="seg" role="group" aria-label="Вид списка">
+      <button type="button" data-view="cards" aria-label="Карточки" title="Карточки"><svg class="ic"><use href="#i-grid"/></svg></button>
+      <button type="button" data-view="table" aria-label="Таблица" title="Таблица"><svg class="ic"><use href="#i-rows"/></svg></button>
+    </div>
+    <button class="btn glass" id="socialBtn" type="button" title="Найти Instagram для лидов в текущем списке"><morph-icon class="mi" data-mi="Instagram" size="16" stroke-width="1.9" aria-hidden="true"></morph-icon><span>Найти соцсети</span></button>
+    <button class="btn glass" id="genAllBtn" type="button" title="Сгенерировать черновики для лидов в текущем списке"><morph-icon class="mi" data-mi="Sparkles" size="16" stroke-width="1.9" aria-hidden="true"></morph-icon><span>Черновики</span></button>
+    <button class="btn glass" id="exportBtn" type="button" title="Экспорт CSV"><morph-icon class="mi" data-mi="Download" size="16" stroke-width="1.9" aria-hidden="true"></morph-icon><span>Экспорт CSV</span></button>
+    <button class="btn glass danger icon" id="clearBtn" type="button" aria-label="Очистить список" title="Очистить список (статусы и заметки сохранятся)"><svg class="ic"><use href="#i-trash"/></svg></button>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="tablewrap">
+    <div class="cards" id="cards"></div>
+    <div class="board" id="board"></div>
+    <table>
+      <thead><tr>
+        <th data-sort="type">Тип</th>
+        <th data-sort="name">Заведение</th>
+        <th data-sort="city">Город</th>
+        <th class="nosort">Телефон</th>
+        <th class="nosort">Написать</th>
+        <th class="nosort">Сайт</th>
+        <th data-sort="rating">Рейтинг</th>
+        <th data-sort="reviews">Отзывы</th>
+        <th data-sort="score">Ответят</th>
+        <th data-sort="crm">Статус</th>
+        <th class="nosort">Черновик сообщения</th>
+        <th class="nosort">Заметка</th>
+        <th class="nosort"><span class="sr-only">Скрыть</span></th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty">
+      <div class="empty-mark" id="emptyMark"><canvas id="emptyCanvas" role="img" aria-label="Пусто"></canvas></div>
+      <p class="empty-text" id="emptyText">Введите ключ API, проверьте города и&nbsp;категории и&nbsp;нажмите «Начать поиск».</p>
+      <button type="button" class="btn glass" id="resetFilters" hidden>Сбросить фильтры</button>
+    </div>
+  </div>
+  </div>
+  <div class="page" id="basePage" hidden>
+  <div class="toolbar">
+    <div class="pgsw" role="group" aria-label="Страница"><button type="button" data-page="search" title="Новые лиды из поиска">Парсер <b data-pgn="lead"></b></button><button type="button" data-page="hidden" title="Всё, с чем уже работали">База <b data-pgn="base"></b></button><button type="button" data-page="msg" title="Кому ответить и что готово к отправке">Сообщения <b data-pgn="msg"></b></button></div>
+    <div class="searchbox"><svg class="ic"><use href="#i-search"/></svg><input class="input" id="blSearch" type="search" placeholder="Поиск по Базе: название, город, заметка…" aria-label="Поиск по базе"></div>
+    <select class="input" id="blSort" aria-label="Сортировка">
+      <option value="new">Сначала свежие</option><option value="name">А–Я</option><option value="city">По городу</option><option value="pause">По дате дожима / паузы</option>
+    </select>
+  </div>
+  <div class="today" id="baseToday" hidden></div>
+  <div class="stats basehead">
+    <b id="baseTitle">База</b><span id="baseSub"></span><span class="sp"></span>
+    <div class="blsel" id="blSel" hidden>
+      <label class="check"><input type="checkbox" id="blAll"> <span id="blSelN">Выбрать все</span></label>
+      <span id="blBulkBox" hidden>
+      <select class="input" id="blBulkCat" aria-label="Куда перенести выбранных"><option value="">Куда…</option></select>
+      <button type="button" class="btn glass" id="blBulkPause" title="Пауза для выбранных записей стопа">Пауза</button>
+      <button type="button" class="btn glass" id="blBulkRestore">Вернуть в новые</button>
+      <button type="button" class="btn glass danger" id="blBulkDel" title="Удалить выбранных навсегда — вместе с заметками и разведкой; новый поиск их не вернёт">Удалить</button>
+      </span>
+    </div>
+  </div>
+  <div class="tablewrap"><div class="hidden-list" id="hiddenList"></div></div>
+  </div>
+  <div class="page" id="msgPage" hidden>
+  <div class="toolbar">
+    <div class="pgsw" role="group" aria-label="Страница"><button type="button" data-page="search" title="Новые лиды из поиска">Парсер <b data-pgn="lead"></b></button><button type="button" data-page="hidden" title="Всё, с чем уже работали">База <b data-pgn="base"></b></button><button type="button" data-page="msg" title="Кому ответить и что готово к отправке">Сообщения <b data-pgn="msg"></b></button></div>
+    <div class="searchbox"><svg class="ic"><use href="#i-search"/></svg><input class="input" id="msgSearch" name="msgSearch" type="search" autocomplete="off" placeholder="Поиск по ленте: название, город, текст…" aria-label="Поиск по сообщениям"></div>
+  </div>
+  <div class="today" id="msgTop"></div>
+  <div class="tablewrap"><div class="msg-list" id="msgList"></div></div>
+  </div>
+</main>
+
+</div>
+
+<div class="scrim" id="scrim"></div>
+<section class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dName" aria-hidden="true" tabindex="-1"></section>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastText"></span><span class="toast-acts" id="toastActs"></span></div>
+
+<script src="guard.js"></script>
+<script src="prompts.js"></script>
+<script src="prompts-ru.js"></script>
+<script src="lang.js"></script>
+<script src="morph.js"></script>
+<script src="bg.js"></script>
+<script src="cities-data.js"></script>
+<script src="cities.js"></script>
+<script src="phone.js"></script>
+<script src="platforms.js"></script>
+<script src="spheres.js"></script>
+<script src="core.js"></script>
+<script src="look.js"></script>
+<script src="qol-early.js"></script>
+<script src="search.js"></script>
+<script src="classifier.js"></script>
+<script src="findall.js"></script>
+<script src="searchx.js"></script><link rel="stylesheet" href="odds.css"><script src="odds.js"></script>
+<script src="deadsite.js"></script>
+<link rel="stylesheet" href="scout.css"><script src="scout.js"></script>
+<script src="opens.js"></script>
+<script src="gis2.js"></script>
+<script src="osm.js"></script>
+<script src="lead.js"></script>
+<script src="base.js"></script>
+<script src="tg.js"></script>
+<script src="drafts.js"></script>
+<script src="ai.js"></script>
+<script src="voice.js"></script>
+<script src="owner.js"></script>
+<script src="app.js"></script>
+<script src="qol.js"></script>
+<script src="wordmark.js"></script>
+<script src="glass.js"></script>
+<script src="coin.js"></script>
+<script src="intro.js"></script>
+<script src="ig.js"></script>
+<script src="bot.js"></script>
+<script src="claims.js"></script>
+<script src="gkey.js"></script>
+<script src="account.js"></script>
+<script src="cloud.js"></script>
+<script src="home.js"></script>
+<script src="result.js"></script>
+<script src="empty.js"></script>
+<script src="stream.js"></script>
+<script src="demo-prompt.js"></script>
+<script src="demo-page-prompt.js"></script>
+<script src="demo-prompt-ru.js"></script>
+<script src="demo-page-prompt-ru.js"></script>
+<script src="demo.js"></script>
+<script src="demokeep.js"></script>
+<script src="vcard.js"></script>
+<script src="postcard.js"></script>
+<script src="domain.js"></script>
+<script src="siteimport.js"></script>
+<script src="sites.js"></script>
+<script src="sub.js"></script>
+<script src="help.js"></script>
+<script src="vendor/maplibre-gl.js"></script>
+<script src="map.js"></script>
+<script src="cardmap.js"></script>
+<link rel="stylesheet" href="look4.css"><script src="look4.js"></script>
+<link rel="stylesheet" href="mission.css"><script src="mission.js"></script>
+<link rel="stylesheet" href="bal.css"><script src="bal.js"></script>
+<link rel="stylesheet" href="whatsnew.css"><script src="whatsnew.js"></script>
+<script src="terms-text.js"></script>
+<link rel="stylesheet" href="terms.css"><script src="terms.js"></script>
+</body>
+</html>

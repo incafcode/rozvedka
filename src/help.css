@@ -1,0 +1,26 @@
+
+.hq-row{display:flex;align-items:center;gap:6px;min-width:0}
+.hq-row>.hq{margin-left:auto}
+.hq{flex:none;display:inline-grid;place-items:center;width:22px;height:22px;margin:-3px -5px -3px 4px;padding:0;border:0;border-radius:7px;background:none;color:var(--ink3);opacity:.55;cursor:pointer;vertical-align:middle;-webkit-tap-highlight-color:transparent;transition:color .15s var(--ease-out),background-color .15s var(--ease-out),opacity .15s var(--ease-out),transform .12s var(--ease-out)}
+.hq svg{display:block;width:15px;height:15px}
+.hq:hover{opacity:1;color:var(--ink);background:rgba(255,255,255,.06)}
+.hq[aria-expanded="true"]{opacity:1;color:var(--c1);background:rgba(var(--c1-rgb),.12)}
+.hq:focus-visible{opacity:1;outline:2px solid var(--c1);outline-offset:1px}
+.hq:active{transform:scale(.92)}
+.hq-lead{display:block;width:100%;min-width:0;margin:-4px 0 10px;padding:0;border:0;background:none;text-align:left;font:inherit;font-size:11.5px;line-height:1.5;color:var(--ink3);opacity:.8;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-wrap:pretty;cursor:pointer;transition:color .15s var(--ease-out),opacity .15s var(--ease-out)}
+.hq-lead:hover{opacity:1;color:var(--ink2)}
+.hq-lead:focus-visible{outline:2px solid var(--c1);outline-offset:2px;border-radius:4px}
+.hq-lead[hidden]{display:none}
+.hq-body,.hint.hq-item{margin:-2px 0 10px;padding:9px 12px 10px;border-radius:10px;background:rgba(255,255,255,.035);box-shadow:inset 0 0 0 1px var(--line);animation:hqIn .18s var(--ease-out)}
+.hq-body .hint{margin:0;font-size:12px;line-height:1.55;color:var(--ink2)}
+.hq-body .hint+.hint{margin-top:6px}
+.hint.hq-item{margin-top:6px;font-size:12px;line-height:1.55;color:var(--ink2)}
+.hq-acts{margin-top:6px}
+@keyframes hqIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.hq-body,.hint.hq-item{animation:none}.hq,.hq-lead{transition:none}}
+.hq-ic{display:grid;place-items:center;width:21px;height:21px;border:1.6px solid currentColor;border-radius:50%;font-size:12px;font-weight:700;line-height:1}
+#tab-help .searchbox{margin:4px 0 6px}
+#tab-help details.faq summary{text-transform:none;letter-spacing:0;font-size:13px;font-weight:500;color:var(--ink2)}
+#tab-help details.faq[open] summary,#tab-help details.faq summary:hover{color:var(--ink)}
+#tab-help details.faq .hint{font-size:12.5px;color:var(--ink2)}
+#helpSup{margin-top:18px}

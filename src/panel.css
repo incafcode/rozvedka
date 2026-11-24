@@ -1,0 +1,9 @@
+
+.scan{padding:2px 14px;gap:0;background:rgba(255,255,255,.035)}
+.scan>.scan-row{padding:10px 0;font-size:13.5px;gap:5px 10px}
+.scan>.scan-row+.scan-row{border-top:1px solid var(--line)}
+.scan-row>span{font-size:12px;color:var(--ink2);font-weight:500}
+.scan-row small{font-size:12.5px;color:var(--ink2)}
+.scan-row b{font-size:14px}
+.scan-row .linkbtn{font-size:12.5px}
+.scan-row.yes{margin:4px -8px;padding:10px 8px}
